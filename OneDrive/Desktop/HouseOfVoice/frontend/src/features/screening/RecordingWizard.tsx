@@ -1,35 +1,58 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Mic, Square, RotateCcw, ChevronRight, Zap,
+  AlertCircle, Loader2, CheckCircle2, BookOpen, Image as ImageIcon, MessageSquare
+} from 'lucide-react';
 import { ScreeningResult } from '../../shared/types';
 import { uploadRecording, runPipeline } from './api';
+
+const fadeUp = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.2, ease: 'easeOut' as const } },
+  exit: { opacity: 0, y: -4, transition: { duration: 0.15 } },
+};
+
+const C = {
+  navy: '#1E3A5F',
+  teal: '#0D9488',
+  tealSoft: '#CCFBF1',
+  surface: '#FFFFFF',
+  border: '#E2E8F0',
+  textPrimary: '#0F172A',
+  textSecondary: '#64748B',
+  danger: '#DC2626',
+};
 
 interface Step {
   id: 'sentence' | 'picture' | 'spontaneous';
   title: string;
-  icon: string;
+  Icon: React.ElementType;
   prompt: string;
+  hint: string;
 }
 
 const STEPS: Step[] = [
   {
     id: 'sentence',
     title: 'Sentence Reading',
-    icon: '📖',
-    prompt:
-      '"The quick brown fox jumps over the lazy dog. She sells seashells by the seashore."',
+    Icon: BookOpen,
+    prompt: 'The quick brown fox jumps over the lazy dog. She sells seashells by the seashore.',
+    hint: 'Read the passage clearly at a comfortable pace.',
   },
   {
     id: 'picture',
     title: 'Picture Description',
-    icon: '🖼️',
-    prompt:
-      'Describe a busy playground or park scene in your own words. Mention who is there and what they are doing.',
+    Icon: ImageIcon,
+    prompt: 'Describe a busy playground or park scene in your own words. Mention the people present and what they are doing.',
+    hint: 'Speak naturally for 30 to 60 seconds.',
   },
   {
     id: 'spontaneous',
     title: 'Spontaneous Speech',
-    icon: '💬',
-    prompt:
-      'Tell us about your favourite weekend activity or a fun memory with your family.',
+    Icon: MessageSquare,
+    prompt: 'Tell us about your favourite weekend activity or a fun memory with your family.',
+    hint: 'Speak freely and naturally for at least 30 seconds.',
   },
 ];
 
@@ -63,7 +86,7 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   const resetRecording = useCallback(() => {
-    setStepData((prev) => {
+    setStepData(prev => {
       const next = { ...prev };
       if (next[step.id]) {
         URL.revokeObjectURL(next[step.id].url);
@@ -79,7 +102,7 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
+      if (streamRef.current) streamRef.current.getTracks().forEach(t => t.stop());
     };
   }, []);
 
@@ -97,37 +120,27 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
-
       const mr = new MediaRecorder(stream, { mimeType: 'audio/webm' });
       mediaRecorderRef.current = mr;
-
-      mr.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
+      mr.ondataavailable = e => { if (e.data.size > 0) chunksRef.current.push(e.data); };
       mr.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        setStepData((prev) => ({
-          ...prev,
-          [step.id]: { blob, url: URL.createObjectURL(blob) },
-        }));
+        setStepData(prev => ({ ...prev, [step.id]: { blob, url: URL.createObjectURL(blob) } }));
         setRecordState('recorded');
-        stream.getTracks().forEach((t) => t.stop());
+        stream.getTracks().forEach(t => t.stop());
         if (timerRef.current) clearInterval(timerRef.current);
       };
-
       mr.start(200);
       setElapsed(0);
       setRecordState('recording');
-      timerRef.current = setInterval(() => setElapsed((p) => p + 1), 1000);
+      timerRef.current = setInterval(() => setElapsed(p => p + 1), 1000);
     } catch {
       setError('Microphone access denied. Please allow microphone permissions and try again.');
       setRecordState('idle');
     }
   };
 
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-  };
+  const stopRecording = () => { mediaRecorderRef.current?.stop(); };
 
   const handleContinue = async () => {
     if (!audioBlob) return;
@@ -142,11 +155,9 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       if (stepIndex < STEPS.length - 1) {
         const nextIndex = stepIndex + 1;
         setStepIndex(nextIndex);
-        setHighestStep((prev) => Math.max(prev, nextIndex));
-        const nextStep = STEPS[nextIndex];
-        setRecordState(stepData[nextStep.id] ? 'recorded' : 'idle');
+        setHighestStep(prev => Math.max(prev, nextIndex));
+        setRecordState(stepData[STEPS[nextIndex].id] ? 'recorded' : 'idle');
       } else {
-        // All steps done → run pipeline
         isPipelineError = true;
         setAnalyzing(true);
         const result = await runPipeline(caseId, newClipIds);
@@ -154,186 +165,196 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       }
     } catch (err) {
       let msg = err instanceof Error ? err.message : 'Upload failed. Please try again.';
-      if (msg.toLowerCase().includes('no speech') || msg.toLowerCase().includes('silent') || msg.toLowerCase().includes('could not decode') || msg.toLowerCase().includes('couldn\'t hear you clearly')) {
-        msg = 'Analysis Failed: No speech detected in your audio. Please re-record your clips and speak clearly into the microphone.';
+      if (
+        msg.toLowerCase().includes('no speech') ||
+        msg.toLowerCase().includes('silent') ||
+        msg.toLowerCase().includes('could not decode') ||
+        msg.toLowerCase().includes("couldn't hear")
+      ) {
+        msg = 'No speech detected in your recording. Please re-record and speak clearly into the microphone.';
       }
       setError(msg);
-
-      if (isPipelineError) {
-        setAnalyzing(false);
-        setRecordState('recorded');
-      } else {
-        setRecordState('recorded');
-      }
+      if (isPipelineError) setAnalyzing(false);
+      setRecordState('recorded');
     }
   };
 
   if (analyzing) {
     return (
-      <div className="min-h-[480px] flex flex-col items-center justify-center gap-6 bg-white rounded-2xl shadow-lg p-10 text-center">
-        <div className="relative w-20 h-20">
-          <div className="absolute inset-0 rounded-full border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
-          <div className="absolute inset-3 rounded-full bg-indigo-50 flex items-center justify-center text-2xl">🧠</div>
+      <motion.div
+        {...fadeUp}
+        style={{ background: C.surface, border: `1px solid ${C.border}` }}
+        className="rounded-xl shadow-sm p-12 flex flex-col items-center gap-6 text-center min-h-[400px] justify-center"
+      >
+        <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: C.tealSoft }}>
+          <Loader2 size={32} strokeWidth={1.75} style={{ color: C.teal }} className="animate-spin" />
         </div>
-        <h2 className="text-xl font-bold text-slate-800">Analyzing Speech Sample</h2>
-        <p className="text-slate-500 max-w-sm leading-relaxed text-sm">
-          Analyzing acoustic features, transcribing phonemes, and evaluating speech metrics...
-        </p>
-        <div className="flex gap-1 mt-2">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full bg-indigo-400"
-              style={{ animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite` }}
-            />
-          ))}
+        <div>
+          <p className="text-xs font-semibold tracking-wide uppercase mb-2" style={{ color: C.teal }}>
+            AI ANALYSIS IN PROGRESS
+          </p>
+          <h2 className="text-lg font-bold mb-1" style={{ color: C.textPrimary }}>
+            Analyzing Your Speech Sample
+          </h2>
+          <p className="text-sm leading-relaxed max-w-sm" style={{ color: C.textSecondary }}>
+            Running Whisper STT — Silero VAD — Acoustic Analysis — Gemini Summary...
+          </p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-      {/* Progress Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 pt-6 pb-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-white font-bold text-lg">Baseline Speech Assessment</h2>
-          <span className="text-indigo-200 text-sm font-medium">
-            Step {stepIndex + 1} of {STEPS.length}
-          </span>
-        </div>
-        {/* Progress bar */}
-        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-500"
-            style={{ width: `${((stepIndex + 1) / STEPS.length) * 100}%` }}
-          />
-        </div>
-        {/* Step tabs */}
-        <div className="flex gap-2 mt-4">
+    <motion.div
+      {...fadeUp}
+      style={{ background: C.surface, border: `1px solid ${C.border}` }}
+      className="rounded-xl shadow-sm overflow-hidden"
+    >
+      {/* ── Top bar ── */}
+      <div style={{ background: C.navy }} className="px-6 py-5">
+        <p className="text-xs font-semibold tracking-wide uppercase mb-3" style={{ color: C.tealSoft }}>
+          BASELINE SPEECH ASSESSMENT
+        </p>
+        <div className="flex items-center gap-2">
           {STEPS.map((s, i) => {
             const isClickable = i <= highestStep;
+            const isActive = i === stepIndex;
             return (
-              <div
-                key={s.id}
-                onClick={() => { if (isClickable) navigateToStep(i); }}
-                className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition ${
-                  isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
-                } ${
-                  i === stepIndex
-                    ? 'bg-white text-indigo-700'
-                    : isClickable
-                    ? 'bg-white/30 text-white hover:bg-white/40'
-                    : 'text-indigo-200'
-                }`}
-              >
-                <span>{s.icon}</span>
-                <span className="hidden sm:inline">{s.title}</span>
-              </div>
+              <React.Fragment key={s.id}>
+                <button
+                  onClick={() => { if (isClickable) navigateToStep(i); }}
+                  disabled={!isClickable}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors border"
+                  style={{
+                    background: isActive ? C.tealSoft : 'rgba(255,255,255,0.1)',
+                    borderColor: isActive ? C.teal : 'transparent',
+                    color: isActive ? C.teal : 'rgba(255,255,255,0.6)',
+                  }}
+                  title={s.title}
+                >
+                  <s.Icon size={16} strokeWidth={1.75} />
+                  <span className="text-xs font-medium hidden sm:inline">{s.title}</span>
+                </button>
+                {i < STEPS.length - 1 && (
+                  <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.2)' }} />
+                )}
+              </React.Fragment>
             );
           })}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6 space-y-6">
-        <div>
-          <h3 className="text-lg font-semibold text-slate-800 mb-1">
-            {step.icon} {step.title}
-          </h3>
-          <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-slate-700 text-sm leading-relaxed italic">
-            {step.prompt}
-          </div>
-          <p className="text-xs text-slate-400 mt-2">
-            {step.id === 'sentence'
-              ? 'Read the text above clearly and naturally.'
-              : 'Speak naturally for 30–60 seconds.'}
-          </p>
-        </div>
+      {/* ── Content ── */}
+      <div className="p-6 space-y-5">
+        <AnimatePresence mode="wait">
+          <motion.div key={step.id} {...fadeUp}>
+            <p className="text-xs font-semibold tracking-wide uppercase mb-2" style={{ color: C.teal }}>
+              STEP {stepIndex + 1}
+            </p>
+            <div
+              className="rounded-xl p-4 text-sm leading-relaxed font-medium"
+              style={{ background: C.tealSoft, border: `1px solid #99F6E4`, color: C.textPrimary }}
+            >
+              {step.prompt}
+            </div>
+            <p className="text-xs mt-2" style={{ color: C.textSecondary }}>{step.hint}</p>
+          </motion.div>
+        </AnimatePresence>
 
+        {/* Error banner */}
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-r-lg shadow-sm flex items-start gap-3">
-            <span className="text-xl leading-none mt-0.5">🛑</span>
-            <div className="text-sm font-medium leading-relaxed">{error}</div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-start gap-3 p-4 rounded-lg"
+            style={{ background: '#FEF2F2', border: `1px solid #FCA5A5` }}
+          >
+            <AlertCircle size={18} strokeWidth={1.75} style={{ color: C.danger, flexShrink: 0, marginTop: 1 }} />
+            <p className="text-sm font-medium" style={{ color: '#991B1B' }}>{error}</p>
+          </motion.div>
         )}
 
-        {/* Recording Controls */}
-        <div className="flex flex-col items-center gap-4">
+        {/* Recording controls */}
+        <div className="flex flex-col items-center gap-4 pt-2">
           {recordState === 'idle' && (
-            <button
+            <motion.button
+              {...fadeUp}
               onClick={startRecording}
-              className="flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-semibold px-8 py-4 rounded-full shadow-lg transition-all duration-150"
+              className="flex items-center gap-3 px-8 py-3.5 rounded-lg font-medium text-white transition-colors"
+              style={{ background: C.navy }}
             >
-              <span className="w-3 h-3 rounded-full bg-red-400 animate-pulse" />
+              <Mic size={18} strokeWidth={1.75} />
               Start Recording
-            </button>
+            </motion.button>
           )}
 
           {recordState === 'recording' && (
-            <div className="flex flex-col items-center gap-3">
-              <div className="flex items-center gap-3 text-red-600 font-bold text-xl">
-                <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+            <motion.div {...fadeUp} className="flex flex-col items-center gap-3">
+              <p className="text-2xl font-bold tabular-nums" style={{ color: C.danger }}>
                 {formatTime(elapsed)}
-              </div>
+              </p>
               <button
                 onClick={stopRecording}
-                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-semibold px-8 py-3 rounded-full shadow-lg transition-all"
+                className="flex items-center gap-2 px-8 py-3.5 rounded-lg font-medium text-white transition-colors"
+                style={{ background: C.danger }}
               >
-                <span className="w-3 h-3 rounded-sm bg-white" />
+                <Square size={16} strokeWidth={2} />
                 Stop Recording
               </button>
-            </div>
+            </motion.div>
           )}
 
           {(recordState === 'recorded' || recordState === 'uploading') && audioUrl && (
-            <div className="w-full space-y-3">
-              <audio controls src={audioUrl} className="w-full rounded-lg" />
-              <div className="flex gap-3">
+            <motion.div {...fadeUp} className="w-full space-y-4">
+              <audio controls src={audioUrl} className="w-full rounded-lg outline-none" />
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={resetRecording}
                   disabled={recordState === 'uploading'}
-                  className="flex-1 border border-slate-300 hover:border-slate-400 text-slate-700 font-medium py-2.5 rounded-xl transition disabled:opacity-40"
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium border transition-colors disabled:opacity-40"
+                  style={{ borderColor: C.border, color: C.textSecondary, background: C.surface }}
                 >
-                  🔄 Re-record
+                  <RotateCcw size={16} strokeWidth={1.75} />
+                  Re-record
                 </button>
                 {stepIndex > 0 && (
                   <button
                     onClick={() => navigateToStep(stepIndex - 1)}
                     disabled={recordState === 'uploading'}
-                    className="flex-1 border-2 border-indigo-200 hover:border-indigo-400 text-indigo-700 font-semibold py-2.5 rounded-xl transition disabled:opacity-40"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium border transition-colors disabled:opacity-40"
+                    style={{ borderColor: C.border, color: C.textSecondary, background: C.surface }}
                   >
-                    ← Back
+                    Back
                   </button>
                 )}
                 <button
                   onClick={handleContinue}
                   disabled={recordState === 'uploading'}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl transition disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-medium text-white transition-colors disabled:opacity-60"
+                  style={{ background: C.teal }}
                 >
                   {recordState === 'uploading' ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <Loader2 size={16} strokeWidth={2} className="animate-spin" />
                       Uploading...
                     </>
                   ) : stepIndex < STEPS.length - 1 ? (
-                    'Continue →'
+                    <>
+                      Continue
+                      <ChevronRight size={16} strokeWidth={2} />
+                    </>
                   ) : (
-                    '🚀 Analyze Speech'
+                    <>
+                      <Zap size={16} strokeWidth={1.75} />
+                      Analyze Speech
+                    </>
                   )}
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
-
-      <style>{`
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-      `}</style>
-    </div>
+    </motion.div>
   );
 };
