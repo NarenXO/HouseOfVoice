@@ -109,12 +109,12 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
         transition={{ duration: 0.2, ease: "easeOut" }}
         className="w-full"
       >
-        <div className="bg-white border border-[#CBD5E1] rounded-[12px] shadow-sm p-6 mt-6">
+        <div className="bg-white border border-[#A7E3D5] rounded-[14px] shadow-sm p-6 mt-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="text-xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-              <p className="text-sm font-medium text-[#475569]">{milestone.goal}</p>
+              <p className="text-sm font-medium text-[#334155]">{milestone.goal}</p>
             </div>
             {getStatusBadge()}
           </div>
@@ -127,11 +127,11 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
             <PracticePanel milestone={milestone} caseId={caseId} onProgressUpdate={onProgressUpdate} onProbeComplete={onProbeComplete} autoFillTrigger={autoFillTrigger} />
           ) : (
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-[#475569] mb-2">Exercises</h4>
+              <h4 className="text-sm font-semibold text-[#0F172A] mb-2">Exercises</h4>
               {mockExercises.map((exercise) => (
                 <div
                   key={exercise.id}
-                  className="flex items-start gap-3 p-4 bg-white border border-[#CBD5E1] rounded-[10px]"
+                  className="flex items-start gap-3 p-4 bg-white border border-[#A7E3D5] rounded-[12px]"
                 >
                   <div className="pt-1">
                     {exercise.done ? (
@@ -142,7 +142,7 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-[#0F172A] text-sm">{exercise.title}</p>
-                    <p className="text-sm font-medium text-[#475569] mt-1">{exercise.instructions}</p>
+                    <p className="text-sm font-medium text-[#334155] mt-1">{exercise.instructions}</p>
                   </div>
                 </div>
               ))}

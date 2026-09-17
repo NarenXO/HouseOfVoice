@@ -79,7 +79,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
 
   if (loading) {
     return (
-      <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
+      <div className="bg-white border border-[#A7E3D5] rounded-[14px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-32">
           <div className="text-[#475569] font-medium">Loading achievements...</div>
         </div>
@@ -89,7 +89,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
 
   if (error || !badgesData) {
     return (
-      <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
+      <div className="bg-white border border-[#A7E3D5] rounded-[14px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-32">
           <div className="text-[#DC2626] font-semibold">{error || "No data available"}</div>
         </div>
@@ -107,10 +107,10 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
   ];
 
   return (
-    <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
+    <div className="bg-white border border-[#A7E3D5] rounded-[14px] p-6 shadow-sm">
       {/* Section Label */}
       <div className="mb-2">
-        <h3 className="text-xs font-bold text-[#0D9488] uppercase tracking-wider">Achievements</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D9488]">ACHIEVEMENTS</h3>
       </div>
 
       {/* Header */}
@@ -120,11 +120,11 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             <Award className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             Achievements
           </h2>
-          <p className="text-sm font-medium text-[#475569] mt-1">
+          <p className="text-sm font-medium text-[#334155] mt-1">
             Earned by mastering sounds in new words
           </p>
         </div>
-        <div className="bg-[#CCFBF1] text-[#0D9488] px-3 py-1 rounded-full text-sm font-bold">
+        <div className="bg-[#CCFBF1] text-[#0F766E] border border-[#0D9488] rounded-full px-2.5 py-0.5 text-xs font-bold">
           {totalBadges} {totalBadges === 1 ? "Badge" : "Badges"}
         </div>
       </div>
@@ -136,11 +136,11 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="inline-block p-4 bg-[#F8FAFC] rounded-full mb-4"
+            className="inline-block p-4 bg-[#F8FAFC] rounded-full mb-4 border border-[#CBD5E1]"
           >
             <Lock className="w-8 h-8 text-[#64748B]" strokeWidth={1.75} />
           </motion.div>
-          <p className="text-[#475569] text-base font-medium">
+          <p className="text-[#334155] text-base font-semibold">
             Complete your first checkpoint probe to unlock your first badge
           </p>
         </div>
@@ -160,15 +160,11 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
               animate={{
                 opacity: 1,
                 y: 0,
-                scale: isNew ? [1, 1.0] : 1
+                scale: isNew ? [1, 1.02, 1] : 1
               }}
               transition={{ delay: index * 0.05, duration: 0.2, ease: "easeOut" }}
               whileHover={{ scale: 1.02, y: -2 }}
-              className={`relative bg-white border-2 rounded-[12px] p-4 shadow-sm ${
-                isNew
-                  ? "border-[#0D9488]"
-                  : "border-[#CBD5E1]"
-              }`}
+              className="relative bg-white border-2 border-[#0D9488] rounded-[12px] p-4 shadow-sm"
             >
               <div className="relative">
                 {/* Icon */}
@@ -177,22 +173,22 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="p-3 bg-[#CCFBF1] rounded-full"
+                    className="p-3 bg-[#CCFBF1] rounded-full border border-[#0D9488]"
                   >
                     <IconComponent className="w-8 h-8 text-[#0D9488]" strokeWidth={1.75} />
                   </motion.div>
                 </div>
 
                 {/* Content */}
-                <h3 className="font-bold text-[#0F172A] text-base mb-1">
+                <h3 className="font-bold text-[#0F172A] text-base mb-1 text-center">
                   {badge.title}
                 </h3>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-[#CCFBF1] text-[#0D9488] text-xs font-bold px-2 py-0.5 rounded-full">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <span className="bg-[#CCFBF1] text-[#0F766E] border border-[#0D9488] rounded-full px-2.5 py-0.5 text-xs font-bold">
                     {badge.phoneme}
                   </span>
                 </div>
-                <p className="text-sm text-[#475569] font-medium">
+                <p className="text-sm text-[#334155] font-medium text-center">
                   {badge.description}
                 </p>
 
@@ -202,7 +198,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute -top-2 -right-2 bg-[#16A34A] text-white text-xs px-2 py-1 rounded-full font-bold"
+                    className="absolute -top-2 -right-2 bg-[#16A34A] text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-sm"
                   >
                     New
                   </motion.div>
@@ -217,18 +213,18 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
           <motion.div
             key={`upcoming-${index}`}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.6 }}
-            className="bg-[#F8FAFC] border-2 border-dashed border-[#CBD5E1] rounded-[12px] p-4"
+            animate={{ opacity: 1 }}
+            className="bg-[#F8FAFC] border border-[#CBD5E1] rounded-[12px] p-4 text-center"
           >
             <div className="flex items-center justify-center mb-3">
-              <div className="p-3 bg-[#E2E8F0] rounded-full">
+              <div className="p-3 bg-[#E2E8F0] rounded-full border border-[#CBD5E1]">
                 <Lock className="w-6 h-6 text-[#64748B]" strokeWidth={1.75} />
               </div>
             </div>
-            <h3 className="font-semibold text-[#64748B] text-base mb-1">
+            <h3 className="font-bold text-[#64748B] text-base mb-1">
               {upcoming.title}
             </h3>
-            <div className="bg-[#E2E8F0] text-[#64748B] text-xs font-bold px-2 py-0.5 rounded-full inline-block font-medium">
+            <div className="bg-[#E2E8F0] text-[#64748B] text-xs font-bold px-2.5 py-0.5 rounded-full inline-block">
               {upcoming.phoneme}
             </div>
           </motion.div>
@@ -243,11 +239,11 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="mt-6 bg-[#CCFBF1] border border-[#0D9488] text-[#0F172A] rounded-lg p-4 text-center"
+            className="mt-6 bg-[#CCFBF1] border border-[#0D9488] text-[#0F172A] rounded-[12px] p-4 text-center shadow-sm"
           >
             <div className="flex items-center justify-center gap-2">
               <Award className="w-5 h-5 text-[#0D9488]" strokeWidth={1.75} />
-              <span className="font-bold text-lg">Badge unlocked</span>
+              <span className="font-bold text-lg text-[#0F172A]">Badge unlocked</span>
               <Award className="w-5 h-5 text-[#0D9488]" strokeWidth={1.75} />
             </div>
           </motion.div>

@@ -38,18 +38,15 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
     const current = sortedMilestones[currentIndex];
     const next = sortedMilestones[nextIndex];
 
-    // Green if both are trained or generalized
     if ((current.status === "trained" || current.status === "generalized") &&
         (next.status === "trained" || next.status === "generalized")) {
       return "bg-[#16A34A]";
     }
 
-    // Accent if going from active to locked
-    if (current.status === "active" && next.status === "locked") {
-      return "bg-[#CBD5E1]";
+    if (current.status === "active" || current.status === "trained" || current.status === "generalized") {
+      return "bg-[#0D9488]";
     }
 
-    // Gray otherwise
     return "bg-[#CBD5E1]";
   };
 
@@ -57,48 +54,43 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
     switch (milestone.status) {
       case "locked":
         return {
-          bg: "bg-[#F1F5F9]",
-          text: "text-[#0F172A]",
-          border: "border-[#CBD5E1]",
+          bg: "bg-[#F8FAFC]",
+          text: "text-[#64748B]",
+          border: "border border-[#CBD5E1]",
           icon: <Lock className="w-6 h-6" strokeWidth={1.75} />,
-          animation: "",
         };
       case "active":
         return {
           bg: "bg-[#1E3A5F]",
           text: "text-white",
-          border: "border-[#0D9488]",
-          icon: <Target className="w-6 h-6" strokeWidth={1.75} />,
-          animation: "",
+          border: "border-2 border-[#0D9488]",
+          icon: <Target className="w-6 h-6 text-white" strokeWidth={1.75} />,
         };
       case "trained":
         return {
           bg: "bg-[#16A34A]",
           text: "text-white",
-          border: "border-[#16A34A]",
-          icon: <CheckCircle2 className="w-6 h-6" strokeWidth={1.75} />,
-          animation: "",
+          border: "border border-[#16A34A]",
+          icon: <CheckCircle2 className="w-6 h-6 text-white" strokeWidth={1.75} />,
         };
       case "generalized":
         return {
           bg: "bg-[#0D9488]",
           text: "text-white",
-          border: "border-[#0D9488]",
-          icon: <Award className="w-6 h-6" strokeWidth={1.75} />,
-          animation: "",
+          border: "border border-[#0D9488]",
+          icon: <Award className="w-6 h-6 text-white" strokeWidth={1.75} />,
         };
       default:
         return {
-          bg: "bg-[#F1F5F9]",
-          text: "text-[#0F172A]",
-          border: "border-[#CBD5E1]",
+          bg: "bg-[#F8FAFC]",
+          text: "text-[#64748B]",
+          border: "border border-[#CBD5E1]",
           icon: <Lock className="w-6 h-6" strokeWidth={1.75} />,
-          animation: "",
         };
     }
   };
 
-  const MilestoneNode = ({ milestone, index }: { milestone: Milestone; index: number }) => {
+  const MilestoneNode = ({ milestone }: { milestone: Milestone; index: number }) => {
     const styles = getNodeStyles(milestone);
     const isGeneralized = milestone.status === "generalized";
     const isJustCompleted = justGeneralized.has(milestone.id);
@@ -110,13 +102,13 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
           initial={false}
           animate={{
             opacity: isJustCompleted ? [0.8, 1] : 1,
-            scale: isJustCompleted ? [1, 1.0] : 1,
+            scale: isJustCompleted ? [1, 1.05, 1] : 1,
           }}
           transition={{ duration: 0.2, ease: "easeOut" }}
           className="relative cursor-pointer"
         >
           <div
-            className={`${styles.bg} ${styles.border} border-4 rounded-full w-20 h-20 flex items-center justify-center ${styles.text} shadow-sm hover:scale-105 transition-transform`}
+            className={`w-20 h-20 rounded-full flex items-center justify-center ${styles.bg} ${styles.border} ${styles.text} shadow-sm hover:scale-105 transition-transform`}
             onClick={() => onMilestoneClick(milestone)}
             onMouseEnter={() => setHoveredMilestone(milestone.id)}
             onMouseLeave={() => setHoveredMilestone(null)}
@@ -127,10 +119,10 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
               >
-                <Award className="w-6 h-6" strokeWidth={1.75} />
+                <Award className="w-6 h-6 text-white" strokeWidth={1.75} />
               </motion.div>
             ) : isTrained ? (
-              <CheckCircle2 className="w-6 h-6" strokeWidth={1.75} />
+              <CheckCircle2 className="w-6 h-6 text-white" strokeWidth={1.75} />
             ) : (
               styles.icon
             )}
@@ -142,7 +134,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                className="absolute -bottom-2 bg-white text-[#0F172A] px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm hover:bg-[#F1F5F9] border border-[#CBD5E1]"
+                className="absolute -bottom-2 bg-white text-[#0F172A] px-3 py-1 rounded-full text-xs font-semibold shadow-sm hover:bg-[#F1F5F9] border border-[#CBD5E1]"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUnlockMilestone(milestone.id);
@@ -162,7 +154,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
 
         {/* Progress indicator for active milestones */}
         {milestone.status === "active" && progressData[milestone.id] && (
-          <div className="bg-[#CCFBF1] text-[#0D9488] font-bold border border-[#0D9488] px-2.5 py-0.5 rounded-full text-xs">
+          <div className="bg-[#CCFBF1] text-[#0D9488] border border-[#0D9488] rounded-full px-2.5 py-0.5 text-xs font-bold">
             {progressData[milestone.id].consecutive_successes}/3
           </div>
         )}
@@ -174,56 +166,59 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
     <div className="w-full">
       {/* Section Label */}
       <div className="mb-2">
-        <h3 className="text-xs font-bold text-[#0D9488] uppercase tracking-wider">Milestones</h3>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-[#0D9488]">MILESTONES</h3>
       </div>
 
-      {/* Desktop: Horizontal layout */}
-      <div className="hidden md:flex items-center justify-center gap-2 overflow-x-auto py-8">
-        {sortedMilestones.map((milestone, index) => {
-          const isLast = index === sortedMilestones.length - 1;
+      {/* Roadmap Container Card */}
+      <div className="bg-white border border-[#A7E3D5] rounded-[14px] p-6 shadow-sm">
+        {/* Desktop: Horizontal layout */}
+        <div className="hidden md:flex items-center justify-center gap-2 overflow-x-auto py-6">
+          {sortedMilestones.map((milestone, index) => {
+            const isLast = index === sortedMilestones.length - 1;
 
-          return (
-            <div key={milestone.id} className="flex items-center">
-              {/* Connector line (before node, except for first) */}
-              {index > 0 && (
-                <div
-                  className={`w-16 h-1 ${getConnectorColor(index - 1, index)} rounded-full`}
-                />
-              )}
+            return (
+              <div key={milestone.id} className="flex items-center">
+                {/* Connector line (before node, except for first) */}
+                {index > 0 && (
+                  <div
+                    className={`w-16 h-1 ${getConnectorColor(index - 1, index)} rounded-full`}
+                  />
+                )}
 
-              {/* Milestone node */}
-              <MilestoneNode milestone={milestone} index={index} />
+                {/* Milestone node */}
+                <MilestoneNode milestone={milestone} index={index} />
 
-              {/* Connector line (after node, except for last) */}
-              {!isLast && (
-                <div
-                  className={`w-16 h-1 ${getConnectorColor(index, index + 1)} rounded-full`}
-                />
-              )}
-            </div>
-          );
-        })}
-      </div>
+                {/* Connector line (after node, except for last) */}
+                {!isLast && (
+                  <div
+                    className={`w-16 h-1 ${getConnectorColor(index, index + 1)} rounded-full`}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
 
-      {/* Mobile: Vertical layout */}
-      <div className="md:hidden flex flex-col items-center gap-2 overflow-y-auto py-8">
-        {sortedMilestones.map((milestone, index) => {
-          const isLast = index === sortedMilestones.length - 1;
+        {/* Mobile: Vertical layout */}
+        <div className="md:hidden flex flex-col items-center gap-2 overflow-y-auto py-6">
+          {sortedMilestones.map((milestone, index) => {
+            const isLast = index === sortedMilestones.length - 1;
 
-          return (
-            <div key={milestone.id} className="flex flex-col items-center">
-              {/* Milestone node */}
-              <MilestoneNode milestone={milestone} index={index} />
+            return (
+              <div key={milestone.id} className="flex flex-col items-center">
+                {/* Milestone node */}
+                <MilestoneNode milestone={milestone} index={index} />
 
-              {/* Connector line (vertical, except for last) */}
-              {!isLast && (
-                <div
-                  className={`w-1 h-12 ${getConnectorColor(index, index + 1)} rounded-full my-2`}
-                />
-              )}
-            </div>
-          );
-        })}
+                {/* Connector line (vertical, except for last) */}
+                {!isLast && (
+                  <div
+                    className={`w-1 h-12 ${getConnectorColor(index, index + 1)} rounded-full my-2`}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
