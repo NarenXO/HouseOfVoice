@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Flame, Target } from "lucide-react";
 import { Milestone, Exercise } from "./types";
 import axios from "axios";
+import ProbeSession from "./ProbeSession";
 
 const API_BASE = "http://localhost:8000/api";
 
@@ -32,6 +33,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState<string | null>(null);
+  const [showProbeSession, setShowProbeSession] = useState(false);
 
   // Mock exercises for the milestone
   const mockExercises: Exercise[] = [
@@ -151,7 +153,40 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
   };
 
   const handleTakeCheckpoint = () => {
-    alert("Checkpoint coming soon! This will be implemented in Phase 5.");
+    setShowProbeSession(true);
+  };
+
+  const handleProbeComplete = (status: "generalized" | "trained", extraItems?: string[]) => {
+    setShowProbeSession(false);
+
+    if (status === "generalized") {
+      // Refresh roadmap and milestone cards
+      if (onProgressUpdate) {
+        onProgressUpdate(milestone.id, 3, false); // Reset checkpoint ready
+      }
+      // Trigger parent refresh if available
+      window.location.reload(); // Simple refresh for demo
+    } else if (status === "trained" && extraItems) {
+      // Append extra practice items to exercise list and reset progress
+      const extraExercises: Exercise[] = extraItems.map((word, index) => ({
+        id: `extra_${index}`,
+        title: `Practice "${word}"`,
+        instructions: `Say "${word}" clearly out loud to reinforce the sound`,
+        done: false,
+      }));
+
+      setExercises([...exercises, ...extraExercises]);
+      // Reset progress by fetching fresh data
+      setTimeout(() => fetchProgress(), 100);
+
+      if (onProgressUpdate) {
+        onProgressUpdate(milestone.id, 0, false);
+      }
+    }
+  };
+
+  const handleProbeCancel = () => {
+    setShowProbeSession(false);
   };
 
   if (loading) {
@@ -164,6 +199,23 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
 
   if (!progress) {
     return null;
+  }
+
+  // Show probe session if active
+  if (showProbeSession) {
+    // Extract phoneme from milestone title (e.g., "s - start of words" -> "/s/")
+    const phonemeMatch = milestone.title.match(/^([a-z]+)/);
+    const phoneme = phonemeMatch ? `/${phonemeMatch[1]}/` : "/s/";
+
+    return (
+      <ProbeSession
+        milestoneId={milestone.id}
+        caseId={caseId}
+        phoneme={phoneme}
+        onComplete={handleProbeComplete}
+        onCancel={handleProbeCancel}
+      />
+    );
   }
 
   const progressPercentage = (progress.completed_exercises / progress.total_exercises) * 100;

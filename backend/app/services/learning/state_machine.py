@@ -10,6 +10,7 @@ class MilestoneStateMachine:
     VALID_TRANSITIONS = {
         ("locked", "active"),
         ("active", "trained"),
+        ("active", "generalized"),  # Direct transition via checkpoint probe
         ("trained", "generalized"),
         # Allow manual unlock override
         ("locked", "active"),

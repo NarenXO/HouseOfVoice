@@ -72,3 +72,56 @@ class ProbeBank:
             passed=passed,
             scored_at=datetime.utcnow().isoformat(),
         )
+
+    @staticmethod
+    def select_probe_word(phoneme: str, exclude_words: list[str] | None = None) -> dict:
+        """
+        Select a probe word for a phoneme, excluding previously used words.
+
+        Args:
+            phoneme: The phoneme to select a probe for (e.g., "s", "th", "r")
+            exclude_words: List of words to exclude from selection
+
+        Returns:
+            Dict with probe word information
+        """
+        import random
+
+        exclude_words = exclude_words or []
+
+        # Normalize phoneme (handle /s/ vs s)
+        phoneme_normalized = phoneme.strip("/")
+
+        # Get all available probe words for the phoneme
+        all_probes = ProbeBank.get_probes_for_phoneme(phoneme_normalized, position="all")
+
+        # Filter out excluded words
+        available_probes = [word for word in all_probes if word not in exclude_words]
+
+        # If no probes available after exclusion, return a default
+        if not available_probes:
+            return {
+                "id": f"probe_{phoneme_normalized}_default",
+                "word": f"practice_{phoneme_normalized}",
+                "phoneme": phoneme_normalized
+            }
+
+        # Randomly select a probe word
+        selected_word = random.choice(available_probes)
+
+        return {
+            "id": f"probe_{phoneme_normalized}_{selected_word}",
+            "word": selected_word,
+            "phoneme": phoneme_normalized
+        }
+
+
+# Convenience functions for the probe engine
+PROBE_WORD_BANK = ProbeBank.PROBE_WORDS
+
+
+def select_probe_word(phoneme: str, exclude_words: list[str] | None = None) -> dict:
+    """
+    Convenience function to select a probe word.
+    """
+    return ProbeBank.select_probe_word(phoneme, exclude_words)

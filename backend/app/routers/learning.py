@@ -2,7 +2,18 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
-from app.services.learning import MilestoneStateMachine, record_practice_attempt, update_streak, get_practice_progress, get_streak
+from urllib.parse import unquote
+from app.services.learning import (
+    MilestoneStateMachine,
+    record_practice_attempt,
+    update_streak,
+    get_practice_progress,
+    get_streak,
+    should_serve_probe,
+    serve_probe,
+    score_probe,
+    get_probe_statistics,
+)
 from app.models.shared import Milestone
 
 router = APIRouter()
@@ -37,6 +48,12 @@ class UnlockRequest(BaseModel):
 class PracticeAttemptRequest(BaseModel):
     case_id: str
     exercise_index: int
+    audio_or_text: str = ""
+
+
+class CheckpointRequest(BaseModel):
+    case_id: str
+    phoneme: str = "/s/"
     audio_or_text: str = ""
 
 
@@ -200,4 +217,77 @@ async def get_roadmap(case_id: str):
         "milestones": sorted_milestones,
         "streak": streak_data,
     }
+
+
+@router.post("/milestones/{milestone_id}/checkpoint")
+async def checkpoint(milestone_id: str, request: CheckpointRequest):
+    """
+    Handle checkpoint probe serving and scoring.
+
+    Phase 1 (serve): If audio_or_text is empty, check if probe should be served
+    and return a probe word from the probe bank.
+
+    Phase 2 (score): If audio_or_text is provided, score the probe attempt
+    and update milestone status accordingly.
+    """
+    milestone = store.get_milestone(milestone_id)
+
+    if not milestone:
+        raise HTTPException(status_code=404, detail="Milestone not found")
+
+    # Phase 1: Serve probe
+    if not request.audio_or_text:
+        # Check if probe should be served
+        ready = await should_serve_probe(milestone_id)
+
+        if not ready:
+            return {
+                "phase": "not_ready",
+                "message": "Complete more practice sessions to unlock checkpoint."
+            }
+
+        # Serve the probe
+        probe_item = await serve_probe(milestone_id, request.phoneme)
+
+        return {
+            "phase": "probe_served",
+            "item": probe_item
+        }
+
+    # Phase 2: Score probe
+    result = await score_probe(
+        milestone_id=milestone_id,
+        case_id=request.case_id,
+        phoneme=request.phoneme,
+        audio_or_text=request.audio_or_text,
+        path_milestones=None
+    )
+
+    # Update milestone status in store (only if different from current and transition is valid)
+    new_status = result["milestone_status"]
+    if milestone.status != new_status and MilestoneStateMachine.can_transition(milestone.status, new_status):
+        updated_milestone = MilestoneStateMachine.transition(milestone, new_status)
+        store.set_milestone(milestone_id, updated_milestone)
+
+    return {
+        "phase": "probe_scored",
+        "result": result["result"],
+        "milestone_status": result["milestone_status"],
+        "badge_awarded": result["badge_awarded"],
+        "message": result["message"],
+        "extra_practice_items": result.get("extra_practice_items", [])
+    }
+
+
+@router.get("/generalization/{case_id}/{phoneme}")
+async def get_generalization_stats(case_id: str, phoneme: str):
+    """
+    Get generalization statistics for a case and phoneme.
+
+    Returns probe attempt counts, pass rate, and last updated timestamp.
+    """
+    # Decode URL-encoded phoneme (e.g., %2Fs%2F -> /s/)
+    decoded_phoneme = unquote(phoneme)
+    stats = get_probe_statistics(case_id, decoded_phoneme)
+    return stats
 

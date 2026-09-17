@@ -91,3 +91,32 @@ class MilestoneScorer:
 
         score = MilestoneScorer.calculate_generalization_score(probe_results)
         return score.rate >= MilestoneScorer.GENERALIZATION_THRESHOLD
+
+
+async def score_attempt(milestone_id: str, audio_or_text: str, is_probe: bool = False) -> bool:
+    """
+    Score a single practice or probe attempt.
+
+    Stub implementation for demo:
+    - For regular practice: always returns True (trained)
+    - For probes: returns True ~70% of the time (hash-based for consistency)
+
+    Args:
+        milestone_id: The milestone being attempted
+        audio_or_text: Audio or text input (stub for now)
+        is_probe: Whether this is a probe attempt
+
+    Returns:
+        True if passed, False otherwise
+    """
+    import hashlib
+
+    if not is_probe:
+        # Regular practice: always pass for demo
+        return True
+
+    # Probe: use hash for consistent 70% pass rate
+    # This ensures the same word always gets the same result
+    hash_input = f"{milestone_id}_{audio_or_text}".encode()
+    hash_value = int(hashlib.md5(hash_input).hexdigest(), 16)
+    return (hash_value % 100) < 70  # 70% pass rate
