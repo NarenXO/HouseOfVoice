@@ -1,5 +1,7 @@
 from fastapi import APIRouter
+
 router = APIRouter()
-@router.get("/ping")
-async def ping():
-    return {"msg": "docs stub"}
+
+@router.get("/health")
+async def health():
+    return {"status": "docs-slice-ok"}
