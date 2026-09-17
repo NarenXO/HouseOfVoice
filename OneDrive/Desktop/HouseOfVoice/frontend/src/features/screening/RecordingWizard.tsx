@@ -142,9 +142,7 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
 
       if (isPipelineError) {
         setAnalyzing(false);
-        setStepIndex(0);
-        setClipIds({});
-        resetRecording();
+        setRecordState('recorded');
       } else {
         setRecordState('recorded');
       }

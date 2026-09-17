@@ -52,27 +52,27 @@ async def create_baseline_recording(
         
     clip_id = str(uuid.uuid4())
     recorded_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    
-    storage_url = None
+
+    # Always save to local temp directory so pipeline can read from disk
+    from pathlib import Path
+    temp_dir = Path("backend/tmp/recordings")
+    temp_dir.mkdir(parents=True, exist_ok=True)
+    local_file_path = temp_dir / f"{clip_id}.webm"
+    local_file_path.write_bytes(file_bytes)
+    logger.info(f"[screening] Saved clip {clip_id} to {local_file_path}")
+
+    storage_url = f"local://{local_file_path.absolute()}"
+
+    # Attempt Supabase upload as secondary (non-blocking)
     supabase = get_supabase_client()
     if supabase:
         try:
-            file_path = f"{case_id}/{prompt_type.value}_{clip_id}.wav"
-            supabase.storage.from_(SUPABASE_BUCKET).upload(file_path, file_bytes)
-            storage_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(file_path)
+            remote_path = f"{case_id}/{prompt_type.value}_{clip_id}.webm"
+            supabase.storage.from_(SUPABASE_BUCKET).upload(remote_path, file_bytes)
+            storage_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(remote_path)
+            logger.info(f"[screening] Uploaded clip {clip_id} to Supabase")
         except Exception as e:
-            logger.error(f"Supabase upload failed: {e}")
-    
-    if not storage_url:
-        # Fallback to local storage
-        from pathlib import Path
-        import tempfile
-        local_dir = Path("backend/tmp/screening") / case_id
-        local_dir.mkdir(parents=True, exist_ok=True)
-        local_path = local_dir / f"{clip_id}.wav"
-        with open(local_path, "wb") as f:
-            f.write(file_bytes)
-        storage_url = f"local://{local_path.absolute()}"
+            logger.warning(f"Supabase upload failed (using local fallback): {e}")
         
     _RECORDINGS_DB[clip_id] = {
         "clip_id": clip_id,
@@ -80,7 +80,8 @@ async def create_baseline_recording(
         "prompt_type": prompt_type,
         "storage_url": storage_url,
         "recorded_at": recorded_at,
-        "raw_bytes": file_bytes
+        "raw_bytes": file_bytes,
+        "local_file_path": str(local_file_path.absolute()),
     }
     
     return BaselineRecordingResponse(
@@ -93,21 +94,28 @@ async def create_baseline_recording(
 
 @router.post("/run-pipeline", response_model=ScreeningResultDB)
 async def run_pipeline(request: RunPipelineRequest):
-    clip_data = {}
+    # Build clip_sources: prefer raw_bytes in memory, then local_file_path on disk
+    clip_sources: dict = {}
+    missing_clips = []
     for p_type, c_id in request.clip_ids.items():
         if c_id in _RECORDINGS_DB:
-            clip_data[p_type] = {
-                "url": _RECORDINGS_DB[c_id]["storage_url"],
-                "bytes": _RECORDINGS_DB[c_id]["raw_bytes"]
+            rec = _RECORDINGS_DB[c_id]
+            clip_sources[p_type] = {
+                "bytes": rec.get("raw_bytes"),
+                "local_file_path": rec.get("local_file_path"),
             }
         else:
-            clip_data[p_type] = {
-                "url": f"https://mock-storage.houseofvoice.internal/{request.case_id}/fallback_{c_id}.wav",
-                "bytes": None
-            }
-            
+            missing_clips.append(c_id)
+            logger.warning(f"[screening] clip_id {c_id} not found in session — skipping.")
+
+    if not clip_sources:
+        raise HTTPException(
+            status_code=400,
+            detail="No recorded clips found in this session. Please record all steps before analyzing."
+        )
+
     try:
-        result = await run_full_pipeline(request.case_id, clip_data)
+        result = await run_full_pipeline(request.case_id, clip_sources)
     except HTTPException:
         raise
     except Exception as e:
