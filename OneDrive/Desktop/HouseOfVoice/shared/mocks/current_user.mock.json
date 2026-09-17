@@ -1,0 +1,16 @@
+{
+  "id": "usr_mock_001",
+  "email": "demo@houseofvoice.ai",
+  "role": "patient",
+  "name": "Aarav Sharma",
+  "communication_profile": {
+    "primary_language": "hi",
+    "secondary_language": "en",
+    "preferred_therapy_language": "hi",
+    "reading_ability": "developing",
+    "typing_ability": "developing",
+    "preferred_communication_method": "voice",
+    "guardian_assistance_required": true,
+    "comfort_with_unfamiliar_people": "medium"
+  }
+}

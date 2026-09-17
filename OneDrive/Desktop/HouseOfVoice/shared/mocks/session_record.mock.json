@@ -1,0 +1,9 @@
+{
+  "session_id": "sess_mock_001",
+  "case_id": "case_mock_001",
+  "therapist_id": "thr_mock_001",
+  "duration_minutes": 45,
+  "activities_completed": ["minimal-pairs-r", "story-retell"],
+  "notes": "Good progress on /r/ in isolation. Struggles in conversational context.",
+  "created_at": "2025-01-15T14:00:00Z"
+}

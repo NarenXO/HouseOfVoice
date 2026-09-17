@@ -1,0 +1,12 @@
+[
+  {
+    "id": "mod_001",
+    "phoneme": "r",
+    "age_band": "5-7",
+    "language": "en",
+    "title": "Racing Rabbits",
+    "description": "A fun race-themed module targeting word-initial /r/.",
+    "storyboard_url": null,
+    "approved": true
+  }
+]
