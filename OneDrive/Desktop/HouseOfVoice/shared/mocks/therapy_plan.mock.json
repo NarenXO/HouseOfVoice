@@ -1,0 +1,9 @@
+{
+  "plan_id": "plan_mock_001",
+  "case_id": "case_mock_001",
+  "therapist_id": "thr_mock_001",
+  "goals": ["Improve /r/ to 80% accuracy", "Generalize /s/ to classroom"],
+  "frequency": "2x/week",
+  "duration_weeks": 12,
+  "status": "draft"
+}
