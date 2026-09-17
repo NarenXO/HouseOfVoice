@@ -11,31 +11,13 @@
  * team's frontend together.
  */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-// import { authRoutes } from "./features/auth-onboarding/routes";
-// import { screeningRoutes } from "./features/screening/routes";
-// import { matchingRoutes } from "./features/matching-booking-plan/routes";
-// import { learningRoutes } from "./features/learning-path/routes";
-// import { sessionRoutes } from "./features/session-smartboard/routes";
-// import { dashboardRoutes } from "./features/dashboard-docs/routes";
-
-// const allRoutes = [
-//   ...authRoutes,
-//   ...screeningRoutes,
-//   ...matchingRoutes,
-//   ...learningRoutes,
-//   ...sessionRoutes,
-//   ...dashboardRoutes,
-// ];
+import MatchingHome from "./features/matching-booking-plan/MatchingHome";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div className="p-8 text-lg">HouseOfVoice — integration pending</div>} />
-        {/* {allRoutes.map((r) => (
-          <Route key={r.path} path={r.path} element={r.element} />
-        ))} */}
+        <Route path="/" element={<MatchingHome />} />
       </Routes>
     </BrowserRouter>
   );

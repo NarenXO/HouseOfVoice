@@ -248,7 +248,7 @@ export default function MatchingHome() {
         
         {/* Header */}
         <div className="flex flex-col space-y-2">
-          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400 pb-2 leading-tight overflow-visible">
             Intelligent Matching & Planning
           </h1>
           <p className="text-gray-400 text-lg">
@@ -348,7 +348,11 @@ export default function MatchingHome() {
                         type="date" 
                         value={bookingDate}
                         onChange={(e) => setBookingDate(e.target.value)}
-                        className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                        disabled={!!booking}
+                        readOnly={!!booking}
+                        className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all ${
+                          booking ? 'pointer-events-none cursor-not-allowed opacity-50' : 'cursor-text'
+                        }`}
                       />
                     </div>
                     <div className="space-y-2">
@@ -357,17 +361,22 @@ export default function MatchingHome() {
                         type="time"
                         value={bookingTime}
                         onChange={(e) => setBookingTime(e.target.value)}
-                        className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                        disabled={!!booking}
+                        readOnly={!!booking}
+                        className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all ${
+                          booking ? 'pointer-events-none cursor-not-allowed opacity-50' : 'cursor-text'
+                        }`}
                       />
                     </div>
                   </div>
                   
-                  <label className="flex items-center space-x-3 cursor-pointer group">
+                  <label className={`flex items-center space-x-3 group ${booking ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
                     <div className="relative flex items-center justify-center">
                       <input 
                         type="checkbox" 
                         checked={isTrial}
                         onChange={(e) => setIsTrial(e.target.checked)}
+                        disabled={!!booking}
                         className="peer sr-only" 
                       />
                       <div className="w-6 h-6 border-2 border-gray-500 rounded flex items-center justify-center peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all">
@@ -392,16 +401,24 @@ export default function MatchingHome() {
                       Secure Slot
                     </button>
                   ) : (
-                    <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="p-2 bg-emerald-500/20 rounded-full">
-                          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                        </div>
-                        <div>
-                          <p className="text-white font-medium">Booking Confirmed</p>
-                          <p className="text-emerald-400 text-sm capitalize">Status: {booking.status}</p>
+                    <div className="space-y-4">
+                      <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="p-2 bg-emerald-500/20 rounded-full">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">Booking Confirmed</p>
+                            <p className="text-emerald-400 text-sm capitalize">Status: {booking.status}</p>
+                          </div>
                         </div>
                       </div>
+                      <button 
+                        onClick={() => setBooking(null)}
+                        className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all"
+                      >
+                        Modify / Book New Slot
+                      </button>
                     </div>
                   )}
 
@@ -467,7 +484,11 @@ export default function MatchingHome() {
                       value={goals}
                       onChange={(e) => setGoals(e.target.value)}
                       rows={2}
-                      className="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all resize-none"
+                      disabled={!!plan?.approved_by}
+                      readOnly={!!plan?.approved_by}
+                      className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all resize-none ${
+                        plan?.approved_by ? 'pointer-events-none cursor-not-allowed opacity-50' : 'cursor-text'
+                      }`}
                     />
                   </div>
 
