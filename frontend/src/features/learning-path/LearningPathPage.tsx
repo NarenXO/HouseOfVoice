@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Lock, Flame } from "lucide-react";
+import { Zap, Flame, CheckCircle2 } from "lucide-react";
 import Roadmap from "./Roadmap";
 import MilestoneCard from "./MilestoneCard";
 import MilestoneEditor from "./MilestoneEditor";
@@ -262,12 +262,12 @@ export default function LearningPathPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#F4F6F8] text-[#0F172A] p-6">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-50">
+      <div className="bg-white border-b border-[#E2E8F0] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-gray-900">Learning Path</h1>
+            <h1 className="text-2xl font-bold text-[#0F172A]">Learning path</h1>
 
             {/* Tab Toggle */}
             <div className="flex gap-2">
@@ -275,21 +275,21 @@ export default function LearningPathPage() {
                 onClick={() => setActiveTab("roadmap")}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                   activeTab === "roadmap"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-[#0D9488] text-white"
+                    : "bg-white text-[#64748B] border border-[#E2E8F0] hover:bg-[#F4F6F8]"
                 }`}
               >
-                🗺️ Patient Roadmap
+                Patient Roadmap
               </button>
               <button
                 onClick={() => setActiveTab("edit")}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                   activeTab === "edit"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-[#0D9488] text-white"
+                    : "bg-white text-[#64748B] border border-[#E2E8F0] hover:bg-[#F4F6F8]"
                 }`}
               >
-                🩺 Clinician Mode
+                Clinician Mode
               </button>
             </div>
 
@@ -297,10 +297,10 @@ export default function LearningPathPage() {
             {activeTab === "roadmap" && (
               <button
                 onClick={handleQuickDemoAutoFill}
-                className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
+                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-sm"
               >
-                <Zap className="w-4 h-4" />
-                ⚡ Quick Demo Auto-Fill
+                <Zap className="w-4 h-4" strokeWidth={1.75} />
+                Auto-fill practice
               </button>
             )}
           </div>
@@ -319,28 +319,18 @@ export default function LearningPathPage() {
             {/* Streak Banner */}
             {learningPath.streak && (
               <motion.div
-                initial={{ opacity: 0, y: -10 }}
+                initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 mb-6 text-white shadow-lg"
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 shadow-sm"
               >
                 <div className="flex items-center gap-3">
-                  <motion.div
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 5, -5, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      repeatDelay: 1
-                    }}
-                    className="text-4xl"
-                  >
-                    🔥
-                  </motion.div>
+                  <Flame className="w-6 h-6 text-[#D97706]" strokeWidth={1.75} />
                   <div>
-                    <div className="font-bold text-2xl">{learningPath.streak.current_streak_days} Day Streak!</div>
-                    <div className="text-sm opacity-90">Practice today to keep your streak alive!</div>
+                    <div className="font-bold text-lg text-[#0F172A] font-mono tabular-nums">
+                      Streak: {learningPath.streak.current_streak_days} days
+                    </div>
+                    <div className="text-sm text-[#64748B]">Practice today to maintain your streak</div>
                   </div>
                 </div>
               </motion.div>
@@ -362,15 +352,16 @@ export default function LearningPathPage() {
             <AnimatePresence>
               {showCelebration && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                  className="bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-xl p-4 mb-6 text-center shadow-lg"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="bg-[#CCFBF1] border border-[#0D9488] rounded-xl p-4 mb-6 text-center shadow-sm"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <span className="text-2xl">🎉</span>
-                    <span className="font-bold text-lg">Amazing Work! You earned a new badge!</span>
-                    <span className="text-2xl">🎉</span>
+                    <CheckCircle2 className="w-5 h-5 text-[#16A34A]" strokeWidth={1.75} />
+                    <span className="font-bold text-lg text-[#0F172A]">Badge unlocked</span>
+                    <CheckCircle2 className="w-5 h-5 text-[#16A34A]" strokeWidth={1.75} />
                   </div>
                 </motion.div>
               )}
@@ -398,13 +389,14 @@ export default function LearningPathPage() {
 
             {/* Sticky Approve Button */}
             {!pathApproved && (
-              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg">
+              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E2E8F0] p-4 shadow-sm">
                 <div className="max-w-7xl mx-auto flex justify-center">
                   <button
                     onClick={handleApprovePath}
-                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-bold transition-colors flex items-center gap-2 shadow-md"
+                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-sm"
                   >
-                    ✅ Approve & Lock Path
+                    <CheckCircle2 className="w-5 h-5" strokeWidth={1.75} />
+                    Approve & Lock Path
                   </button>
                 </div>
               </div>
@@ -413,14 +405,15 @@ export default function LearningPathPage() {
             {/* Path Approved Banner */}
             {pathApproved && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="fixed bottom-0 left-0 right-0 bg-green-600 text-white p-4 shadow-lg"
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="fixed bottom-0 left-0 right-0 bg-[#CCFBF1] border border-[#0D9488] text-[#0F172A] p-4 shadow-sm"
               >
                 <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
-                  <span className="text-2xl">✅</span>
-                  <span className="font-bold text-lg">Path is Live & Approved</span>
-                  <span className="text-2xl">🎉</span>
+                  <CheckCircle2 className="w-6 h-6 text-[#16A34A]" strokeWidth={1.75} />
+                  <span className="font-bold text-lg">Path is live and approved</span>
+                  <CheckCircle2 className="w-6 h-6 text-[#16A34A]" strokeWidth={1.75} />
                 </div>
               </motion.div>
             )}

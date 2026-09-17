@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Lock, Star } from "lucide-react";
+import { CheckCircle2, Lock, Award } from "lucide-react";
 import { Milestone, Exercise } from "./types";
 import PracticePanel from "./PracticePanel";
 
@@ -21,25 +21,25 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
     switch (milestone.status) {
       case "locked":
         return (
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-gray-200 text-gray-600">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#F4F6F8] text-[#64748B] border border-[#E2E8F0]">
             Locked
           </span>
         );
       case "active":
         return (
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-blue-500 text-white">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#1E3A5F] text-white">
             Active
           </span>
         );
       case "trained":
         return (
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#16A34A] text-white">
             Trained
           </span>
         );
       case "generalized":
         return (
-          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-amber-400 text-amber-900">
+          <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0D9488] text-white">
             Generalized
           </span>
         );
@@ -51,10 +51,10 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
   const getBanner = () => {
     if (milestone.status === "active") {
       return (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <div className="bg-[#CCFBF1] border border-[#0D9488] rounded-lg p-3 mb-4">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-blue-900">Current Focus</span>
+            <div className="w-2 h-2 bg-[#0D9488] rounded-full" />
+            <span className="text-sm font-medium text-[#0F172A]">Current focus</span>
           </div>
         </div>
       );
@@ -62,10 +62,10 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
 
     if (milestone.status === "generalized") {
       return (
-        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+        <div className="bg-[#CCFBF1] border border-[#0D9488] rounded-lg p-3 mb-4">
           <div className="flex items-center gap-2">
-            <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-            <span className="text-sm font-medium text-amber-900">Generalized! ⭐</span>
+            <Award className="w-4 h-4 text-[#0D9488]" strokeWidth={1.75} />
+            <span className="text-sm font-medium text-[#0F172A]">Generalized</span>
           </div>
         </div>
       );
@@ -73,17 +73,17 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
 
     if (milestone.status === "locked") {
       return (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-4">
+        <div className="bg-[#F4F6F8] border border-[#E2E8F0] rounded-lg p-3 mb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Lock className="w-4 h-4 text-gray-500" />
-              <span className="text-sm text-gray-600">Complete previous milestone to unlock</span>
+              <Lock className="w-4 h-4 text-[#64748B]" strokeWidth={1.75} />
+              <span className="text-sm text-[#64748B]">Complete previous milestone to unlock</span>
             </div>
             <button
               onClick={() => onUnlockMilestone(milestone.id)}
-              className="px-3 py-1 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full text-xs font-medium transition-colors"
+              className="px-3 py-1 bg-white hover:bg-[#F4F6F8] text-[#64748B] border border-[#E2E8F0] rounded-full text-xs font-medium transition-colors"
             >
-              Unlock Anyway
+              Unlock
             </button>
           </div>
         </div>
@@ -106,15 +106,15 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
         initial={{ height: 0, opacity: 0 }}
         animate={{ height: "auto", opacity: 1 }}
         exit={{ height: 0, opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
         className="w-full"
       >
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 mt-6">
+        <div className="bg-white border border-[#E2E8F0] rounded-[12px] shadow-sm p-6 mt-6">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-xl font-bold text-gray-900 mb-1">{milestone.title}</h3>
-              <p className="text-gray-600 text-sm">{milestone.goal}</p>
+              <h3 className="text-xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
+              <p className="text-[#64748B] text-sm">{milestone.goal}</p>
             </div>
             {getStatusBadge()}
           </div>
@@ -127,22 +127,22 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
             <PracticePanel milestone={milestone} caseId={caseId} onProgressUpdate={onProgressUpdate} onProbeComplete={onProbeComplete} autoFillTrigger={autoFillTrigger} />
           ) : (
             <div className="space-y-3">
-              <h4 className="text-sm font-semibold text-gray-700 mb-2">Exercises</h4>
+              <h4 className="text-sm font-semibold text-[#64748B] mb-2">Exercises</h4>
               {mockExercises.map((exercise) => (
                 <div
                   key={exercise.id}
-                  className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+                  className="flex items-start gap-3 p-3 bg-[#F4F6F8] rounded-lg"
                 >
                   <div className="pt-1">
                     {exercise.done ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      <CheckCircle2 className="w-5 h-5 text-[#16A34A]" strokeWidth={1.75} />
                     ) : (
-                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
+                      <div className="w-5 h-5 border-2 border-[#E2E8F0] rounded-full" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 text-sm">{exercise.title}</p>
-                    <p className="text-gray-600 text-xs mt-1">{exercise.instructions}</p>
+                    <p className="font-medium text-[#0F172A] text-sm">{exercise.title}</p>
+                    <p className="text-[#64748B] text-xs mt-1">{exercise.instructions}</p>
                   </div>
                 </div>
               ))}
