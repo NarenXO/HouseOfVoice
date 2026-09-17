@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     SUPABASE_ANON_KEY: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     GEMINI_API_KEY: str = ""
-    USE_MOCKS: bool = True
+    USE_MOCKS: bool = False
 
     class Config:
         env_file = ".env"
