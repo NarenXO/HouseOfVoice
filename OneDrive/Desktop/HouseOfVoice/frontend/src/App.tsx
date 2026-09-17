@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import { LanguageProvider } from './shared/LanguageContext'
 import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding'
 import DashboardDocs from './features/dashboard-docs/DashboardDocs'
-import { Activity, UserCheck, LayoutDashboard, Users, BookOpen } from 'lucide-react'
+import { ScreeningPage } from './features/screening/ScreeningPage'
+import { Activity, UserCheck, LayoutDashboard, Users, BookOpen, Mic } from 'lucide-react'
 
 /* Feature imports — uncomment during integration */
-// import { ScreeningFlow } from './features/screening/ScreeningFlow'
 // import { MatchingFlow } from './features/matching/MatchingFlow'
 // import { LearningPathPage } from './features/learning-path/LearningPathPage'
 // import { SessionRoom } from './features/session/SessionRoom'
@@ -16,6 +16,7 @@ function Header() {
   const navItems = [
     { path: '/', label: 'Onboarding', icon: UserCheck },
     { path: '/docs', label: 'Progress Dashboard', icon: LayoutDashboard },
+    { path: '/screening', label: 'Screening', icon: Mic },
     // { path: '/learning', label: 'Learning Path', icon: BookOpen },
     { path: '/matching', label: 'Therapist Matching', icon: Users },
   ];
@@ -80,6 +81,7 @@ export default function App() {
               <Route path="/" element={<AuthOnboarding />} />
               <Route path="/auth/*" element={<AuthOnboarding />} />
               <Route path="/docs/*" element={<DashboardDocs />} />
+              <Route path="/screening/*" element={<ScreeningPage />} />
               {/* <Route path="/learning/*" element={<LearningPathPage />} /> */}
               <Route path="/matching" element={
                 <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
@@ -88,7 +90,6 @@ export default function App() {
                   <p className="text-[#64748B] text-sm">Feature by Salman</p>
                 </div>
               } />
-              {/* <Route path="/screening/*" element={<ScreeningFlow />} /> */}
               {/* <Route path="/session/*" element={<SessionRoom />} /> */}
             </Routes>
           </main>
