@@ -1,9 +1,4 @@
-/**
- * Dashboard Documentation Feature
- * Main entry point for the documentation slice
- */
-import SessionNoteForm from "./SessionNoteForm";
-
+// Placeholder for dashboard-docs feature
 export default function DashboardDocs() {
-  return <SessionNoteForm />;
+  return <div>Dashboard Docs Placeholder</div>;
 }
