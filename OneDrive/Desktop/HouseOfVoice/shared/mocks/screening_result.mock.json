@@ -1,9 +1,18 @@
 {
-  "case_id": "case_mock_001",
+  "case_id": "mock-case-001",
   "overall_severity": "mild",
-  "phoneme_scores": { "r": 0.4, "s": 0.7, "th": 0.3 },
-  "fluency_score": 0.65,
-  "language_score": 0.72,
-  "recommendations": ["Focus on /r/ production", "Introduce /th/ minimal pairs"],
-  "created_at": "2025-01-15T10:00:00Z"
+  "phoneme_scores": {
+    "s": 0.65,
+    "th": 0.40,
+    "r": 0.55,
+    "l": 0.80
+  },
+  "fluency_score": 0.72,
+  "language_score": 0.85,
+  "recommendations": [
+    "Focus on /th/ sound in initial positions",
+    "Target /s/ blends through interactive pacing drills",
+    "Incorporate minimal pair contrast exercises for /r/ vs /w/"
+  ],
+  "created_at": "2025-01-15T10:30:00Z"
 }
