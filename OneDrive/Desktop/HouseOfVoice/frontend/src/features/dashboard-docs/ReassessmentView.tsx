@@ -40,7 +40,7 @@ export default function ReassessmentView({ caseId }: ReassessmentViewProps) {
     setIsRunning(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:8000/docs/reassessment', {
+      const response = await fetch('/api/docs/reassessment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 

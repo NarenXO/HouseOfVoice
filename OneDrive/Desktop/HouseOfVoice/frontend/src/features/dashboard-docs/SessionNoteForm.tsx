@@ -68,8 +68,7 @@ export default function SessionNoteForm({ onSubmit }: SessionNoteFormProps) {
     };
 
     try {
-      // TODO: update to /api/docs/session-notes at integration
-      const response = await fetch('http://localhost:8000/session-notes', {
+      const response = await fetch('/api/docs/session-notes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

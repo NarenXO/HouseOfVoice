@@ -28,7 +28,7 @@ export default function UrgentFlagButton({ caseId }: UrgentFlagButtonProps) {
 
   const fetchFlags = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/docs/urgent-flags/${caseId}`);
+      const response = await fetch(`/api/docs/urgent-flags/${caseId}`);
       if (response.ok) {
         const data = await response.json();
         setFlags(data);
@@ -43,7 +43,7 @@ export default function UrgentFlagButton({ caseId }: UrgentFlagButtonProps) {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:8000/docs/urgent-flag', {
+      const response = await fetch('/api/docs/urgent-flag', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

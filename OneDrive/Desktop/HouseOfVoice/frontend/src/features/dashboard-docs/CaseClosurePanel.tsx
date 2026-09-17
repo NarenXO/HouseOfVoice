@@ -56,7 +56,7 @@ export default function CaseClosurePanel({ caseId }: CaseClosurePanelProps) {
 
   const fetchCaseStatus = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/docs/case/${caseId}/closure`);
+      const response = await fetch(`/api/docs/case/${caseId}/closure`);
       if (response.ok) {
         const data = await response.json();
         setCaseClosure(data);
@@ -68,7 +68,7 @@ export default function CaseClosurePanel({ caseId }: CaseClosurePanelProps) {
 
   const fetchFollowups = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/docs/case/${caseId}/follow-ups`);
+      const response = await fetch(`/api/docs/case/${caseId}/follow-ups`);
       if (response.ok) {
         const data = await response.json();
         setFollowups(data);
@@ -86,7 +86,7 @@ export default function CaseClosurePanel({ caseId }: CaseClosurePanelProps) {
 
     setIsClosing(true);
     try {
-      const response = await fetch(`http://localhost:8000/docs/case/${caseId}/close`, {
+      const response = await fetch(`/api/docs/case/${caseId}/close`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -119,7 +119,7 @@ export default function CaseClosurePanel({ caseId }: CaseClosurePanelProps) {
 
     setIsSubmittingFollowup(true);
     try {
-      const response = await fetch(`http://localhost:8000/docs/case/${caseId}/follow-up-response`, {
+      const response = await fetch(`/api/docs/case/${caseId}/follow-up-response`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

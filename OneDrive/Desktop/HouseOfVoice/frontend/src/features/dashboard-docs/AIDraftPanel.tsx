@@ -32,7 +32,7 @@ export default function AIDraftPanel({ sessionNoteId }: AIDraftPanelProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/docs/session-notes/draft', {
+      const response = await fetch('/api/docs/session-notes/draft', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ export default function AIDraftPanel({ sessionNoteId }: AIDraftPanelProps) {
 
     setIsApproving(true);
     try {
-      const response = await fetch(`http://localhost:8000/docs/session-notes/draft/${draft.id}/approve`, {
+      const response = await fetch(`/api/docs/session-notes/draft/${draft.id}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

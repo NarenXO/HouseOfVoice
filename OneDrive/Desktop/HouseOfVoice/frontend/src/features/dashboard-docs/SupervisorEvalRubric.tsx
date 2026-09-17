@@ -65,7 +65,7 @@ export default function SupervisorEvalRubric({ caseId }: SupervisorEvalRubricPro
 
   const fetchPastEvaluations = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/docs/supervisor-evaluations/${caseId}`);
+      const response = await fetch(`/api/docs/supervisor-evaluations/${caseId}`);
       if (response.ok) {
         const data = await response.json();
         setPastEvaluations(data);
@@ -97,7 +97,7 @@ export default function SupervisorEvalRubric({ caseId }: SupervisorEvalRubricPro
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:8000/docs/supervisor-evaluation', {
+      const response = await fetch('/api/docs/supervisor-evaluation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

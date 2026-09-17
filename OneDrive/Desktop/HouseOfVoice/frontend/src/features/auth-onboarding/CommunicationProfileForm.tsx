@@ -66,7 +66,7 @@ export function CommunicationProfileForm({ userId, onSuccess, demoMode = false }
 
   const onSubmit = async (data: CommunicationProfileFormData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/onboarding/communication-profile', {
+      const response = await fetch('/api/auth/onboarding/communication-profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

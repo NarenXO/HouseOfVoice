@@ -29,7 +29,7 @@ export default function FeedbackForm({ caseId }: FeedbackFormProps) {
 
   const fetchPastFeedback = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/docs/feedback/${caseId}`);
+      const response = await fetch(`/api/docs/feedback/${caseId}`);
       if (response.ok) {
         const data = await response.json();
         setPastFeedback(data);
@@ -47,7 +47,7 @@ export default function FeedbackForm({ caseId }: FeedbackFormProps) {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('http://localhost:8000/docs/feedback', {
+      const response = await fetch('/api/docs/feedback', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
