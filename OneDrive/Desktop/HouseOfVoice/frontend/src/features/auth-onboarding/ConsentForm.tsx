@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../../shared/LanguageContext';
-import { Mic, Users, BarChart3, CheckCircle, XCircle } from 'lucide-react';
+import { Mic, Users, TrendingUp, CheckCircle, XCircle } from 'lucide-react';
 
 interface ConsentFormData {
   recording_consent: boolean;
@@ -24,7 +24,7 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
 
   const onSubmit = async (data: ConsentFormData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/auth/baseline-consent', {
+      const response = await fetch('/api/auth/baseline-consent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,12 +37,21 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
         }),
       });
 
-      if (response.ok) {
-        onSuccess();
-      } else {
-        const error = await response.json();
-        alert(`Consent submission failed: ${error.detail}`);
+      const text = await response.text();
+      let result: any = {};
+      try {
+        result = text ? JSON.parse(text) : {};
+      } catch (err) {
+        console.error("Non-JSON response:", text);
       }
+
+      if (!response.ok) {
+        const errorMessage = result.detail || result.message || `Server error (${response.status})`;
+        alert(`Consent submission failed: ${errorMessage}`);
+        return;
+      }
+
+      onSuccess();
     } catch (error) {
       alert(`Consent submission failed: ${error}`);
     }
@@ -50,22 +59,23 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-2xl shadow-xl p-8"
+      transition={{ duration: 0.2, ease: 'easeOut' }}
+      className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-8"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Consent & Preferences</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-wider text-[#0D9488] mb-6">RECORDING & PRIVACY CONSENT</h2>
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Recording Consent */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
           <div className="flex items-start gap-4 mb-4">
-            <div className="bg-blue-100 rounded-lg p-3">
-              <Mic className="w-6 h-6 text-blue-600" />
+            <div className="bg-[#F4F6F8] rounded-lg p-3">
+              <Mic className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-800 mb-2">Audio Recording Consent</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-[#0F172A] mb-2">Audio Recording Consent</h3>
+              <p className="text-sm text-[#64748B]">
                 Used for AI speech analysis and tracking articulation progress. Your voice recordings help personalize therapy exercises and measure improvement over time.
               </p>
             </div>
@@ -77,11 +87,11 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
               onClick={() => setRecordingConsent(true)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-all ${
                 recordingConsent === true
-                  ? 'bg-green-500 text-white border-green-500'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'
+                  ? 'bg-[#0D9488] text-white border-[#0D9488]'
+                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0D9488]'
               } border`}
             >
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" strokeWidth={1.75} />
               I Consent
             </button>
             <button
@@ -89,11 +99,11 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
               onClick={() => setRecordingConsent(false)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-all ${
                 recordingConsent === false
-                  ? 'bg-red-500 text-white border-red-500'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-red-500'
+                  ? 'bg-[#64748B] text-white border-[#64748B]'
+                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#64748B]'
               } border`}
             >
-              <XCircle className="w-5 h-5" />
+              <XCircle className="w-5 h-5" strokeWidth={1.75} />
               I Decline
             </button>
           </div>
@@ -104,16 +114,16 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
               animate={{ opacity: 1, height: 'auto' }}
               className="mt-4"
             >
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-[#0F172A] mb-2">
                 Optional Reason for Declining
               </label>
               <textarea
                 {...register('declined_reason')}
                 rows={2}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-lg focus:ring-2 focus:ring-[#0D9488] focus:border-[#0D9488] transition-colors"
                 placeholder="Please share your reason (e.g., 'Prefer manual notes')"
               />
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="text-xs text-[#64748B] mt-2">
                 Note: Declining recording still allows all therapy activities with manual clinician notes.
               </p>
             </motion.div>
@@ -121,14 +131,14 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
         </div>
 
         {/* Supervisor Presence Consent */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
           <div className="flex items-start gap-4 mb-4">
-            <div className="bg-purple-100 rounded-lg p-3">
-              <Users className="w-6 h-6 text-purple-600" />
+            <div className="bg-[#F4F6F8] rounded-lg p-3">
+              <Users className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-800 mb-2">Supervisor Presence Consent</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-[#0F172A] mb-2">Supervisor Presence Consent</h3>
+              <p className="text-sm text-[#64748B]">
                 Licensed supervisors may review sessions for quality assurance and provide guidance to therapists. This helps maintain high standards of care.
               </p>
             </div>
@@ -140,11 +150,11 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
               onClick={() => setSupervisorConsent(true)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-all ${
                 supervisorConsent === true
-                  ? 'bg-green-500 text-white border-green-500'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'
+                  ? 'bg-[#0D9488] text-white border-[#0D9488]'
+                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#0D9488]'
               } border`}
             >
-              <CheckCircle className="w-5 h-5" />
+              <CheckCircle className="w-5 h-5" strokeWidth={1.75} />
               I Consent
             </button>
             <button
@@ -152,33 +162,33 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
               onClick={() => setSupervisorConsent(false)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg transition-all ${
                 supervisorConsent === false
-                  ? 'bg-red-500 text-white border-red-500'
-                  : 'bg-white text-gray-700 border-gray-300 hover:border-red-500'
+                  ? 'bg-[#64748B] text-white border-[#64748B]'
+                  : 'bg-white text-[#64748B] border-[#E2E8F0] hover:border-[#64748B]'
               } border`}
             >
-              <XCircle className="w-5 h-5" />
+              <XCircle className="w-5 h-5" strokeWidth={1.75} />
               I Decline
             </button>
           </div>
         </div>
 
         {/* Progress Checkpoints Info */}
-        <div className="bg-gradient-to-r from-teal-50 to-cyan-50 rounded-xl p-6">
+        <div className="bg-white border border-[#E2E8F0] rounded-xl p-6">
           <div className="flex items-start gap-4">
-            <div className="bg-teal-100 rounded-lg p-3">
-              <BarChart3 className="w-6 h-6 text-teal-600" />
+            <div className="bg-[#F4F6F8] rounded-lg p-3">
+              <TrendingUp className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-gray-800 mb-2">Progress Checkpoints</h3>
-              <p className="text-sm text-gray-600">
+              <h3 className="font-semibold text-[#0F172A] mb-2">Progress Checkpoints</h3>
+              <p className="text-sm text-[#64748B]">
                 Practice activities include assessment items to measure phoneme improvements and track your progress over time. These checkpoints help tailor therapy to your specific needs.
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <p className="text-sm text-yellow-800">
+        <div className="bg-[#F4F6F8] border border-[#E2E8F0] rounded-lg p-4">
+          <p className="text-sm text-[#64748B]">
             <strong>Important:</strong> You can change these consent preferences at any time through your account settings.
           </p>
         </div>
@@ -186,7 +196,8 @@ export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentForm
         <button
           type="submit"
           disabled={recordingConsent === null || supervisorConsent === null || isSubmitting}
-          className="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#0D9488] text-white py-3 rounded-lg hover:bg-[#0D9488]/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ borderRadius: '8px' }}
         >
           {isSubmitting ? 'Submitting...' : 'Complete Onboarding'}
         </button>

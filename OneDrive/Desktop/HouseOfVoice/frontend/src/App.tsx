@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import { LanguageProvider } from './shared/LanguageContext'
 import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding'
 import DashboardDocs from './features/dashboard-docs/DashboardDocs'
+import { Activity, UserCheck, LayoutDashboard, Users } from 'lucide-react'
 
 /* Feature imports — uncomment during integration */
 // import { ScreeningFlow } from './features/screening/ScreeningFlow'
@@ -13,35 +14,45 @@ function Header() {
   const location = useLocation();
   
   const navItems = [
-    { path: '/', label: '👤 Onboarding', icon: '👤' },
-    { path: '/docs', label: '📊 Progress Dashboard', icon: '📊' },
-    { path: '/matching', label: '👨‍⚕️ Therapist Matching', icon: '👨‍⚕️' },
+    { path: '/', label: 'Onboarding', icon: UserCheck },
+    { path: '/docs', label: 'Progress Dashboard', icon: LayoutDashboard },
+    { path: '/matching', label: 'Therapist Matching', icon: Users },
   ];
 
   return (
-    <header className="bg-white shadow-md border-b border-gray-200">
+    <header className="bg-white border-b border-[#E2E8F0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-indigo-600 hover:text-indigo-700">
-              🏠 HouseOfVoice
+            <Link to="/" className="flex items-center gap-2 text-xl font-bold text-[#1E3A5F] hover:text-[#2E5A88] transition-colors">
+              <Activity className="w-6 h-6" strokeWidth={1.75} />
+              <span>HouseOfVoice</span>
             </Link>
           </div>
           <nav className="flex space-x-4">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  location.pathname === item.path || 
-                  (item.path !== '/' && location.pathname.startsWith(item.path))
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path || 
+                (item.path !== '/' && location.pathname.startsWith(item.path));
+              
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors relative ${
+                    isActive 
+                      ? 'text-[#0D9488]' 
+                      : 'text-[#64748B] hover:text-[#0F172A]'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" strokeWidth={1.75} />
+                  <span>{item.label}</span>
+                  {isActive && (
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#0D9488]" />
+                  )}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       </div>
@@ -52,7 +63,7 @@ function Header() {
 function Home() {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-indigo-600">🏠 HouseOfVoice</h1>
+      <h1 className="text-4xl font-bold text-[#1E3A5F]">HouseOfVoice</h1>
     </div>
   )
 }
@@ -61,7 +72,7 @@ export default function App() {
   return (
     <LanguageProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-[#F4F6F8]">
           <Header />
           <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <Routes>
@@ -70,9 +81,9 @@ export default function App() {
               <Route path="/docs/*" element={<DashboardDocs />} />
               <Route path="/matching" element={
                 <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-                  <h2 className="text-3xl font-bold text-gray-800 mb-4">👨‍⚕️ Therapist Matching</h2>
-                  <p className="text-gray-600 mb-4">Coming soon! This feature will help you find the perfect therapist.</p>
-                  <p className="text-gray-500 text-sm">Feature by Salman</p>
+                  <h2 className="text-3xl font-bold text-[#0F172A] mb-4">Therapist Matching</h2>
+                  <p className="text-[#64748B] mb-4">Coming soon! This feature will help you find the perfect therapist.</p>
+                  <p className="text-[#64748B] text-sm">Feature by Salman</p>
                 </div>
               } />
               {/* <Route path="/screening/*" element={<ScreeningFlow />} /> */}

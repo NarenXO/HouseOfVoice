@@ -19,13 +19,19 @@ async def register(request: RegisterRequest):
     
     try:
         # Create user in Supabase Auth
-        auth_response = supabase.auth.admin.create_user({
-            "email": request.email,
-            "password": request.password,
-            "email_confirm": True
-        })
-        
-        user_id = auth_response.user.id
+        try:
+            auth_response = supabase.auth.admin.create_user({
+                "email": request.email,
+                "password": request.password,
+                "email_confirm": True
+            })
+            user_id = auth_response.user.id
+        except Exception as auth_error:
+            # Handle specific Supabase auth errors (e.g., duplicate email)
+            error_msg = str(auth_error)
+            if "duplicate" in error_msg.lower() or "already" in error_msg.lower():
+                raise HTTPException(status_code=400, detail="Email already registered. Please use a different email or login.")
+            raise HTTPException(status_code=400, detail=f"Authentication failed: {error_msg}")
         
         # Insert into profiles table
         profile_data = {
@@ -34,10 +40,18 @@ async def register(request: RegisterRequest):
             "name": request.name,
             "dob": request.dob.isoformat() if request.dob else None,
             "gender": request.gender,
-            "contact_info": request.contact_info
+            "contact_info": request.contact_info or {}
         }
         
-        supabase.table("profiles").insert(profile_data).execute()
+        try:
+            supabase.table("profiles").insert(profile_data).execute()
+        except Exception as db_error:
+            # If profile creation fails, try to clean up the auth user
+            try:
+                supabase.auth.admin.delete_user(user_id)
+            except:
+                pass
+            raise HTTPException(status_code=400, detail=f"Profile creation failed: {str(db_error)}")
         
         child_id = None
         
@@ -48,8 +62,12 @@ async def register(request: RegisterRequest):
                 "child_dob": request.child_dob.isoformat() if request.child_dob else None,
                 "child_gender": request.child_gender
             }
-            profile_data["contact_info"]["child_info"] = child_info
-            child_id = "child_info_stored"  # Placeholder to indicate child info was stored
+            try:
+                # Update profile with child info
+                supabase.table("profiles").update({"contact_info": {**profile_data["contact_info"], "child_info": child_info}}).eq("id", user_id).execute()
+                child_id = "child_info_stored"  # Placeholder to indicate child info was stored
+            except Exception as child_error:
+                raise HTTPException(status_code=400, detail=f"Child information storage failed: {str(child_error)}")
         
         # Handle therapist/supervisor profile creation
         if request.role in [UserRole.THERAPIST, UserRole.SUPERVISOR]:
@@ -58,12 +76,15 @@ async def register(request: RegisterRequest):
                 "specialization": request.specialization,
                 "languages": request.languages or [],
                 "years_experience": request.years_experience or 0,
-                "weekly_availability": request.weekly_availability or {},
+                "weekly_availability": request.weekly_availability or "",
                 "session_mode": request.session_mode.value if request.session_mode else "online",
                 "verification_status": request.verification_status.value if request.verification_status else "Self Declared"
             }
             
-            supabase.table("therapist_profiles").insert(therapist_profile_data).execute()
+            try:
+                supabase.table("therapist_profiles").insert(therapist_profile_data).execute()
+            except Exception as therapist_error:
+                raise HTTPException(status_code=400, detail=f"Therapist profile creation failed: {str(therapist_error)}")
         
         return RegisterResponse(
             user_id=user_id,
@@ -74,8 +95,11 @@ async def register(request: RegisterRequest):
             child_id=child_id
         )
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as-is
+        raise
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Unexpected registration error: {str(e)}")
 
 @router.post("/onboarding/communication-profile")
 async def communication_profile(request: CommunicationProfileRequest):
