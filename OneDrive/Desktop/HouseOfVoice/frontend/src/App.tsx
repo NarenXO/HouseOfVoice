@@ -1,33 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
-/* Feature imports — uncomment during integration */
-// import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding'
-// import { ScreeningFlow } from './features/screening/ScreeningFlow'
-// import { MatchingFlow } from './features/matching/MatchingFlow'
-// import { LearningDashboard } from './features/learning/LearningDashboard'
-// import { SessionRoom } from './features/session/SessionRoom'
-import { DashboardDocs } from './features/dashboard-docs'
-
-function Home() {
-  return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold text-indigo-600">🏠 HouseOfVoice</h1>
-    </div>
-  )
-}
+﻿import React from 'react';
+import DashboardDocs from './features/dashboard-docs/DashboardDocs';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* <Route path="/auth/*" element={<AuthOnboarding />} /> */}
-        {/* <Route path="/screening/*" element={<ScreeningFlow />} /> */}
-        {/* <Route path="/matching/*" element={<MatchingFlow />} /> */}
-        {/* <Route path="/learning/*" element={<LearningDashboard />} /> */}
-        {/* <Route path="/session/*" element={<SessionRoom />} /> */}
-        <Route path="/docs" element={<DashboardDocs />} />
-      </Routes>
-    </BrowserRouter>
-  )
+    <div className="min-h-screen bg-slate-50">
+      <DashboardDocs />
+    </div>
+  );
 }
