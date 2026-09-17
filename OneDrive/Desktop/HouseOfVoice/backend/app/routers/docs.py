@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
-from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse
-from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard
+from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse, UrgentFlagCreate, UrgentFlagResponse, ReassessmentCreate, ReassessmentResponse
+from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard, raise_flag, get_flags_by_case, create_reassessment, get_reassessments
 import json
 from pathlib import Path
 
@@ -90,3 +90,27 @@ async def get_ai_drafts(case_id: str):
 async def get_dashboard_data(case_id: str):
     dashboard_data = get_dashboard(case_id)
     return dashboard_data
+
+
+@router.post("/urgent-flag", response_model=UrgentFlagResponse, status_code=201)
+async def create_urgent_flag(flag: UrgentFlagCreate):
+    created_flag = raise_flag(flag)
+    return created_flag
+
+
+@router.get("/urgent-flags/{case_id}", response_model=List[UrgentFlagResponse])
+async def get_urgent_flags(case_id: str):
+    flags = get_flags_by_case(case_id)
+    return flags
+
+
+@router.post("/reassessment", response_model=ReassessmentResponse, status_code=201)
+async def create_reassessment_endpoint(reassessment: ReassessmentCreate):
+    created_reassessment = create_reassessment(reassessment.case_id)
+    return created_reassessment
+
+
+@router.get("/reassessments/{case_id}", response_model=List[ReassessmentResponse])
+async def get_reassessments_endpoint(case_id: str):
+    reassessments = get_reassessments(case_id)
+    return reassessments

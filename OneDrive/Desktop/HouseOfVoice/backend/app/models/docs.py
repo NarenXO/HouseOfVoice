@@ -53,3 +53,30 @@ class DashboardResponse(BaseModel):
     generalization_rate: dict[str, list[dict]]
     isolation_forest_alert: bool
     alert_message: str | None = None
+
+
+class UrgentFlagCreate(BaseModel):
+    case_id: str
+    raised_by: str
+    note: str
+
+
+class UrgentFlagResponse(BaseModel):
+    id: str
+    case_id: str
+    raised_by: str
+    raised_at: datetime
+    note: str
+
+
+class ReassessmentCreate(BaseModel):
+    case_id: str
+
+
+class ReassessmentResponse(BaseModel):
+    id: str
+    case_id: str
+    baseline_snapshot: dict
+    current_snapshot: dict
+    improvement_summary: str
+    assessed_at: datetime

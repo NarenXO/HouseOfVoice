@@ -132,14 +132,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="w-6 h-6 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Progress Dashboard</h1>
-        </div>
-        <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-          {dashboardData.case_id}
-        </div>
+      <div className="flex items-center gap-2">
+        <BarChart3 className="w-6 h-6 text-blue-600" />
+        <h1 className="text-2xl font-bold text-gray-900">Progress Dashboard</h1>
       </div>
 
       {/* Isolation Forest Alert Banner */}
