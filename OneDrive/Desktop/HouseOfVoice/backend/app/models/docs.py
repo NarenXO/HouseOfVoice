@@ -80,3 +80,46 @@ class ReassessmentResponse(BaseModel):
     current_snapshot: dict
     improvement_summary: str
     assessed_at: datetime
+
+
+class FeedbackCreate(BaseModel):
+    case_id: str
+    session_id: str
+    rating: int
+    satisfaction_level: str
+    comments: str
+
+
+class FeedbackResponse(BaseModel):
+    id: str
+    case_id: str
+    session_id: str
+    rating: int
+    satisfaction_level: str
+    comments: str
+    submitted_at: datetime
+
+
+class SupervisorEvalCreate(BaseModel):
+    case_id: str
+    therapist_id: str
+    documentation_quality: int
+    therapy_planning: int
+    session_quality: int
+    clinical_reasoning: int
+    professional_communication: int
+    feedback_notes: str
+
+
+class SupervisorEvalResponse(BaseModel):
+    id: str
+    case_id: str
+    therapist_id: str
+    documentation_quality: int
+    therapy_planning: int
+    session_quality: int
+    clinical_reasoning: int
+    professional_communication: int
+    feedback_notes: str
+    average_score: float
+    evaluated_at: datetime

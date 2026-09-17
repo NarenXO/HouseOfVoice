@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
-from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse, UrgentFlagCreate, UrgentFlagResponse, ReassessmentCreate, ReassessmentResponse
-from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard, raise_flag, get_flags_by_case, create_reassessment, get_reassessments
+from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse, UrgentFlagCreate, UrgentFlagResponse, ReassessmentCreate, ReassessmentResponse, FeedbackCreate, FeedbackResponse, SupervisorEvalCreate, SupervisorEvalResponse
+from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard, raise_flag, get_flags_by_case, create_reassessment, get_reassessments, submit_feedback, get_feedback_by_case, submit_evaluation, get_evaluations_by_case
 import json
 from pathlib import Path
 
@@ -114,3 +114,27 @@ async def create_reassessment_endpoint(reassessment: ReassessmentCreate):
 async def get_reassessments_endpoint(case_id: str):
     reassessments = get_reassessments(case_id)
     return reassessments
+
+
+@router.post("/feedback", response_model=FeedbackResponse, status_code=201)
+async def create_feedback(feedback: FeedbackCreate):
+    created_feedback = submit_feedback(feedback, use_mocks=USE_MOCKS)
+    return created_feedback
+
+
+@router.get("/feedback/{case_id}", response_model=List[FeedbackResponse])
+async def get_feedback(case_id: str):
+    feedback_list = get_feedback_by_case(case_id, use_mocks=USE_MOCKS)
+    return feedback_list
+
+
+@router.post("/supervisor-evaluation", response_model=SupervisorEvalResponse, status_code=201)
+async def create_supervisor_evaluation(evaluation: SupervisorEvalCreate):
+    created_evaluation = submit_evaluation(evaluation)
+    return created_evaluation
+
+
+@router.get("/supervisor-evaluations/{case_id}", response_model=List[SupervisorEvalResponse])
+async def get_supervisor_evaluations(case_id: str):
+    evaluations = get_evaluations_by_case(case_id)
+    return evaluations

@@ -4,6 +4,8 @@ from .ai_drafts import generate_draft, approve_draft, get_drafts_by_case
 from .dashboard import get_dashboard
 from .urgent_flags import raise_flag, get_flags_by_case
 from .reassessment import create_reassessment, get_reassessments
+from .feedback import submit_feedback, get_feedback_by_case
+from .supervisor_eval import submit_evaluation, get_evaluations_by_case
 
 __all__ = [
     "generate_dashboard_timeseries",
@@ -17,5 +19,9 @@ __all__ = [
     "raise_flag",
     "get_flags_by_case",
     "create_reassessment",
-    "get_reassessments"
+    "get_reassessments",
+    "submit_feedback",
+    "get_feedback_by_case",
+    "submit_evaluation",
+    "get_evaluations_by_case"
 ]
