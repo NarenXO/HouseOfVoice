@@ -51,10 +51,10 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
   const getBanner = () => {
     if (milestone.status === "active") {
       return (
-        <div className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-[12px] p-3 mb-4">
+        <div className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-3 mb-4 shadow-sm">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 bg-[#059669] rounded-full" />
-            <span className="text-sm font-extrabold text-[#022C22]">Current focus</span>
+            <div className="w-2.5 h-2.5 bg-[#34D399] rounded-full" />
+            <span className="text-sm font-extrabold text-white">Current focus</span>
           </div>
         </div>
       );
@@ -62,10 +62,10 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
 
     if (milestone.status === "generalized") {
       return (
-        <div className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-[12px] p-3 mb-4">
+        <div className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-3 mb-4 shadow-sm">
           <div className="flex items-center gap-2">
-            <Award className="w-4 h-4 text-[#059669]" strokeWidth={1.75} />
-            <span className="text-sm font-extrabold text-[#022C22]">Generalized</span>
+            <Award className="w-4 h-4 text-[#34D399]" strokeWidth={1.75} />
+            <span className="text-sm font-extrabold text-white">Generalized</span>
           </div>
         </div>
       );
@@ -131,18 +131,18 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
               {mockExercises.map((exercise) => (
                 <div
                   key={exercise.id}
-                  className="flex items-start gap-3 p-4 bg-[#F0FDF4] border border-[#A7F3D0] rounded-[12px]"
+                  className="flex items-start gap-3 p-4 bg-[#064E3B] border border-[#0D9488] rounded-[12px] shadow-sm"
                 >
                   <div className="pt-1">
                     {exercise.done ? (
-                      <CheckCircle2 className="w-5 h-5 text-[#059669]" strokeWidth={1.75} />
+                      <CheckCircle2 className="w-5 h-5 text-[#34D399]" strokeWidth={2} />
                     ) : (
-                      <div className="w-5 h-5 border-2 border-[#CBD5E1] rounded-full" />
+                      <div className="w-5 h-5 border-2 border-[#0D9488] rounded-full" />
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="font-black text-[#022C22] text-base">{exercise.title}</p>
-                    <p className="text-base font-extrabold text-[#022C22] mt-1">{exercise.instructions}</p>
+                    <p className="font-black text-white text-base">{exercise.title}</p>
+                    <p className="text-base font-extrabold text-[#CCFBF1] mt-1">{exercise.instructions}</p>
                   </div>
                 </div>
               ))}

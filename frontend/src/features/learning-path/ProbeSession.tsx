@@ -159,25 +159,25 @@ export default function ProbeSession({
                 <p className="text-[#1E293B] font-bold">Say this word out loud:</p>
               </div>
 
-              <div className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-[12px] p-8 mb-6">
-                <div className="text-4xl font-black text-[#022C22] tracking-tight mb-3">
+              <div className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-8 mb-6 shadow-sm">
+                <div className="text-3xl font-black text-white tracking-tight mb-3">
                   {probeItem.display_text}
                 </div>
-                <p className="text-base font-extrabold text-[#022C22]">{probeItem.instructions}</p>
+                <p className="text-base font-extrabold text-[#CCFBF1]">{probeItem.instructions}</p>
               </div>
 
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={handleSubmitAttempt}
                   disabled={loading}
-                  className="bg-[#1E3A5F] hover:bg-[#2E5A88] disabled:bg-[#E2E8F0] disabled:text-[#64748B] text-white font-extrabold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
+                  className="bg-[#047857] hover:bg-[#059669] disabled:bg-[#E2E8F0] disabled:text-[#64748B] text-white font-extrabold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
                 >
-                  <Mic className="w-5 h-5" strokeWidth={1.75} />
+                  <Mic className="w-5 h-5 text-white" strokeWidth={1.75} />
                   Submit
                 </button>
                 <button
                   onClick={onCancel}
-                  className="bg-white hover:bg-[#F0FDF4] text-[#022C22] border border-[#059669] font-extrabold rounded-lg px-4 py-2 transition-colors"
+                  className="bg-white hover:bg-[#CCFBF1] text-[#064E3B] border border-[#0D9488] font-extrabold rounded-lg px-4 py-2 transition-colors"
                 >
                   Cancel
                 </button>
@@ -214,14 +214,14 @@ export default function ProbeSession({
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="bg-[#F0FDF4] border border-[#A7F3D0] text-[#022C22] rounded-[12px] p-6 mb-6"
+                  className="bg-[#064E3B] border border-[#0D9488] text-white rounded-[12px] p-6 mb-6"
                 >
                   <div className="flex items-center justify-center gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-[#059669]" strokeWidth={1.75} />
-                    <p className="text-[#022C22] font-black text-lg">
+                    <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
+                    <p className="text-[#CCFBF1] font-black text-lg">
                       {outcomeData.badge?.title || "Sound Master Badge"}
                     </p>
-                    <CheckCircle2 className="w-6 h-6 text-[#059669]" strokeWidth={1.75} />
+                    <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
                   </div>
                 </motion.div>
               )}
@@ -256,8 +256,8 @@ export default function ProbeSession({
               </div>
 
               {outcomeData?.extra_practice_items && outcomeData.extra_practice_items.length > 0 && (
-                <div className="bg-[#FFFBEB] border border-[#D97706] text-[#022C22] rounded-[12px] p-6 mb-6">
-                  <p className="text-[#022C22] font-black mb-4">Extra practice words:</p>
+                <div className="bg-[#064E3B] border border-[#0D9488] text-white rounded-[12px] p-6 mb-6">
+                  <p className="text-[#CCFBF1] font-black mb-4">Extra practice words:</p>
                   <div className="flex flex-wrap gap-3 justify-center">
                     {outcomeData.extra_practice_items.map((word: string, index: number) => (
                       <motion.span
@@ -265,7 +265,7 @@ export default function ProbeSession({
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: index * 0.05, duration: 0.15, ease: "easeOut" }}
-                        className="bg-white border border-[#059669] text-[#022C22] px-4 py-2 rounded-full text-sm font-black shadow-sm"
+                        className="bg-[#CCFBF1] border border-[#0D9488] text-[#064E3B] px-4 py-2 rounded-full text-sm font-black shadow-sm"
                       >
                         {word}
                       </motion.span>
