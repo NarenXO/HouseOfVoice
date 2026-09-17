@@ -265,28 +265,28 @@ export default function LearningPathPage() {
     <div className="min-h-screen bg-[#E8F8F3] text-[#0F172A] p-6">
       <div className="max-w-6xl mx-auto">
         {/* Sticky Top Header Card */}
-        <div className="bg-white border-2 border-[#059669] rounded-[16px] p-4 shadow-sm mb-6 sticky top-4 z-50 flex items-center justify-between">
-          <h1 className="text-2xl font-black text-[#022C22] tracking-tight">Learning path</h1>
+        <div className="bg-[#064E3B] border-2 border-[#0D9488] rounded-[16px] p-4 shadow-md mb-6 sticky top-4 z-50 flex items-center justify-between">
+          <h1 className="text-2xl font-black text-white tracking-tight">Learning path</h1>
 
           <div className="flex items-center gap-3">
             {/* Tab Toggle */}
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveTab("roadmap")}
-                className={`px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                   activeTab === "roadmap"
-                    ? "bg-[#059669] text-white"
-                    : "bg-white text-[#022C22] border border-[#059669] hover:bg-[#F0FDF4]"
+                    ? "bg-[#022C22] text-white border border-[#34D399] font-black"
+                    : "bg-[#064E3B] text-[#D1FAE5] border border-[#0D9488] font-bold hover:bg-[#047857]"
                 }`}
               >
                 Patient Roadmap
               </button>
               <button
                 onClick={() => setActiveTab("edit")}
-                className={`px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
                   activeTab === "edit"
-                    ? "bg-[#059669] text-white"
-                    : "bg-white text-[#022C22] border border-[#059669] hover:bg-[#F0FDF4]"
+                    ? "bg-[#022C22] text-white border border-[#34D399] font-black"
+                    : "bg-[#064E3B] text-[#D1FAE5] border border-[#0D9488] font-bold hover:bg-[#047857]"
                 }`}
               >
                 Clinician Mode
@@ -297,9 +297,9 @@ export default function LearningPathPage() {
             {activeTab === "roadmap" && (
               <button
                 onClick={handleQuickDemoAutoFill}
-                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-bold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-white hover:bg-[#CCFBF1] text-[#064E3B] font-black rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
               >
-                <Zap className="w-4 h-4" strokeWidth={1.75} />
+                <Zap className="w-4 h-4 text-[#064E3B]" strokeWidth={1.75} />
                 Auto-fill practice
               </button>
             )}
@@ -318,17 +318,17 @@ export default function LearningPathPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="bg-[#064E3B] border border-[#0D9488] rounded-[16px] p-5 shadow-sm"
+                className="bg-[#064E3B] border-2 border-[#0D9488] rounded-[16px] p-5 shadow-md"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-[#047857] border border-[#0D9488] rounded-full flex items-center justify-center">
+                  <div className="p-2.5 bg-[#022C22] border border-[#059669] rounded-full flex items-center justify-center">
                     <Flame className="w-6 h-6 text-[#F59E0B]" strokeWidth={1.75} />
                   </div>
                   <div>
                     <div className="font-black text-xl text-white tabular-nums tracking-tight">
                       Streak: {learningPath.streak.current_streak_days} days
                     </div>
-                    <div className="text-sm font-bold text-[#CCFBF1]">
+                    <div className="text-sm font-bold text-[#D1FAE5]">
                       Practice today to maintain your streak
                     </div>
                   </div>
@@ -356,7 +356,7 @@ export default function LearningPathPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="bg-[#064E3B] border border-[#0D9488] rounded-[14px] p-4 text-center shadow-sm"
+                  className="bg-[#064E3B] border-2 border-[#0D9488] rounded-[14px] p-4 text-center shadow-md"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#34D399]" strokeWidth={1.75} />
@@ -389,13 +389,13 @@ export default function LearningPathPage() {
 
             {/* Sticky Approve Button */}
             {!pathApproved && (
-              <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#A7E3D5] p-4 shadow-md z-40">
+              <div className="fixed bottom-0 left-0 right-0 bg-[#064E3B] border-t border-[#0D9488] p-4 shadow-md z-40">
                 <div className="max-w-6xl mx-auto flex justify-center">
                   <button
                     onClick={handleApprovePath}
-                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-semibold rounded-lg px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
+                    className="bg-white hover:bg-[#CCFBF1] text-[#064E3B] font-black rounded-lg px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
                   >
-                    <CheckCircle2 className="w-5 h-5 text-white" strokeWidth={1.75} />
+                    <CheckCircle2 className="w-5 h-5 text-[#064E3B]" strokeWidth={1.75} />
                     Approve & Lock Path
                   </button>
                 </div>
@@ -408,12 +408,12 @@ export default function LearningPathPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="fixed bottom-0 left-0 right-0 bg-[#CCFBF1] border-t border-[#0D9488] text-[#0F172A] p-4 shadow-md z-40"
+                className="fixed bottom-0 left-0 right-0 bg-[#064E3B] border-t border-[#0D9488] text-white p-4 shadow-md z-40"
               >
                 <div className="max-w-6xl mx-auto flex items-center justify-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-[#16A34A]" strokeWidth={1.75} />
-                  <span className="font-bold text-lg text-[#0F172A]">Path is live and approved</span>
-                  <CheckCircle2 className="w-6 h-6 text-[#16A34A]" strokeWidth={1.75} />
+                  <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
+                  <span className="font-bold text-lg text-white">Path is live and approved</span>
+                  <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
                 </div>
               </motion.div>
             )}
