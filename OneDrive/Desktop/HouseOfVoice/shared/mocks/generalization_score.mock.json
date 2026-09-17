@@ -1,0 +1,6 @@
+{
+  "case_id": "case_mock_001",
+  "phoneme": "s",
+  "context_scores": { "home": 0.85, "school": 0.55, "clinic": 0.90 },
+  "overall": 0.77
+}

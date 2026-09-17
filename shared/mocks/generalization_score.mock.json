@@ -1,7 +1,29 @@
 {
-  "caseId": "case_demo_001",
-  "phoneme": "s",
-  "probesAttempted": 6,
-  "probesPassed": 5,
-  "rate": 0.82
+  "case_id": "case_demo_001",
+  "overall_rate": 0.75,
+  "total_probes_attempted": 8,
+  "total_probes_passed": 6,
+  "phonemes": [
+    {
+      "phoneme": "/s/",
+      "probes_attempted": 4,
+      "probes_passed": 3,
+      "rate": 0.75,
+      "last_updated": "2025-01-15T10:30:00Z"
+    },
+    {
+      "phoneme": "/r/",
+      "probes_attempted": 2,
+      "probes_passed": 1,
+      "rate": 0.50,
+      "last_updated": "2025-01-15T10:30:00Z"
+    },
+    {
+      "phoneme": "/th/",
+      "probes_attempted": 2,
+      "probes_passed": 2,
+      "rate": 1.0,
+      "last_updated": "2025-01-15T10:30:00Z"
+    }
+  ]
 }

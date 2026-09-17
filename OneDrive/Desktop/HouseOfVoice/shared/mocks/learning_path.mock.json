@@ -1,0 +1,7 @@
+{
+  "case_id": "case_mock_001",
+  "milestones": [
+    { "id": "m1", "phoneme": "r", "target": "word-initial /r/", "current_level": "isolation", "status": "in_progress" },
+    { "id": "m2", "phoneme": "th", "target": "voiced /th/ in sentences", "current_level": "none", "status": "not_started" }
+  ]
+}
