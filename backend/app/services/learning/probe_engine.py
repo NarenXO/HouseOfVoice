@@ -114,7 +114,10 @@ async def score_probe(
     if passed:
         # Award badge for this milestone if not already awarded
         badge = award_badge(case_id, milestone_id, normalized_phoneme)
-        
+
+        # Don't reset consecutive counter on pass - keep streak intact
+        # Only reset on fail
+
         return {
             "result": "pass",
             "milestone_status": "generalized",
@@ -125,7 +128,9 @@ async def score_probe(
         }
     else:
         _consecutive_successes[milestone_id] = 0
-        extra_items = TRAINED_VARIETY.get(phoneme, ["practice word 1", "practice word 2"])[:3]
+        # Use normalized phoneme for TRAINED_VARIETY lookup
+        lookup_key = f"/{normalized_phoneme}/"
+        extra_items = TRAINED_VARIETY.get(lookup_key, TRAINED_VARIETY.get(phoneme, ["practice word 1", "practice word 2"]))[:3]
         return {
             "result": "continue_practice",
             "milestone_status": "trained",

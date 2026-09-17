@@ -1,5 +1,7 @@
 """Scoring logic for training and generalization phases."""
 from typing import List
+import os
+import logging
 from app.models.shared import ProbeResult, GeneralizationScore
 
 
@@ -97,13 +99,46 @@ async def score_attempt(milestone_id: str, audio_or_text: str, is_probe: bool = 
     """
     Score a single practice or probe attempt.
 
-    Stub implementation for demo:
+    Supports both mock and live modes via USE_MOCKS environment variable.
+    - When USE_MOCKS=True: Uses mock scoring (always True for practice, 70% for probes)
+    - When USE_MOCKS=False: Would call actual speech analysis API (currently stubbed with fallback)
+
+    Args:
+        milestone_id: The milestone being attempted
+        audio_or_text: Audio or text input (stub for now)
+        is_probe: Whether this is a probe attempt
+
+    Returns:
+        True if passed, False otherwise
+    """
+    use_mocks = os.getenv("USE_MOCKS", "True").lower() == "true"
+
+    if use_mocks:
+        # Mock scoring - 100% offline, no API keys required
+        return _mock_score(milestone_id, audio_or_text, is_probe)
+    else:
+        # Live mode - would call actual speech analysis API
+        try:
+            # TODO: Implement actual speech analysis API call
+            # For now, still use mock with warning
+            logging.warning("Speech analysis API not yet implemented, falling back to mock scoring")
+            return _mock_score(milestone_id, audio_or_text, is_probe)
+        except Exception as e:
+            # Fallback to mock on error
+            logging.error(f"Speech analysis API failed: {e}, falling back to mock scoring")
+            return _mock_score(milestone_id, audio_or_text, is_probe)
+
+
+def _mock_score(milestone_id: str, audio_or_text: str, is_probe: bool) -> bool:
+    """
+    Mock scoring implementation.
+
     - For regular practice: always returns True (trained)
     - For probes: returns True ~70% of the time (hash-based for consistency)
 
     Args:
         milestone_id: The milestone being attempted
-        audio_or_text: Audio or text input (stub for now)
+        audio_or_text: Audio or text input
         is_probe: Whether this is a probe attempt
 
     Returns:

@@ -60,9 +60,102 @@ class CheckpointRequest(BaseModel):
     audio_or_text: str = ""
 
 
+class GeneratePathRequest(BaseModel):
+    case_id: str
+    screening_result: dict
+
+
+class ApprovePathRequest(BaseModel):
+    case_id: str
+
+
 @router.get("/ping")
 def ping():
     return {"module": "learning", "status": "ok"}
+
+
+@router.post("/paths/generate")
+async def generate_learning_path(request: GeneratePathRequest):
+    """
+    Generate a learning path based on screening results.
+
+    Uses Gemini (or mock if USE_MOCKS=True) to create a personalized
+    sequence of milestones based on the patient's flagged errors.
+
+    Mock mode (USE_MOCKS=True): 100% offline, no API keys required
+    Live mode (USE_MOCKS=False): Would call Gemini API with graceful fallback
+    """
+    from app.services.learning import PathGenerator
+    from app.models.shared import ScreeningResult
+    import os
+    import logging
+
+    # Convert screening result dict to ScreeningResult model
+    screening_result = ScreeningResult(**request.screening_result)
+
+    try:
+        # Generate path (handles mock/live internally)
+        milestones = PathGenerator.generate_path(request.case_id, screening_result)
+    except Exception as e:
+        # Fallback to mock if generation fails
+        logging.error(f"Path generation failed: {e}, falling back to mock")
+        os.environ["USE_MOCKS"] = "True"
+        milestones = PathGenerator.generate_path(request.case_id, screening_result)
+
+    # Set first milestone as active, rest as locked
+    if milestones:
+        milestones[0].status = "active"
+        for milestone in milestones[1:]:
+            milestone.status = "locked"
+
+    # Store the path
+    path_id = f"path_{request.case_id}"
+    path_data = {
+        "path_id": path_id,
+        "case_id": request.case_id,
+        "is_live": False,
+        "milestones": [m.model_dump() for m in milestones],
+    }
+    store.set_path(request.case_id, path_data)
+
+    # Store milestones individually for practice attempts
+    for milestone in milestones:
+        store.set_milestone(milestone.id, milestone)
+
+    return {
+        "path_id": path_id,
+        "case_id": request.case_id,
+        "is_live": False,
+        "milestones": [m.model_dump() for m in milestones],
+    }
+
+
+@router.post("/paths/{id}/approve")
+async def approve_learning_path(id: str, request: ApprovePathRequest):
+    """
+    Approve and lock a learning path as live.
+
+    Once approved, the path becomes the active therapy plan
+    and milestones can be practiced.
+    """
+    path_data = store.get_path(request.case_id)
+
+    if not path_data:
+        raise HTTPException(status_code=404, detail="Learning path not found")
+
+    if path_data["path_id"] != id:
+        raise HTTPException(status_code=400, detail="Path ID mismatch")
+
+    # Mark as live
+    path_data["is_live"] = True
+    store.set_path(request.case_id, path_data)
+
+    return {
+        "path_id": id,
+        "case_id": request.case_id,
+        "is_live": True,
+        "milestones": path_data["milestones"],
+    }
 
 
 @router.post("/milestones/{milestone_id}/unlock")
@@ -135,6 +228,29 @@ async def get_progress(milestone_id: str):
     """
     progress_data = await get_practice_progress(milestone_id)
     return progress_data
+
+
+@router.get("/paths/{case_id}")
+async def get_learning_path(case_id: str):
+    """
+    Get the learning path for a patient case.
+
+    Returns list of Milestone objects for the case.
+    """
+    path_data = store.get_path(case_id)
+
+    if not path_data:
+        raise HTTPException(status_code=404, detail="Learning path not found")
+
+    # Sort milestones by order_index
+    sorted_milestones = sorted(path_data.get("milestones", []), key=lambda m: m["order_index"])
+
+    return {
+        "path_id": path_data.get("path_id"),
+        "case_id": case_id,
+        "is_live": path_data.get("is_live", False),
+        "milestones": sorted_milestones,
+    }
 
 
 @router.get("/paths/{case_id}/roadmap")
