@@ -1,35 +1,10 @@
+"""
+Domain-specific pydantic models. OWNERSHIP: whoever owns app/routers/screening.py.
+Extend freely — this file belongs only to you, so it can never conflict
+with anyone else's PR. Import shared shapes from app.models.shared, don't
+redefine them here.
+"""
 from pydantic import BaseModel
-from typing import Dict, List
-from enum import Enum
+from app.models.shared import *  # noqa: F401,F403  (shared contract types)
 
-class PromptType(str, Enum):
-    SENTENCE = "sentence"
-    PICTURE = "picture"
-    SPONTANEOUS = "spontaneous"
-
-class BaselineRecording(BaseModel):
-    id: str
-    case_id: str
-    prompt_type: PromptType
-    storage_url: str
-    recorded_at: str
-
-class BaselineRecordingResponse(BaseModel):
-    clip_id: str
-    case_id: str
-    prompt_type: PromptType
-    storage_url: str
-    recorded_at: str
-
-class RunPipelineRequest(BaseModel):
-    case_id: str
-    clip_ids: Dict[str, str]
-
-class ScreeningResultDB(BaseModel):
-    case_id: str
-    overall_severity: str
-    phoneme_scores: Dict[str, float]
-    fluency_score: float
-    language_score: float
-    recommendations: List[str]
-    created_at: str
+# TODO: add your own request/response models below.
