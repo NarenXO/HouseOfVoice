@@ -11,3 +11,5 @@ websockets==12.0
 
 # --- ADD-ONS ---
 faster-whisper
+librosa
+soundfile
