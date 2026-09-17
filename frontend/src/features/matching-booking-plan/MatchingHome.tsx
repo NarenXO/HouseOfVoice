@@ -243,15 +243,15 @@ export default function MatchingHome() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-white p-6 md:p-12 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-[#F4F6F8] text-slate-800 p-6 md:p-12 font-sans selection:bg-[#CCFBF1]">
       <div className="max-w-6xl mx-auto space-y-12">
         
         {/* Header */}
         <div className="flex flex-col space-y-2">
-          <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400 pb-2 leading-tight overflow-visible">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#1E3A5F] pb-2 leading-tight overflow-visible">
             Intelligent Matching & Planning
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-slate-600 text-lg">
             Review AI-ranked specialists, secure a session, and draft a tailored therapy plan.
           </p>
         </div>
@@ -261,15 +261,15 @@ export default function MatchingHome() {
           {/* Left Column: Recommendations */}
           <div className="space-y-6">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-indigo-500/10 rounded-lg">
-                <Users className="w-6 h-6 text-indigo-400" />
+              <div className="p-2 bg-[#CCFBF1] rounded-lg">
+                <Users className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
               </div>
-              <h2 className="text-2xl font-semibold">Recommended Therapists</h2>
+              <h2 className="text-2xl font-semibold text-[#1E3A5F]">Recommended Therapists</h2>
             </div>
             
             {loadingTherapists ? (
-              <div className="flex items-center justify-center h-48 bg-white/5 rounded-2xl border border-white/10">
-                <Loader2 className="w-8 h-8 animate-spin text-indigo-400" />
+              <div className="flex items-center justify-center h-48 bg-white rounded-xl border border-[#E2E8F0] shadow-sm">
+                <Loader2 className="w-8 h-8 animate-spin text-[#0D9488]" strokeWidth={1.75} />
               </div>
             ) : (
               <div className="space-y-4">
@@ -277,39 +277,39 @@ export default function MatchingHome() {
                   <div 
                     key={rec.therapist.id} 
                     onClick={() => setSelectedTherapist(rec.therapist.id)}
-                    className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer backdrop-blur-xl
+                    className={`p-6 rounded-xl border transition-all duration-300 cursor-pointer shadow-sm
                       ${selectedTherapist === rec.therapist.id 
-                        ? 'bg-indigo-500/20 border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.2)]' 
-                        : 'bg-white/5 border-white/10 hover:bg-white/10'}`}
+                        ? 'bg-white border-[#0D9488] ring-1 ring-[#0D9488]' 
+                        : 'bg-white border-[#E2E8F0] hover:border-[#0D9488]/50'}`}
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="text-xl font-bold text-white">{rec.therapist.name}</h3>
+                        <h3 className="text-xl font-bold text-[#1E3A5F]">{rec.therapist.name}</h3>
                         <div className="flex flex-wrap gap-2 mt-2">
-                          <span className="px-2.5 py-1 text-xs rounded-full bg-white/10 text-gray-300 flex items-center">
-                            <Clock className="w-3 h-3 mr-1" /> {rec.therapist.years_experience} yrs
+                          <span className="px-2.5 py-1 text-xs rounded-full bg-slate-100 text-slate-700 flex items-center">
+                            <Clock className="w-3 h-3 mr-1" strokeWidth={1.75} /> {rec.therapist.years_experience} yrs
                           </span>
-                          <span className="px-2.5 py-1 text-xs rounded-full bg-white/10 text-gray-300 flex items-center">
-                            <Video className="w-3 h-3 mr-1" /> {rec.therapist.session_mode}
+                          <span className="px-2.5 py-1 text-xs rounded-full bg-slate-100 text-slate-700 flex items-center">
+                            <Video className="w-3 h-3 mr-1" strokeWidth={1.75} /> {rec.therapist.session_mode}
                           </span>
                         </div>
                       </div>
                       <div className="flex flex-col items-end">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 font-bold text-white shadow-lg">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-[#0D9488] font-bold text-white shadow-sm">
                           {Math.round(rec.score)}
                         </div>
-                        <span className="text-xs text-gray-400 mt-1 uppercase tracking-wider">Match</span>
+                        <span className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold mt-1">Match</span>
                       </div>
                     </div>
                     
                     {/* Reasoning Factors */}
-                    <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
-                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Why this match?</p>
+                    <div className="mt-4 pt-4 border-t border-[#E2E8F0] space-y-3">
+                      <p className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold mb-2">Why this match?</p>
                       {rec.reasoning.map((reason, idx) => (
-                        <div key={idx} className="flex items-start space-x-2 text-sm text-gray-300">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                        <div key={idx} className="flex items-start space-x-2 text-sm text-slate-600">
+                          <CheckCircle2 className="w-4 h-4 text-[#0D9488] shrink-0 mt-0.5" strokeWidth={1.75} />
                           <div>
-                            <span className="font-medium text-white">{reason.factor} (+{reason.contribution}):</span> {reason.explanation}
+                            <span className="font-medium text-[#1E3A5F]">{reason.factor} (+{reason.contribution}):</span> {reason.explanation}
                           </div>
                         </div>
                       ))}
@@ -324,46 +324,44 @@ export default function MatchingHome() {
           <div className="space-y-8">
             
             {/* Booking Section */}
-            <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-32 bg-indigo-500/10 blur-[100px] rounded-full mix-blend-screen pointer-events-none" />
-              
+            <div className="p-6 bg-white rounded-xl border border-[#E2E8F0] shadow-sm relative overflow-hidden">
               <div className="flex items-center space-x-3 mb-6 relative z-10">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
-                  <CalendarDays className="w-6 h-6 text-purple-400" />
+                <div className="p-2 bg-[#CCFBF1] rounded-lg">
+                  <CalendarDays className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
                 </div>
-                <h2 className="text-2xl font-semibold">Booking & Supervisor</h2>
+                <h2 className="text-2xl font-semibold text-[#1E3A5F]">Booking & Supervisor</h2>
               </div>
               
               {!selectedTherapist ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center relative z-10">
-                  <User className="w-12 h-12 text-gray-600 mb-3" />
-                  <p className="text-gray-400">Select a therapist from the list to continue.</p>
+                  <User className="w-12 h-12 text-slate-400 mb-3" strokeWidth={1.75} />
+                  <p className="text-slate-500">Select a therapist from the list to continue.</p>
                 </div>
               ) : (
                 <div className="space-y-5 relative z-10">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-400">Date</label>
+                      <label className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold">Date</label>
                       <input 
                         type="date" 
                         value={bookingDate}
                         onChange={(e) => setBookingDate(e.target.value)}
                         disabled={!!booking}
                         readOnly={!!booking}
-                        className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all ${
+                        className={`w-full bg-slate-50 border border-[#E2E8F0] rounded-xl px-4 py-3 text-slate-800 focus:ring-2 focus:ring-[#0D9488] focus:border-transparent outline-none transition-all ${
                           booking ? 'pointer-events-none cursor-not-allowed opacity-50' : 'cursor-text'
                         }`}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-400">Time</label>
+                      <label className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold">Time</label>
                       <input 
                         type="time"
                         value={bookingTime}
                         onChange={(e) => setBookingTime(e.target.value)}
                         disabled={!!booking}
                         readOnly={!!booking}
-                        className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all ${
+                        className={`w-full bg-slate-50 border border-[#E2E8F0] rounded-xl px-4 py-3 text-slate-800 focus:ring-2 focus:ring-[#0D9488] focus:border-transparent outline-none transition-all ${
                           booking ? 'pointer-events-none cursor-not-allowed opacity-50' : 'cursor-text'
                         }`}
                       />
@@ -379,16 +377,16 @@ export default function MatchingHome() {
                         disabled={!!booking}
                         className="peer sr-only" 
                       />
-                      <div className={`transition-all ${isTrial ? 'w-5 h-5 bg-indigo-600 border border-indigo-500 rounded-md flex items-center justify-center' : 'w-5 h-5 bg-slate-900 border border-slate-700 rounded-md'}`}>
-                        {isTrial && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                      <div className={`transition-all ${isTrial ? 'w-5 h-5 bg-[#0D9488] border border-[#0D9488] rounded-md flex items-center justify-center' : 'w-5 h-5 bg-slate-50 border border-[#E2E8F0] rounded-md'}`}>
+                        {isTrial && <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />}
                       </div>
                     </div>
-                    <span className="text-gray-300 group-hover:text-white transition-colors">Request as Trial Session</span>
+                    <span className="text-slate-600 group-hover:text-slate-900 transition-colors">Request as Trial Session</span>
                   </label>
 
                   {bookingError && (
-                    <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start space-x-2 text-red-400">
-                      <AlertCircle className="w-5 h-5 shrink-0" />
+                    <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start space-x-2 text-red-600">
+                      <AlertCircle className="w-5 h-5 shrink-0" strokeWidth={1.75} />
                       <p className="text-sm">{bookingError}</p>
                     </div>
                   )}
@@ -396,26 +394,26 @@ export default function MatchingHome() {
                   {!booking ? (
                     <button 
                       onClick={handleBook}
-                      className="w-full py-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-400 hover:to-purple-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.3)] transition-all transform active:scale-[0.98]"
+                      className="w-full py-4 bg-[#1E3A5F] hover:bg-[#1E3A5F]/90 text-white font-bold rounded-xl shadow-sm transition-all transform active:scale-[0.98]"
                     >
                       Secure Slot
                     </button>
                   ) : (
                     <div className="space-y-4">
-                      <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between">
+                      <div className="p-4 bg-[#CCFBF1] border border-[#0D9488]/30 rounded-xl flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <div className="p-2 bg-emerald-500/20 rounded-full">
-                            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                          <div className="p-2 bg-white rounded-full shadow-sm">
+                            <CheckCircle2 className="w-5 h-5 text-[#0D9488]" strokeWidth={1.75} />
                           </div>
                           <div>
-                            <p className="text-white font-medium">Booking Confirmed</p>
-                            <p className="text-emerald-400 text-sm capitalize">Status: {booking.status}</p>
+                            <p className="text-[#1E3A5F] font-semibold">Booking Confirmed</p>
+                            <p className="text-[#0D9488] text-sm capitalize font-medium">Status: {booking.status}</p>
                           </div>
                         </div>
                       </div>
                       <button 
                         onClick={() => setBooking(null)}
-                        className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all"
+                        className="w-full py-3 bg-slate-50 hover:bg-slate-100 border border-[#E2E8F0] text-slate-700 font-medium rounded-xl transition-all"
                       >
                         Modify / Book New Slot
                       </button>
@@ -423,16 +421,16 @@ export default function MatchingHome() {
                   )}
 
                   {/* Supervisor Allocation */}
-                  <div className="pt-6 mt-6 border-t border-white/10">
+                  <div className="pt-6 mt-6 border-t border-[#E2E8F0]">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-lg font-semibold flex items-center">
-                        <UserPlus className="w-5 h-5 mr-2 text-blue-400" /> Supervisor Allocation
+                      <h3 className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold flex items-center">
+                        <UserPlus className="w-5 h-5 mr-2 text-[#0D9488]" strokeWidth={1.75} /> Supervisor Allocation
                       </h3>
                     </div>
                     
                     {supervisorError && (
-                      <div className="p-3 mb-4 bg-orange-500/10 border border-orange-500/20 rounded-xl flex items-start space-x-2 text-orange-400">
-                        <AlertCircle className="w-5 h-5 shrink-0" />
+                      <div className="p-3 mb-4 bg-orange-50 border border-orange-200 rounded-xl flex items-start space-x-2 text-orange-600">
+                        <AlertCircle className="w-5 h-5 shrink-0" strokeWidth={1.75} />
                         <p className="text-sm">{supervisorError}</p>
                       </div>
                     )}
@@ -440,18 +438,18 @@ export default function MatchingHome() {
                     {!supervisor ? (
                       <button 
                         onClick={handleAssignSupervisor}
-                        className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all"
+                        className="w-full py-3 bg-slate-50 hover:bg-slate-100 border border-[#E2E8F0] text-slate-700 font-medium rounded-xl transition-all"
                       >
                         Auto-Assign Supervisor
                       </button>
                     ) : (
-                      <div className="p-4 bg-blue-500/10 border border-blue-500/30 rounded-xl flex items-center space-x-3">
-                        <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
-                          <User className="w-5 h-5 text-blue-400" />
+                      <div className="p-4 bg-slate-50 border border-[#E2E8F0] rounded-xl flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-full bg-[#CCFBF1] flex items-center justify-center">
+                          <User className="w-5 h-5 text-[#0D9488]" strokeWidth={1.75} />
                         </div>
                         <div>
-                          <p className="text-white font-medium">Assigned Supervisor ID: {supervisor.supervisor_id}</p>
-                          <p className="text-blue-400 text-sm">Lowest caseload selected</p>
+                          <p className="text-[#1E3A5F] font-semibold">Assigned Supervisor ID: {supervisor.supervisor_id}</p>
+                          <p className="text-slate-500 text-sm">Lowest caseload selected</p>
                         </div>
                       </div>
                     )}
@@ -461,32 +459,30 @@ export default function MatchingHome() {
             </div>
 
             {/* AI Therapy Plan Section */}
-            <div className="p-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-32 bg-purple-500/10 blur-[100px] rounded-full mix-blend-screen pointer-events-none" />
-              
+            <div className="p-6 bg-white rounded-xl border border-[#E2E8F0] shadow-sm relative overflow-hidden">
               <div className="flex items-center space-x-3 mb-6 relative z-10">
-                <div className="p-2 bg-pink-500/10 rounded-lg">
-                  <BrainCircuit className="w-6 h-6 text-pink-400" />
+                <div className="p-2 bg-[#CCFBF1] rounded-lg">
+                  <BrainCircuit className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
                 </div>
-                <h2 className="text-2xl font-semibold">AI Therapy Plan</h2>
+                <h2 className="text-2xl font-semibold text-[#1E3A5F]">AI Therapy Plan</h2>
               </div>
 
               {!selectedTherapist ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center relative z-10">
-                  <Sparkles className="w-12 h-12 text-gray-600 mb-3" />
-                  <p className="text-gray-400">Select a therapist first to draft a plan.</p>
+                  <Sparkles className="w-12 h-12 text-slate-400 mb-3" strokeWidth={1.75} />
+                  <p className="text-slate-500">Select a therapist first to draft a plan.</p>
                 </div>
               ) : (
                 <div className="space-y-5 relative z-10">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-400">Primary Goals (comma separated)</label>
+                    <label className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold">Primary Goals (comma separated)</label>
                     <textarea 
                       value={goals}
                       onChange={(e) => setGoals(e.target.value)}
                       rows={2}
                       disabled={!!plan?.approved_by}
                       readOnly={!!plan?.approved_by}
-                      className={`w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-pink-500 focus:border-transparent outline-none transition-all resize-none ${
+                      className={`w-full bg-slate-50 border border-[#E2E8F0] rounded-xl px-4 py-3 text-slate-800 focus:ring-2 focus:ring-[#0D9488] focus:border-transparent outline-none transition-all resize-none ${
                         plan?.approved_by ? 'pointer-events-none cursor-not-allowed opacity-50' : 'cursor-text'
                       }`}
                     />
@@ -496,20 +492,20 @@ export default function MatchingHome() {
                     <button 
                       onClick={handleDraftPlan}
                       disabled={isDrafting}
-                      className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(236,72,153,0.2)] transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                      className="w-full py-4 bg-[#1E3A5F] hover:bg-[#1E3A5F]/90 text-white font-bold rounded-xl shadow-sm transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
                     >
-                      {isDrafting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Sparkles className="w-5 h-5" />}
+                      {isDrafting ? <Loader2 className="w-5 h-5 animate-spin" strokeWidth={1.75} /> : <Sparkles className="w-5 h-5" strokeWidth={1.75} />}
                       <span>{isDrafting ? "Drafting with Gemini..." : "Draft Plan via Gemini"}</span>
                     </button>
                   ) : (
                     <div className="space-y-4">
-                      <div className="p-5 bg-black/40 rounded-2xl border border-white/5 space-y-4">
+                      <div className="p-5 bg-slate-50 rounded-xl border border-[#E2E8F0] space-y-4">
                         {Object.entries(plan.gemini_draft || {}).map(([key, value]) => (
                           <div key={key}>
-                            <h4 className="text-pink-400 text-sm font-semibold uppercase tracking-wider mb-1">
+                            <h4 className="text-[#0D9488] uppercase tracking-wide text-xs font-semibold mb-1">
                               {key.replace(/_/g, ' ')}
                             </h4>
-                            <p className="text-gray-300 text-sm leading-relaxed">
+                            <p className="text-slate-700 text-sm leading-relaxed">
                               {value as string}
                             </p>
                           </div>
@@ -517,14 +513,14 @@ export default function MatchingHome() {
                       </div>
 
                       {plan.approved_by ? (
-                        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center space-x-3 text-emerald-400">
-                          <CheckCircle2 className="w-5 h-5 shrink-0" />
+                        <div className="p-4 bg-[#CCFBF1] border border-[#0D9488]/30 rounded-xl flex items-center space-x-3 text-[#0D9488]">
+                          <CheckCircle2 className="w-5 h-5 shrink-0" strokeWidth={1.75} />
                           <span className="font-medium">Plan Approved & Locked</span>
                         </div>
                       ) : (
                         <button 
                           onClick={handleApprovePlan}
-                          className="w-full py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold rounded-xl transition-all"
+                          className="w-full py-4 bg-slate-100 hover:bg-slate-200 border border-[#E2E8F0] text-[#1E3A5F] font-bold rounded-xl transition-all"
                         >
                           Approve & Lock Plan
                         </button>
