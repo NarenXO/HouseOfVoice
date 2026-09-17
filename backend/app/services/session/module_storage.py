@@ -63,22 +63,25 @@ class ModuleStorage:
         for module_data in sample_modules:
             self.modules[module_data["id"]] = ModuleGenerateResponse(**module_data)
     
-    def save_module(self, module: ModuleGenerateResponse) -> ModuleGenerateResponse:
+    def save_module(self, module: dict) -> dict:
         """
         Save a generated module to storage.
         
         Args:
-            module: Module to save
+            module: Module dictionary to save
             
         Returns:
-            Saved module with assigned ID
+            Saved module dictionary with assigned ID
         """
         # Generate ID if not provided
-        if not module.id or module.id == "":
-            module.id = str(uuid.uuid4())
+        if not module.get("id") or module.get("id") == "":
+            module["id"] = str(uuid.uuid4())
+        
+        # Convert dictionary to ModuleGenerateResponse for storage
+        module_response = ModuleGenerateResponse(**module)
         
         # Store module
-        self.modules[module.id] = module
+        self.modules[module["id"]] = module_response
         
         # In production, this would be a Supabase INSERT operation:
         # supabase.table('modules').insert({
@@ -97,6 +100,7 @@ class ModuleStorage:
         #     'created_at': module.created_at
         # }).execute()
         
+        # Return the dictionary version
         return module
     
     def get_module(self, module_id: str) -> Optional[ModuleGenerateResponse]:

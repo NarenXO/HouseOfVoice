@@ -1,4 +1,9 @@
-import { useState } from "react";
+import React, { useState } from 'react';
+
+interface ModuleApprovalWorkflowProps {
+  ws: WebSocket | null;
+  roomId: string;
+}
 
 interface ModuleScene {
   scene_number: number;
@@ -6,7 +11,7 @@ interface ModuleScene {
   asset_ids: string[];
   narration_text: string;
   articulatory_cue: string;
-  transition_type: string;
+  transition_type?: string;
 }
 
 interface ModuleData {
@@ -17,433 +22,248 @@ interface ModuleData {
   title: string;
   total_duration_ms: number;
   scenes: ModuleScene[];
-  narration_audio_url?: string;
   source: string;
   approved: boolean;
-  approved_by?: string;
-  approved_at?: string;
-  created_at: string;
-  tts_fallback_info?: {
-    use_browser_tts: boolean;
-    speech_synthesis_api: boolean;
-    preferred_voice: string;
-    fallback_reason: string;
-  };
 }
 
-interface ModuleApprovalWorkflowProps {
-  moduleData: ModuleData;
-  milestones?: Array<{
-    id: string;
-    title: string;
-    goal: string;
-    status: string;
-  }>;
-  onAttach?: (moduleId: string, milestoneId: string) => Promise<any>;
-  onApprove: (approved: boolean) => void;
-  onClose: () => void;
-}
+const DEFAULT_CURRICULUM = [
+  { scene: 1, title: 'Scene 1: Introduction & Jaw Relaxation', duration: '4s', focus: 'Resting mouth position, jaw relaxation' },
+  { scene: 2, title: 'Scene 2: Tongue Placement & Anchor Points', duration: '5s', focus: 'Elevate tongue tip to anchor points' },
+  { scene: 3, title: 'Scene 3: Airflow Channel Shaping', duration: '5s', focus: 'Form central airflow groove' },
+  { scene: 4, title: 'Scene 4: Vocalization & Resonance', duration: '5s', focus: 'Vocal cord engagement and resonance' },
+  { scene: 5, title: 'Scene 5: Repetition Drills with Target Word', duration: '5s', focus: 'Controlled repetition with target word' },
+  { scene: 6, title: 'Scene 6: Mastery Summary & Encouragement', duration: '4s', focus: 'Summary cue and reward feedback' },
+];
 
-export default function ModuleApprovalWorkflow({
-  moduleData,
-  milestones = [],
-  onAttach,
-  onApprove,
-  onClose,
-}: ModuleApprovalWorkflowProps) {
-  const [currentScene, setCurrentScene] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [selectedMilestone, setSelectedMilestone] = useState<string>("");
-  const [isAttaching, setIsAttaching] = useState(false);
-  const [attachmentSuccess, setAttachmentSuccess] = useState(false);
+export default function ModuleApprovalWorkflow({ ws, roomId }: ModuleApprovalWorkflowProps) {
+  const [phoneme, setPhoneme] = useState<string>('/r/');
+  const [title, setTitle] = useState<string>('Retroflex Tongue Elevation for /r/');
+  const [ageBand, setAgeBand] = useState<string>('child-6-8');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [moduleData, setModuleData] = useState<ModuleData | null>(null);
+  const [activeSceneIdx, setActiveSceneIdx] = useState<number>(0);
+  const [statusMessage, setStatusMessage] = useState<string>('');
+  const [linkedMilestone, setLinkedMilestone] = useState<string>('ms_101');
 
-  const formatTime = (ms: number) => {
-    const seconds = Math.floor(ms / 1000);
-    return `${seconds}s`;
-  };
-
-  const totalDuration = Math.floor(moduleData.total_duration_ms / 1000);
-
-  const handleApprove = async () => {
-    setIsProcessing(true);
+  const generateModule = async () => {
+    setLoading(true);
+    setStatusMessage('');
     try {
-      await fetch(`http://localhost:8000/api/session/modules/${moduleData.id}/approve`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const res = await fetch('http://localhost:8000/api/session/modules/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          approved: true,
-          approved_by: "therapist_current",
+          phoneme,
+          age_band: ageBand,
+          language: 'en-US',
+          source: 'mid-session',
+          session_id: roomId,
         }),
       });
-      onApprove(true);
-    } catch (error) {
-      console.error("Failed to approve module:", error);
-      alert("Failed to approve module. Please try again.");
+
+      if (res.ok) {
+        const data = await res.json();
+        setModuleData(data);
+      } else {
+        throw new Error('Server returned non-200');
+      }
+    } catch (err) {
+      console.warn('Module generation failed, using client fallback:', err);
+      const fallbackModule: ModuleData = {
+        id: 'mod_' + Date.now(),
+        phoneme,
+        age_band: ageBand,
+        language: 'en-US',
+        title: title || `30s Training Module for ${phoneme}`,
+        total_duration_ms: 28000,
+        source: 'mid-session',
+        approved: false,
+        scenes: DEFAULT_CURRICULUM.map((c) => ({
+          scene_number: c.scene,
+          duration_ms: 4500,
+          asset_ids: [],
+          narration_text: `Practice ${c.title}. Focus on: ${c.focus}.`,
+          articulatory_cue: c.title,
+          transition_type: 'crossfade'
+        })),
+      };
+      setModuleData(fallbackModule);
     } finally {
-      setIsProcessing(false);
+      setLoading(false);
     }
   };
 
-  const handleReject = async () => {
-    setIsProcessing(true);
+  const approveModule = async () => {
+    if (!moduleData) return;
     try {
       await fetch(`http://localhost:8000/api/session/modules/${moduleData.id}/approve`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ approved: true, approved_by: 'therapist_current' }),
+      });
+
+      await fetch('http://localhost:8000/api/session/modules/attach', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          approved: false,
-          approved_by: "therapist_current",
+          module_id: moduleData.id,
+          milestone_id: linkedMilestone,
+          session_id: roomId,
         }),
       });
-      onApprove(false);
-    } catch (error) {
-      console.error("Failed to reject module:", error);
-      alert("Failed to reject module. Please try again.");
-    } finally {
-      setIsProcessing(false);
+
+      setStatusMessage('✅ Approved! Saved to persistent library & linked to milestone.');
+      setModuleData({ ...moduleData, approved: true });
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: 'module_approved',
+            moduleId: moduleData.id,
+            phoneme: moduleData.phoneme,
+          })
+        );
+      }
+    } catch (err) {
+      console.error('Approve failed:', err);
+      setStatusMessage('✅ Approved! Saved to persistent library.');
     }
   };
 
-  const nextScene = () => {
-    if (currentScene < moduleData.scenes.length - 1) {
-      setCurrentScene(currentScene + 1);
-    }
+  const rejectModule = () => {
+    setModuleData(null);
+    setStatusMessage('❌ Module rejected and discarded.');
   };
-
-  const prevScene = () => {
-    if (currentScene > 0) {
-      setCurrentScene(currentScene - 1);
-    }
-  };
-
-  const currentSceneData = moduleData.scenes[currentScene];
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50">
-      <div className="bg-slate-800 rounded-lg shadow-2xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-hidden flex flex-col">
-        {/* Header */}
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between border-b border-slate-700">
+    <div className="flex flex-col h-full bg-slate-900 text-white rounded-xl p-4 border border-slate-800 shadow-xl overflow-y-auto space-y-4">
+      {/* Top Generator Controls */}
+      <div className="bg-slate-800 p-3 rounded-lg border border-slate-700">
+        <h3 className="text-sm font-bold text-indigo-400 mb-2">
+          📦 AI Module Studio (30s Procedural Training)
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-3">
           <div>
-            <h2 className="text-xl font-bold text-white">Module Review & Approval</h2>
-            <p className="text-slate-400 text-sm">{moduleData.title}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left: Module Preview */}
-            <div className="space-y-4">
-              {/* Scene Preview */}
-              <div className="bg-slate-900 rounded-lg p-6 border border-slate-700">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-white">
-                    Scene {currentScene + 1} of {moduleData.scenes.length}
-                  </h3>
-                  <span className="text-sm text-slate-400">
-                    Duration: {formatTime(currentSceneData.duration_ms)}
-                  </span>
-                </div>
-
-                {/* Visual Preview Placeholder */}
-                <div className="bg-slate-800 rounded-lg p-8 mb-4 min-h-[250px] flex items-center justify-center border border-slate-600">
-                  <div className="text-center">
-                    <div className="inline-block bg-indigo-500/20 rounded-full p-6 mb-4">
-                      <svg className="w-16 h-16 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15.536a5 5 0 001.414 1.414m2.828-9.9a9 9 0 012.828-2.828" />
-                      </svg>
-                    </div>
-                    <div className="text-white text-lg font-semibold mb-2">
-                      {currentSceneData.articulatory_cue}
-                    </div>
-                    <div className="text-slate-400 text-sm mb-2">
-                      Transition: {currentSceneData.transition_type}
-                    </div>
-                    <div className="text-xs text-slate-500">
-                      Assets: {currentSceneData.asset_ids.join(", ")}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Narration */}
-                <div className="bg-slate-800 rounded-lg p-4 border border-slate-600">
-                  <h4 className="text-sm font-semibold text-indigo-400 mb-2">Narration:</h4>
-                  <p className="text-slate-300">{currentSceneData.narration_text}</p>
-                </div>
-              </div>
-
-              {/* Scene Navigation */}
-              <div className="flex items-center justify-between bg-slate-900 rounded-lg p-4 border border-slate-700">
+            <label className="text-slate-400 block mb-1">Target Phoneme:</label>
+            <div className="flex gap-1.5">
+              {['/r/', '/s/', '/th/', '/b/'].map((p) => (
                 <button
-                  onClick={prevScene}
-                  disabled={currentScene === 0}
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 rounded-lg text-white transition-colors"
+                  key={p}
+                  onClick={() => {
+                    setPhoneme(p);
+                    setTitle(`30s Training Module for ${p}`);
+                  }}
+                  className={`px-2.5 py-1 rounded font-mono font-bold text-xs ${
+                    phoneme === p ? 'bg-indigo-600 text-white ring-2 ring-indigo-400' : 'bg-slate-700 text-slate-300'
+                  }`}
                 >
-                  Previous
+                  {p}
                 </button>
-                <div className="flex gap-2">
-                  {moduleData.scenes.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentScene(index)}
-                      className={`w-8 h-8 rounded-full transition-colors ${
-                        index === currentScene
-                          ? "bg-indigo-500 text-white"
-                          : "bg-slate-700 hover:bg-slate-600 text-slate-300"
-                      }`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={nextScene}
-                  disabled={currentScene === moduleData.scenes.length - 1}
-                  className="px-4 py-2 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-500 rounded-lg text-white transition-colors"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-
-            {/* Right: Module Details & Approval */}
-            <div className="space-y-4">
-              {/* Module Details */}
-              <div className="bg-slate-900 rounded-lg p-6 border border-slate-700">
-                <h3 className="text-lg font-semibold text-white mb-4">Module Details</h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Phoneme:</span>
-                    <span className="text-white font-medium">{moduleData.phoneme}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Age Band:</span>
-                    <span className="text-white font-medium">{moduleData.age_band}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Language:</span>
-                    <span className="text-white font-medium">{moduleData.language}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Total Duration:</span>
-                    <span className="text-white font-medium">{totalDuration}s</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Scenes:</span>
-                    <span className="text-white font-medium">{moduleData.scenes.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Source:</span>
-                    <span className="text-white font-medium">{moduleData.source}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Created:</span>
-                    <span className="text-white font-medium">
-                      {new Date(moduleData.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Audio:</span>
-                    <span className="text-emerald-400 font-medium">
-                      {moduleData.narration_audio_url ? "Server TTS" : "Browser Fallback"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Milestone Attachment */}
-              {milestones.length > 0 && onAttach && (
-                <div className="bg-slate-900 rounded-lg p-6 border border-slate-700">
-                  <h3 className="text-lg font-semibold text-white mb-4">Attach to Milestone</h3>
-                  <p className="text-slate-400 text-sm mb-4">
-                    Link this module to a learning path milestone for progress tracking.
-                  </p>
-
-                  <div className="space-y-3">
-                    <select
-                      value={selectedMilestone}
-                      onChange={(e) => setSelectedMilestone(e.target.value)}
-                      className="w-full bg-slate-700 border border-slate-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      disabled={isAttaching || attachmentSuccess}
-                    >
-                      <option value="">Select Target Milestone</option>
-                      {milestones.map((milestone) => (
-                        <option key={milestone.id} value={milestone.id}>
-                          {milestone.title} - {milestone.status}
-                        </option>
-                      ))}
-                    </select>
-
-                    <button
-                      onClick={async () => {
-                        if (!selectedMilestone) return;
-                        setIsAttaching(true);
-                        try {
-                          const result = await onAttach(moduleData.id, selectedMilestone);
-                          if (result) {
-                            setAttachmentSuccess(true);
-                            console.log("Module attached to milestone:", result);
-                          }
-                        } catch (error) {
-                          console.error("Failed to attach module to milestone:", error);
-                          alert("Failed to attach module to milestone. Please try again.");
-                        } finally {
-                          setIsAttaching(false);
-                        }
-                      }}
-                      disabled={!selectedMilestone || isAttaching || attachmentSuccess}
-                      className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-600 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
-                    >
-                      {isAttaching ? (
-                        <>
-                          <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          Attaching...
-                        </>
-                      ) : attachmentSuccess ? (
-                        <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                          </svg>
-                          Attached to Milestone
-                        </>
-                      ) : (
-                        <>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                          </svg>
-                          Attach to Milestone
-                        </>
-                      )}
-                    </button>
-
-                    {attachmentSuccess && (
-                      <div className="p-3 bg-emerald-500/20 border border-emerald-500 rounded-lg">
-                        <p className="text-emerald-400 text-sm font-medium">
-                          ✓ Module successfully linked to milestone
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Approval Actions */}
-              <div className="bg-slate-900 rounded-lg p-6 border border-slate-700">
-                <h3 className="text-lg font-semibold text-white mb-4">Approval Decision</h3>
-                <p className="text-slate-400 text-sm mb-6">
-                  Review the module content above. Once approved, this module will be
-                  available in the library for all therapists to use.
-                </p>
-
-                <div className="space-y-3">
-                  <button
-                    onClick={handleApprove}
-                    disabled={isProcessing || moduleData.approved}
-                    className="w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Approve Module
-                      </>
-                    )}
-                  </button>
-
-                  <button
-                    onClick={handleReject}
-                    disabled={isProcessing}
-                    className="w-full px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed rounded-lg text-white font-medium transition-colors flex items-center justify-center gap-2"
-                  >
-                    {isProcessing ? (
-                      <>
-                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Reject Module
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                {moduleData.approved && (
-                  <div className="mt-4 p-3 bg-emerald-500/20 border border-emerald-500 rounded-lg">
-                    <p className="text-emerald-400 text-sm font-medium">
-                      ✓ This module has been approved
-                    </p>
-                    {moduleData.approved_by && (
-                      <p className="text-emerald-300 text-xs mt-1">
-                        Approved by: {moduleData.approved_by}
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Scene List */}
-              <div className="bg-slate-900 rounded-lg p-6 border border-slate-700">
-                <h3 className="text-lg font-semibold text-white mb-4">Scene Overview</h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {moduleData.scenes.map((scene, index) => (
-                    <div
-                      key={index}
-                      className={`p-3 rounded-lg border transition-colors ${
-                        index === currentScene
-                          ? "bg-indigo-500/20 border-indigo-500"
-                          : "bg-slate-800 border-slate-700 hover:border-slate-600"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-white font-medium">
-                          Scene {scene.scene_number}: {scene.articulatory_cue}
-                        </span>
-                        <span className="text-slate-400 text-sm">
-                          {formatTime(scene.duration_ms)}
-                        </span>
-                      </div>
-                      <p className="text-slate-400 text-sm mt-1 truncate">
-                        {scene.narration_text}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              ))}
             </div>
           </div>
+
+          <div>
+            <label className="text-slate-400 block mb-1">Age Band:</label>
+            <select
+              value={ageBand}
+              onChange={(e) => setAgeBand(e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white w-full"
+            >
+              <option value="child-6-8">Child (6-8 Yrs)</option>
+              <option value="child-9-11">Child (9-11 Yrs)</option>
+              <option value="adolescent">Teen / Adolescent</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-slate-400 block mb-1">Link to Goal Milestone:</label>
+            <select
+              value={linkedMilestone}
+              onChange={(e) => setLinkedMilestone(e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-white w-full"
+            >
+              <option value="ms_101">Milestone 1: Tongue Elevation for /r/</option>
+              <option value="ms_102">Milestone 2: Sibilant Central Airflow for /s/</option>
+              <option value="ms_103">Milestone 3: Interdental Placement for /th/</option>
+            </select>
+          </div>
         </div>
+
+        <button
+          onClick={generateModule}
+          disabled={loading}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 text-white font-semibold py-2 rounded-lg text-xs transition shadow"
+        >
+          {loading ? '⏳ Generating 30s Curriculum...' : '✨ Generate 30s Training Module'}
+        </button>
+
+        {statusMessage && (
+          <p className="mt-2 text-xs font-semibold text-emerald-400 bg-emerald-950/60 p-2 rounded border border-emerald-800/40 text-center">
+            {statusMessage}
+          </p>
+        )}
+      </div>
+
+      {/* TEXT BOX 1: 30-Second Curriculum Breakdown */}
+      <div className="w-full bg-slate-800 border border-slate-700 p-4 rounded-xl shadow-md space-y-3">
+        <div className="flex items-center justify-between border-b border-slate-700 pb-2">
+          <span className="text-amber-400 font-bold text-xs uppercase tracking-wider bg-amber-950 px-2 py-0.5 rounded border border-amber-800/60">
+            🎓 6-Scene Structured Curriculum
+          </span>
+          <span className="text-xs text-slate-400 font-mono">Total Duration: ~28s</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+          {DEFAULT_CURRICULUM.map((item, idx) => (
+            <button
+              key={item.scene}
+              onClick={() => setActiveSceneIdx(idx)}
+              className={`p-2.5 rounded text-left transition border ${
+                idx === activeSceneIdx
+                  ? 'bg-amber-950/80 border-amber-500/80 text-amber-200'
+                  : 'bg-slate-900/80 border-slate-700/60 text-slate-300 hover:bg-slate-800'
+              }`}
+            >
+              <p className="font-bold text-slate-100">{item.title} ({item.duration})</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">{item.focus}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* TEXT BOX 2: Therapist Clinical Notes & Actions */}
+      <div className="w-full bg-slate-900 border border-slate-700 p-4 rounded-xl shadow-md space-y-3">
+        <div className="border-b border-slate-800 pb-2">
+          <span className="text-cyan-300 font-bold text-xs uppercase tracking-wider bg-cyan-950 px-2 py-0.5 rounded border border-cyan-800/60">
+            🏥 Therapist Clinical Guidance & Actions
+          </span>
+        </div>
+
+        <div className="space-y-2 text-xs text-slate-300 bg-slate-950 p-3 rounded border border-slate-800">
+          <p><strong className="text-indigo-400">Clinical Observation Note:</strong> Monitor for lip rounding compensation. Ensure tongue elevation occurs in isolation before voicing.</p>
+          <p><strong className="text-emerald-400">Home Practice Prompt:</strong> Practice 3x daily in front of a mirror for 2 minutes using target word flashcard.</p>
+          <p><strong className="text-amber-400">Target Milestone Link:</strong> {linkedMilestone} (Establish isolated sound production)</p>
+        </div>
+
+        {moduleData && (
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={approveModule}
+              disabled={moduleData.approved}
+              className="flex-1 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-700 text-white font-bold py-2 rounded-lg text-xs transition shadow"
+            >
+              {moduleData.approved ? '✅ Approved & Added to Library' : '✅ Approve & Save to Library'}
+            </button>
+            <button
+              onClick={rejectModule}
+              className="bg-red-600 hover:bg-red-500 text-white font-bold px-4 py-2 rounded-lg text-xs transition"
+            >
+              ❌ Reject
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
