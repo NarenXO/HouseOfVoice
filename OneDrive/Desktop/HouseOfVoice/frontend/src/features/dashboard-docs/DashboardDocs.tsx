@@ -110,7 +110,7 @@ export default function DashboardDocs() {
       {/* Tab Content */}
       {activeTab === 'dashboard' && (
         <div>
-          <Dashboard />
+          <Dashboard caseId={CASE_ID} />
           <div className="mt-6 flex justify-end">
             <UrgentFlagButton caseId={CASE_ID} />
           </div>
