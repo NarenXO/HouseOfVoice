@@ -69,13 +69,13 @@ function App() {
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Routes>
-            <Route path="/" element={<AuthOnboarding />} />
             <Route path="/auth/*" element={<AuthOnboarding />} />
             <Route path="/docs/*" element={<DashboardDocs />} />
             <Route path="/learning/*" element={<LearningPathPage />} />
             <Route path="/matching/*" element={<MatchingHome />} />
             <Route path="/screening/*" element={<ScreeningHome />} />
             <Route path="/session/*" element={<SessionHome />} />
+            <Route path="/" element={<AuthOnboarding />} />
           </Routes>
         </main>
       </div>
