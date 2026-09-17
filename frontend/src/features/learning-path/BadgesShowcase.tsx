@@ -81,7 +81,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
     return (
       <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-32">
-          <div className="text-[#475569]">Loading achievements...</div>
+          <div className="text-[#475569] font-medium">Loading achievements...</div>
         </div>
       </div>
     );
@@ -91,7 +91,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
     return (
       <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-32">
-          <div className="text-[#DC2626]">{error || "No data available"}</div>
+          <div className="text-[#DC2626] font-semibold">{error || "No data available"}</div>
         </div>
       </div>
     );
@@ -120,7 +120,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             <Award className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             Achievements
           </h2>
-          <p className="text-base text-[#475569] mt-1">
+          <p className="text-base text-[#475569] font-medium mt-1">
             Earned by mastering sounds in new words
           </p>
         </div>
@@ -140,7 +140,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
           >
             <Lock className="w-8 h-8 text-[#64748B]" strokeWidth={1.75} />
           </motion.div>
-          <p className="text-[#475569] text-base">
+          <p className="text-[#475569] text-base font-medium">
             Complete your first checkpoint probe to unlock your first badge
           </p>
         </div>
@@ -192,7 +192,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
                     {badge.phoneme}
                   </span>
                 </div>
-                <p className="text-sm text-[#475569]">
+                <p className="text-sm text-[#475569] font-medium">
                   {badge.description}
                 </p>
 
@@ -228,7 +228,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             <h3 className="font-semibold text-[#64748B] text-base mb-1">
               {upcoming.title}
             </h3>
-            <div className="bg-[#E2E8F0] text-[#64748B] text-xs font-bold px-2 py-0.5 rounded-full inline-block">
+            <div className="bg-[#E2E8F0] text-[#64748B] text-xs font-bold px-2 py-0.5 rounded-full inline-block font-medium">
               {upcoming.phoneme}
             </div>
           </motion.div>
@@ -247,7 +247,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
           >
             <div className="flex items-center justify-center gap-2">
               <Award className="w-5 h-5 text-[#0D9488]" strokeWidth={1.75} />
-              <span className="font-bold">Badge unlocked</span>
+              <span className="font-bold text-lg">Badge unlocked</span>
               <Award className="w-5 h-5 text-[#0D9488]" strokeWidth={1.75} />
             </div>
           </motion.div>

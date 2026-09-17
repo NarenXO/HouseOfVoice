@@ -79,7 +79,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
     return (
       <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-48">
-          <div className="text-[#475569]">Loading generalization data...</div>
+          <div className="text-[#475569] font-medium">Loading generalization data...</div>
         </div>
       </div>
     );
@@ -89,7 +89,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
     return (
       <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-48">
-          <div className="text-[#DC2626]">{error || "No data available"}</div>
+          <div className="text-[#DC2626] font-semibold">{error || "No data available"}</div>
         </div>
       </div>
     );
@@ -118,7 +118,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
           <h2 className="text-2xl font-bold text-[#0F172A]">
             Generalization index
           </h2>
-          <p className="text-base text-[#475569] mt-1">
+          <p className="text-base text-[#475569] font-medium mt-1">
             Untrained word mastery rate
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               <div className="text-4xl font-extrabold font-mono tabular-nums text-[#0F172A]" style={{ color: gaugeColor }}>
                 {percentage}%
               </div>
-              <div className="text-xs text-[#475569] mt-1">{statusText}</div>
+              <div className="text-xs text-[#475569] font-medium mt-1">{statusText}</div>
             </motion.div>
           </div>
         </div>
@@ -221,7 +221,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
                   />
                 </div>
               </div>
-              <div className="text-sm text-[#475569] whitespace-nowrap font-mono tabular-nums">
+              <div className="text-sm text-[#475569] whitespace-nowrap font-mono tabular-nums font-medium">
                 {phoneme.probes_passed} / {phoneme.probes_attempted} ({phonemePercentage}%)
               </div>
             </motion.div>
@@ -232,7 +232,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
       {/* Overall Stats */}
       <div className="mt-6 pt-4 border-t border-[#CBD5E1]">
         <div className="flex justify-between text-base">
-          <span className="text-[#475569]">
+          <span className="text-[#475569] font-medium">
             Total probes attempted
           </span>
           <span className="font-bold text-[#0F172A] font-mono tabular-nums">
@@ -240,7 +240,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
           </span>
         </div>
         <div className="flex justify-between text-base mt-2">
-          <span className="text-[#475569]">
+          <span className="text-[#475569] font-medium">
             Total probes passed
           </span>
           <span className="font-bold text-[#0F172A] font-mono tabular-nums">

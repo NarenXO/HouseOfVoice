@@ -114,7 +114,7 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
           <div className="flex items-start justify-between mb-4">
             <div>
               <h3 className="text-2xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-              <p className="text-[#475569] text-base">{milestone.goal}</p>
+              <p className="text-[#475569] text-base font-medium">{milestone.goal}</p>
             </div>
             {getStatusBadge()}
           </div>
@@ -131,7 +131,7 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
               {mockExercises.map((exercise) => (
                 <div
                   key={exercise.id}
-                  className="flex items-start gap-3 p-4 bg-[#F1F5F9] rounded-lg"
+                  className="flex items-start gap-3 p-4 bg-white border border-[#CBD5E1] rounded-[10px]"
                 >
                   <div className="pt-1">
                     {exercise.done ? (
@@ -142,7 +142,7 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
                   </div>
                   <div className="flex-1">
                     <p className="font-semibold text-[#0F172A] text-base">{exercise.title}</p>
-                    <p className="text-[#475569] text-sm mt-1">{exercise.instructions}</p>
+                    <p className="text-[#475569] text-sm mt-1 font-medium">{exercise.instructions}</p>
                   </div>
                 </div>
               ))}

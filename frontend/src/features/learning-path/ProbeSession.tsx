@@ -107,7 +107,7 @@ export default function ProbeSession({
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl p-8 text-center">
-          <div className="text-[#475569]">Loading checkpoint...</div>
+          <div className="text-[#475569] font-medium">Loading checkpoint...</div>
         </div>
       </div>
     );
@@ -141,7 +141,7 @@ export default function ProbeSession({
             >
               {/* Section Label */}
               <div className="mb-4">
-                <h3 className="text-xs font-semibold text-[#0D9488] tracking-wider uppercase">Generalization probe</h3>
+                <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Generalization probe</h3>
               </div>
 
               {/* Step Indicator */}
@@ -155,28 +155,28 @@ export default function ProbeSession({
                   <Target className="w-8 h-8 text-[#0D9488]" strokeWidth={1.75} />
                 </div>
                 <h3 className="text-2xl font-bold text-[#0F172A] mb-2">Generalization probe</h3>
-                <p className="text-[#475569]">Say this word out loud:</p>
+                <p className="text-[#475569] font-medium">Say this word out loud:</p>
               </div>
 
               <div className="bg-white border border-[#CBD5E1] rounded-xl p-8 mb-6">
                 <div className="text-6xl font-bold text-[#0F172A] mb-4 font-mono tabular-nums">
                   {probeItem.display_text}
                 </div>
-                <p className="text-[#475569] text-base">{probeItem.instructions}</p>
+                <p className="text-[#475569] text-base font-medium">{probeItem.instructions}</p>
               </div>
 
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={handleSubmitAttempt}
                   disabled={loading}
-                  className="bg-[#0D9488] hover:bg-[#0F766E] disabled:bg-[#E2E8F0] disabled:text-[#64748B] text-white px-8 py-4 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
+                  className="bg-[#0D9488] hover:bg-[#0F766E] disabled:bg-[#E2E8F0] disabled:text-[#64748B] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
                 >
                   <Mic className="w-5 h-5" strokeWidth={1.75} />
                   Submit
                 </button>
                 <button
                   onClick={onCancel}
-                  className="bg-white hover:bg-[#F4F6F8] text-[#0F172A] border border-[#CBD5E1] px-6 py-4 rounded-lg font-semibold transition-colors"
+                  className="bg-white hover:bg-[#F4F6F8] text-[#0F172A] border border-[#CBD5E1] font-semibold rounded-[8px] px-5 py-2.5 transition-colors"
                 >
                   Cancel
                 </button>
@@ -203,7 +203,7 @@ export default function ProbeSession({
                   <Award className="w-14 h-14 text-[#0D9488]" strokeWidth={1.75} />
                 </motion.div>
                 <h3 className="text-3xl font-bold text-[#0F172A] mb-2">Probe complete</h3>
-                <p className="text-[#475569] text-lg">
+                <p className="text-[#475569] text-lg font-medium">
                   Sound generalized. You have mastered this sound on a new word.
                 </p>
               </div>
@@ -227,7 +227,7 @@ export default function ProbeSession({
 
               <button
                 onClick={handleComplete}
-                className="bg-[#16A34A] hover:bg-[#15803D] text-white px-8 py-4 rounded-lg font-semibold transition-colors flex items-center gap-2 mx-auto shadow-sm"
+                className="bg-[#16A34A] hover:bg-[#15803D] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2 mx-auto"
               >
                 Continue
                 <ArrowRight className="w-5 h-5" strokeWidth={1.75} />
@@ -249,7 +249,7 @@ export default function ProbeSession({
                   <RotateCcw className="w-12 h-12 text-[#D97706]" strokeWidth={1.75} />
                 </div>
                 <h3 className="text-2xl font-bold text-[#0F172A] mb-2">Additional practice required</h3>
-                <p className="text-[#64748B]">
+                <p className="text-[#64748B] font-medium">
                   {outcomeData?.message || "Let's reinforce this sound with additional practice."}
                 </p>
               </div>
@@ -275,7 +275,7 @@ export default function ProbeSession({
 
               <button
                 onClick={handleComplete}
-                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-8 py-4 rounded-lg font-medium transition-colors shadow-sm"
+                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors"
               >
                 Back to practice
               </button>

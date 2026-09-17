@@ -218,7 +218,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="text-gray-500">Loading practice panel...</div>
+        <div className="text-gray-500 font-medium">Loading practice panel...</div>
       </div>
     );
   }
@@ -253,7 +253,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
       {/* Header */}
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-        <p className="text-[#475569] text-base mb-4">{milestone.goal}</p>
+        <p className="text-[#475569] text-base mb-4 font-medium">{milestone.goal}</p>
 
         {/* Progress text */}
         <div className="flex items-center justify-between mb-2">
@@ -303,12 +303,12 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
             <Target className="w-8 h-8 text-[#0D9488] flex-shrink-0" strokeWidth={1.75} />
             <div className="flex-1">
               <h4 className="font-bold text-[#0F172A] text-lg mb-2">Checkpoint ready</h4>
-              <p className="text-[#475569] mb-4">
+              <p className="text-[#475569] mb-4 font-medium">
                 You have completed the required practice sessions. Take the generalization probe to assess progress.
               </p>
               <button
                 onClick={handleTakeCheckpoint}
-                className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
               >
                 <Target className="w-5 h-5" strokeWidth={1.75} />
                 Take probe checkpoint
@@ -334,7 +334,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
                 <h4 className={`font-semibold mb-2 ${exercise.done ? "text-[#0D9488] line-through opacity-60" : "text-[#0F172A]"}`}>
                   Exercise {index + 1}: {exercise.title}
                 </h4>
-                <p className={`text-base ${exercise.done ? "text-[#0D9488] opacity-60" : "text-[#475569]"}`}>
+                <p className={`text-base ${exercise.done ? "text-[#0D9488] opacity-60" : "text-[#475569]"} font-medium`}>
                   {exercise.instructions}
                 </p>
               </div>
@@ -351,7 +351,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
                 ) : (
                   <button
                     onClick={() => handleMarkDone(index)}
-                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-sm"
+                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors"
                   >
                     Mark Done
                   </button>
@@ -374,7 +374,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
           onClick={() => {
             alert("Practice session recorded");
           }}
-          className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+          className="bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors"
         >
           Record Practice Session
         </button>

@@ -240,7 +240,7 @@ export default function LearningPathPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-500">Loading learning path...</div>
+        <div className="text-gray-500 font-medium">Loading learning path...</div>
       </div>
     );
   }
@@ -248,7 +248,7 @@ export default function LearningPathPage() {
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-red-500">Error: {error}</div>
+        <div className="text-red-500 font-semibold">Error: {error}</div>
       </div>
     );
   }
@@ -256,7 +256,7 @@ export default function LearningPathPage() {
   if (!learningPath) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-gray-500">No learning path found</div>
+        <div className="text-gray-500 font-medium">No learning path found</div>
       </div>
     );
   }
@@ -273,7 +273,7 @@ export default function LearningPathPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveTab("roadmap")}
-                className={`px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-[8px] font-semibold transition-colors flex items-center gap-2 ${
                   activeTab === "roadmap"
                     ? "bg-[#1E3A5F] text-white"
                     : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F4F6F8]"
@@ -283,7 +283,7 @@ export default function LearningPathPage() {
               </button>
               <button
                 onClick={() => setActiveTab("edit")}
-                className={`px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-[8px] font-semibold transition-colors flex items-center gap-2 ${
                   activeTab === "edit"
                     ? "bg-[#1E3A5F] text-white"
                     : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F4F6F8]"
@@ -297,7 +297,7 @@ export default function LearningPathPage() {
             {activeTab === "roadmap" && (
               <button
                 onClick={handleQuickDemoAutoFill}
-                className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
               >
                 <Zap className="w-4 h-4" strokeWidth={1.75} />
                 Auto-fill practice
@@ -330,7 +330,7 @@ export default function LearningPathPage() {
                     <div className="font-bold text-lg text-[#0F172A] font-mono tabular-nums">
                       Streak: {learningPath.streak.current_streak_days} days
                     </div>
-                    <div className="text-sm text-[#475569]">Practice today to maintain your streak</div>
+                    <div className="text-sm text-[#475569] font-medium">Practice today to maintain your streak</div>
                   </div>
                 </div>
               </motion.div>
@@ -393,7 +393,7 @@ export default function LearningPathPage() {
                 <div className="max-w-7xl mx-auto flex justify-center">
                   <button
                     onClick={handleApprovePath}
-                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-8 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-sm"
+                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-semibold rounded-[8px] px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
                   >
                     <CheckCircle2 className="w-5 h-5" strokeWidth={1.75} />
                     Approve & Lock Path
@@ -412,7 +412,7 @@ export default function LearningPathPage() {
               >
                 <div className="max-w-7xl mx-auto flex items-center justify-center gap-3">
                   <CheckCircle2 className="w-6 h-6 text-[#16A34A]" strokeWidth={1.75} />
-                  <span className="font-bold text-lg">Path is live and approved</span>
+                  <span className="font-bold text-lg text-[#0F172A]">Path is live and approved</span>
                   <CheckCircle2 className="w-6 h-6 text-[#16A34A]" strokeWidth={1.75} />
                 </div>
               </motion.div>

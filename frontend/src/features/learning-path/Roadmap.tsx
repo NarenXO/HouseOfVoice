@@ -174,7 +174,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
     <div className="w-full">
       {/* Section Label */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-[#0D9488] tracking-wider uppercase">Milestones</h3>
+        <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Milestones</h3>
       </div>
 
       {/* Desktop: Horizontal layout */}
