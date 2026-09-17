@@ -1,4 +1,4 @@
-import { jsx as _jsx } from "react/jsx-runtime";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 /**
  * OWNERSHIP: Naren only. Nobody else edits this file during the 24h build.
  *
@@ -28,6 +28,6 @@ import LearningPathPage from "./features/learning-path/LearningPathPage";
 //   ...dashboardRoutes,
 // ];
 function App() {
-    return (_jsx(BrowserRouter, { children: _jsx(Routes, { children: _jsx(Route, { path: "/", element: _jsx(LearningPathPage, {}) }) }) }));
+    return (_jsx(BrowserRouter, { children: _jsxs(Routes, { children: [_jsx(Route, { path: "/", element: _jsx(LearningPathPage, {}) }), _jsx(Route, { path: "/learning", element: _jsx(LearningPathPage, {}) }), _jsx(Route, { path: "/path", element: _jsx(LearningPathPage, {}) })] }) }));
 }
 export default App;

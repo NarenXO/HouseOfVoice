@@ -34,6 +34,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LearningPathPage />} />
+        <Route path="/learning" element={<LearningPathPage />} />
+        <Route path="/path" element={<LearningPathPage />} />
         {/* {allRoutes.map((r) => (
           <Route key={r.path} path={r.path} element={r.element} />
         ))} */}
