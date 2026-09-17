@@ -105,24 +105,24 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
   const strokeDashoffset = circumference - (data.overall_rate * circumference);
 
   return (
-    <div className="bg-white border-2 border-[#059669] rounded-[16px] p-6 shadow-sm">
+    <div className="bg-[#064E3B] border-2 border-[#0D9488] rounded-[16px] p-6 shadow-md">
       {/* Section Label */}
       <div className="mb-1.5">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#047857]">GENERALIZATION BY CONTEXT</h3>
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#A7F3D0]">GENERALIZATION BY CONTEXT</h3>
       </div>
 
       {/* Card Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-black text-[#022C22] tracking-tight">
+          <h2 className="text-2xl font-black text-white tracking-tight">
             Generalization index
           </h2>
-          <p className="text-sm font-bold text-[#1E293B] mt-1">
+          <p className="text-sm font-bold text-[#D1FAE5] mt-1">
             Untrained word mastery rate
           </p>
         </div>
         <div className="relative group">
-          <Info className="w-5 h-5 text-[#1E293B] cursor-help" strokeWidth={1.75} />
+          <Info className="w-5 h-5 text-[#D1FAE5] cursor-help" strokeWidth={1.75} />
           <div className="absolute right-0 top-6 w-64 p-3 bg-[#022C22] text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none font-bold">
             Measures speech accuracy on words never practiced in therapy.
           </div>
@@ -138,7 +138,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               cx="60"
               cy="60"
               r={radius}
-              stroke="#D1FAE5"
+              stroke="#047857"
               strokeWidth="10"
               fill="none"
             />
@@ -147,7 +147,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               cx="60"
               cy="60"
               r={radius}
-              stroke="#059669"
+              stroke="#34D399"
               strokeWidth="10"
               fill="none"
               strokeLinecap="round"
@@ -167,10 +167,10 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="text-center"
             >
-              <div className="text-5xl font-black text-[#022C22] tabular-nums tracking-tight">
+              <div className="text-5xl font-black text-white tabular-nums tracking-tight">
                 {percentage}%
               </div>
-              <div className="text-xs font-extrabold text-[#047857] mt-1">{statusText}</div>
+              <div className="text-xs font-extrabold text-[#34D399] mt-1">{statusText}</div>
             </motion.div>
           </div>
         </div>
@@ -182,10 +182,10 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-4 mb-6 shadow-sm"
+          className="bg-[#022C22] border border-[#059669] rounded-[12px] p-4 mb-6 shadow-sm"
         >
           <div className="flex items-center gap-2">
-            <span className="text-sm font-extrabold text-white">
+            <span className="text-sm font-extrabold text-[#34D399]">
               {topPhoneme.phoneme} is generalized. Ready for conversational transfer.
             </span>
           </div>
@@ -203,9 +203,9 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="bg-[#064E3B] text-white border border-[#0D9488] rounded-[12px] p-3 flex items-center gap-3 shadow-sm"
+              className="bg-[#022C22] text-white border border-[#059669] rounded-[12px] p-3 flex items-center gap-3 shadow-sm"
             >
-              <div className="w-12 h-8 flex items-center justify-center bg-[#CCFBF1] text-[#064E3B] font-black rounded-md text-xs font-mono">
+              <div className="w-12 h-8 flex items-center justify-center bg-[#064E3B] text-[#34D399] border border-[#059669] font-black rounded-md text-xs font-mono">
                 {phoneme.phoneme}
               </div>
               <div className="flex-1">
@@ -227,7 +227,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
       </div>
 
       {/* Overall Stats Inner Accent Panel */}
-      <div className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-4 mt-6 shadow-sm">
+      <div className="bg-[#022C22] border border-[#059669] rounded-[12px] p-4 mt-6 shadow-sm">
         <div className="flex justify-between items-center text-sm">
           <span className="font-extrabold text-white text-sm">
             Total probes attempted

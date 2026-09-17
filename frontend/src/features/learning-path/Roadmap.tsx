@@ -40,52 +40,52 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
 
     if ((current.status === "trained" || current.status === "generalized") &&
         (next.status === "trained" || next.status === "generalized")) {
-      return "bg-[#059669]";
+      return "bg-[#34D399]";
     }
 
     if (current.status === "active" || current.status === "trained" || current.status === "generalized") {
-      return "bg-[#059669]";
+      return "bg-[#34D399]";
     }
 
-    return "bg-[#CBD5E1]";
+    return "bg-[#047857]";
   };
 
   const getNodeStyles = (milestone: Milestone) => {
     switch (milestone.status) {
       case "locked":
         return {
-          bg: "bg-[#F8FAFC]",
-          text: "text-[#64748B]",
-          border: "border border-[#CBD5E1]",
-          icon: <Lock className="w-6 h-6" strokeWidth={1.75} />,
+          bg: "bg-[#022C22]",
+          text: "text-[#059669]",
+          border: "border border-[#059669]",
+          icon: <Lock className="w-6 h-6 text-[#059669]" strokeWidth={1.75} />,
         };
       case "active":
         return {
-          bg: "bg-[#064E3B]",
+          bg: "bg-[#047857]",
           text: "text-white",
-          border: "border-2 border-[#0D9488]",
+          border: "border-2 border-[#34D399]",
           icon: <Target className="w-6 h-6 text-white" strokeWidth={1.75} />,
         };
       case "trained":
         return {
-          bg: "bg-[#16A34A]",
+          bg: "bg-[#059669]",
           text: "text-white",
-          border: "border border-[#16A34A]",
+          border: "border border-[#34D399]",
           icon: <CheckCircle2 className="w-6 h-6 text-white" strokeWidth={1.75} />,
         };
       case "generalized":
         return {
-          bg: "bg-[#059669]",
+          bg: "bg-[#0D9488]",
           text: "text-white",
-          border: "border border-[#059669]",
+          border: "border border-[#34D399]",
           icon: <Award className="w-6 h-6 text-white" strokeWidth={1.75} />,
         };
       default:
         return {
-          bg: "bg-[#F8FAFC]",
-          text: "text-[#64748B]",
-          border: "border border-[#CBD5E1]",
-          icon: <Lock className="w-6 h-6" strokeWidth={1.75} />,
+          bg: "bg-[#022C22]",
+          text: "text-[#059669]",
+          border: "border border-[#059669]",
+          icon: <Lock className="w-6 h-6 text-[#059669]" strokeWidth={1.75} />,
         };
     }
   };
@@ -134,7 +134,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                className="absolute -bottom-2 bg-white text-[#022C22] px-3 py-1 rounded-full text-xs font-bold shadow-sm hover:bg-[#F0FDF4] border border-[#059669]"
+                className="absolute -bottom-2 bg-white text-[#064E3B] px-3 py-1 rounded-full text-xs font-black shadow-sm hover:bg-[#CCFBF1] border border-[#0D9488]"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUnlockMilestone(milestone.id);
@@ -148,13 +148,13 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         </motion.div>
 
         {/* Label */}
-        <div className="text-sm font-extrabold text-center max-w-[100px] text-[#022C22]">
+        <div className="text-sm font-extrabold text-center max-w-[100px] text-white">
           {milestone.title}
         </div>
 
         {/* Progress indicator for active milestones */}
         {milestone.status === "active" && progressData[milestone.id] && (
-          <div className="bg-[#D1FAE5] text-[#047857] border border-[#059669] font-black px-3 py-1 rounded-full text-xs">
+          <div className="bg-[#022C22] text-[#34D399] border border-[#059669] font-black px-3 py-1 rounded-full text-xs">
             {progressData[milestone.id].consecutive_successes}/3
           </div>
         )}
@@ -166,11 +166,11 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
     <div className="w-full">
       {/* Section Label */}
       <div className="mb-1.5">
-        <h3 className="text-xs font-black uppercase tracking-widest text-[#047857]">MILESTONES</h3>
+        <h3 className="text-xs font-black uppercase tracking-widest text-[#A7F3D0]">MILESTONES</h3>
       </div>
 
       {/* Roadmap Container Card */}
-      <div className="bg-white border-2 border-[#059669] rounded-[16px] p-6 shadow-sm">
+      <div className="bg-[#064E3B] border-2 border-[#0D9488] rounded-[16px] p-6 shadow-md">
         {/* Desktop: Horizontal layout */}
         <div className="hidden md:flex items-center justify-center gap-2 overflow-x-auto py-6">
           {sortedMilestones.map((milestone, index) => {
