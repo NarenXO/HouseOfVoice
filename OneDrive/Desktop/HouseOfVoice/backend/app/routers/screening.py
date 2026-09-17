@@ -112,7 +112,7 @@ async def run_pipeline(request: RunPipelineRequest):
         raise
     except Exception as e:
         logger.error(f"[screening] Pipeline error: {e}")
-        raise HTTPException(status_code=400, detail="Failed to run pipeline")
+        raise HTTPException(status_code=400, detail=str(e))
         
     _RESULTS_DB[request.case_id] = result
     return ScreeningResultDB(**result)

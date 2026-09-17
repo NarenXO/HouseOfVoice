@@ -47,9 +47,8 @@ def _fetch_audio_bytes(clip_data: dict) -> bytes:
                 except Exception as e:
                     logger.debug(f"[pipeline] Could not fetch {url}: {e}")
 
-    # Return minimal valid WAV (44-byte header, 1 second silence at 16kHz)
-    logger.warning("[pipeline] No real audio available; using silent WAV stub.")
-    return _make_silent_wav()
+    # No real audio available — raise an error instead of silently substituting a WAV stub
+    raise ValueError("No audio bytes available. Please re-record your clips.")
 
 
 def _make_silent_wav(sample_rate: int = 16000, duration_s: int = 1) -> bytes:
@@ -82,6 +81,7 @@ async def run_full_pipeline(case_id: str, clip_data: dict) -> dict:
     Orchestrate the 7-stage screening pipeline.
     Returns a dict matching the frozen ScreeningResult contract.
     """
+    print(f"[DEBUG PIPELINE] Running live pipeline for case: {case_id}")
     logger.info(f"[screening] LIVE mode active. Running live pipeline for case_id={case_id}")
 
     try:
@@ -111,10 +111,11 @@ async def run_full_pipeline(case_id: str, clip_data: dict) -> dict:
         logger.info(f"[pipeline] VAD done: speech_ratio={vad_res.get('speech_ratio')}")
     except ValueError as e:
         import fastapi
+        print(f"[DEBUG PIPELINE] ValueError caught: {e}")
         logger.warning(f"[pipeline] Silence detected: {e}")
         raise fastapi.HTTPException(
-            status_code=400, 
-            detail="No speech detected in your recording. Please record again and speak clearly into your microphone."
+            status_code=400,
+            detail=str(e)
         )
 
     # Stage 3 – Features

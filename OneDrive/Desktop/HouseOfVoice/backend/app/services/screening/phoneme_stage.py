@@ -41,15 +41,20 @@ async def process_phonemes(audio_bytes: bytes, whisper_res: dict) -> dict:
 
     # Attempt Wav2Vec2 refinement (optional, soft fail)
     try:
-        import io
+        import tempfile
         import numpy as np
-        import soundfile as sf
+        import librosa
         from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
         import torch
 
-        audio_data, sr = sf.read(io.BytesIO(audio_bytes), dtype="float32")
-        if audio_data.ndim > 1:
-            audio_data = audio_data.mean(axis=1)
+        suffix = ".webm" if (len(audio_bytes) >= 4 and audio_bytes[:4] == b'\x1a\x45\xdf\xa3') else ".wav"
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp.write(audio_bytes)
+            _tmp_path = tmp.name
+        try:
+            audio_data, sr = librosa.load(_tmp_path, sr=16000, mono=True)
+        finally:
+            import os; os.remove(_tmp_path)
 
         processor = Wav2Vec2Processor.from_pretrained("facebook/wav2vec2-base-960h")
         model = Wav2Vec2ForCTC.from_pretrained("facebook/wav2vec2-base-960h")

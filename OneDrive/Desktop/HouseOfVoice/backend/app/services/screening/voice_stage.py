@@ -9,14 +9,19 @@ logger = logging.getLogger(__name__)
 
 async def process_voice(audio_bytes: bytes) -> dict:
     """Compute voice stability score (0.0–1.0)."""
-    import io
+    import tempfile
     import numpy as np
-    import soundfile as sf
     import librosa
 
-    audio_data, sr = sf.read(io.BytesIO(audio_bytes), dtype="float32")
-    if audio_data.ndim > 1:
-        audio_data = audio_data.mean(axis=1)
+    # Write to temp file to support WebM from MediaRecorder
+    suffix = ".webm" if (len(audio_bytes) >= 4 and audio_bytes[:4] == b'\x1a\x45\xdf\xa3') else ".wav"
+    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+        tmp.write(audio_bytes)
+        tmp_path = tmp.name
+    try:
+        audio_data, sr = librosa.load(tmp_path, sr=None, mono=True)
+    finally:
+        import os; os.remove(tmp_path)
 
     # Pitch stability: lower std dev → higher stability
     try:
