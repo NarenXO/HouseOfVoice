@@ -29,18 +29,18 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         }
         // Accent if going from active to locked
         if (current.status === "active" && next.status === "locked") {
-            return "bg-[#E2E8F0]";
+            return "bg-[#CBD5E1]";
         }
         // Gray otherwise
-        return "bg-[#E2E8F0]";
+        return "bg-[#CBD5E1]";
     };
     const getNodeStyles = (milestone) => {
         switch (milestone.status) {
             case "locked":
                 return {
-                    bg: "bg-[#F4F6F8]",
-                    text: "text-[#64748B]",
-                    border: "border-[#E2E8F0]",
+                    bg: "bg-[#F1F5F9]",
+                    text: "text-[#0F172A]",
+                    border: "border-[#CBD5E1]",
                     icon: _jsx(Lock, { className: "w-6 h-6", strokeWidth: 1.75 }),
                     animation: "",
                 };
@@ -48,7 +48,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 return {
                     bg: "bg-[#1E3A5F]",
                     text: "text-white",
-                    border: "border-[#1E3A5F]",
+                    border: "border-[#0D9488]",
                     icon: _jsx(Target, { className: "w-6 h-6", strokeWidth: 1.75 }),
                     animation: "",
                 };
@@ -70,9 +70,9 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 };
             default:
                 return {
-                    bg: "bg-[#F4F6F8]",
-                    text: "text-[#64748B]",
-                    border: "border-[#E2E8F0]",
+                    bg: "bg-[#F1F5F9]",
+                    text: "text-[#0F172A]",
+                    border: "border-[#CBD5E1]",
                     icon: _jsx(Lock, { className: "w-6 h-6", strokeWidth: 1.75 }),
                     animation: "",
                 };
@@ -86,10 +86,10 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         return (_jsxs("div", { className: "flex flex-col items-center gap-2", children: [_jsx(motion.div, { initial: false, animate: {
                         opacity: isJustCompleted ? [0.8, 1] : 1,
                         scale: isJustCompleted ? [1, 1.0] : 1,
-                    }, transition: { duration: 0.2, ease: "easeOut" }, className: "relative cursor-pointer", children: _jsxs("div", { className: `${styles.bg} ${styles.border} border-4 rounded-full w-20 h-20 flex items-center justify-center ${styles.text} shadow-sm hover:scale-105 transition-transform`, onClick: () => onMilestoneClick(milestone), onMouseEnter: () => setHoveredMilestone(milestone.id), onMouseLeave: () => setHoveredMilestone(null), children: [isGeneralized ? (_jsx(motion.div, { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 }, transition: { duration: 0.2, ease: "easeOut" }, children: _jsx(Award, { className: "w-6 h-6", strokeWidth: 1.75 }) })) : isTrained ? (_jsx(CheckCircle2, { className: "w-6 h-6", strokeWidth: 1.75 })) : (styles.icon), milestone.status === "locked" && hoveredMilestone === milestone.id && (_jsx(motion.button, { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9 }, transition: { duration: 0.15, ease: "easeOut" }, className: "absolute -bottom-2 bg-white text-[#64748B] px-3 py-1.5 rounded-full text-xs font-medium shadow-sm hover:bg-[#F4F6F8] border border-[#E2E8F0]", onClick: (e) => {
+                    }, transition: { duration: 0.2, ease: "easeOut" }, className: "relative cursor-pointer", children: _jsxs("div", { className: `${styles.bg} ${styles.border} border-4 rounded-full w-20 h-20 flex items-center justify-center ${styles.text} shadow-sm hover:scale-105 transition-transform`, onClick: () => onMilestoneClick(milestone), onMouseEnter: () => setHoveredMilestone(milestone.id), onMouseLeave: () => setHoveredMilestone(null), children: [isGeneralized ? (_jsx(motion.div, { initial: { scale: 0.8, opacity: 0 }, animate: { scale: 1, opacity: 1 }, transition: { duration: 0.2, ease: "easeOut" }, children: _jsx(Award, { className: "w-6 h-6", strokeWidth: 1.75 }) })) : isTrained ? (_jsx(CheckCircle2, { className: "w-6 h-6", strokeWidth: 1.75 })) : (styles.icon), milestone.status === "locked" && hoveredMilestone === milestone.id && (_jsx(motion.button, { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 }, exit: { opacity: 0, scale: 0.9 }, transition: { duration: 0.15, ease: "easeOut" }, className: "absolute -bottom-2 bg-white text-[#0F172A] px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm hover:bg-[#F4F6F8] border border-[#CBD5E1]", onClick: (e) => {
                                     e.stopPropagation();
                                     onUnlockMilestone(milestone.id);
-                                }, title: "Unlock milestone", children: "Unlock" }))] }) }), _jsx("div", { className: `text-sm font-medium text-center max-w-[100px] ${styles.text}`, children: milestone.title }), milestone.status === "active" && progressData[milestone.id] && (_jsxs("div", { className: "bg-[#CCFBF1] text-[#0D9488] text-xs font-semibold px-2 py-1 rounded-full", children: [progressData[milestone.id].consecutive_successes, "/3"] }))] }));
+                                }, title: "Unlock milestone", children: "Unlock" }))] }) }), _jsx("div", { className: `text-sm font-semibold text-center max-w-[100px] ${styles.text}`, children: milestone.title }), milestone.status === "active" && progressData[milestone.id] && (_jsxs("div", { className: "bg-[#CCFBF1] text-[#0D9488] text-xs font-bold px-2 py-1 rounded-full", children: [progressData[milestone.id].consecutive_successes, "/3"] }))] }));
     };
     return (_jsxs("div", { className: "w-full", children: [_jsx("div", { className: "mb-4", children: _jsx("h3", { className: "text-xs font-semibold text-[#0D9488] tracking-wider uppercase", children: "Milestones" }) }), _jsx("div", { className: "hidden md:flex items-center justify-center gap-2 overflow-x-auto py-8", children: sortedMilestones.map((milestone, index) => {
                     const isLast = index === sortedMilestones.length - 1;

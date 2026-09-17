@@ -264,7 +264,7 @@ export default function LearningPathPage() {
   return (
     <div className="min-h-screen bg-[#F4F6F8] text-[#0F172A] p-6">
       {/* Header */}
-      <div className="bg-white border-b border-[#E2E8F0] sticky top-0 z-50">
+      <div className="bg-white border-b border-[#CBD5E1] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <h1 className="text-2xl font-bold text-[#0F172A]">Learning path</h1>
@@ -273,20 +273,20 @@ export default function LearningPathPage() {
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveTab("roadmap")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
                   activeTab === "roadmap"
-                    ? "bg-[#0D9488] text-white"
-                    : "bg-white text-[#64748B] border border-[#E2E8F0] hover:bg-[#F4F6F8]"
+                    ? "bg-[#1E3A5F] text-white"
+                    : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F4F6F8]"
                 }`}
               >
                 Patient Roadmap
               </button>
               <button
                 onClick={() => setActiveTab("edit")}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
                   activeTab === "edit"
-                    ? "bg-[#0D9488] text-white"
-                    : "bg-white text-[#64748B] border border-[#E2E8F0] hover:bg-[#F4F6F8]"
+                    ? "bg-[#1E3A5F] text-white"
+                    : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F4F6F8]"
                 }`}
               >
                 Clinician Mode
@@ -297,7 +297,7 @@ export default function LearningPathPage() {
             {activeTab === "roadmap" && (
               <button
                 onClick={handleQuickDemoAutoFill}
-                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-5 py-2.5 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Zap className="w-4 h-4" strokeWidth={1.75} />
                 Auto-fill practice
@@ -322,7 +322,7 @@ export default function LearningPathPage() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="bg-white border border-[#E2E8F0] rounded-xl p-4 mb-6 shadow-sm"
+                className="bg-white border border-[#CBD5E1] rounded-xl p-4 mb-6 shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <Flame className="w-6 h-6 text-[#D97706]" strokeWidth={1.75} />
@@ -330,7 +330,7 @@ export default function LearningPathPage() {
                     <div className="font-bold text-lg text-[#0F172A] font-mono tabular-nums">
                       Streak: {learningPath.streak.current_streak_days} days
                     </div>
-                    <div className="text-sm text-[#64748B]">Practice today to maintain your streak</div>
+                    <div className="text-sm text-[#475569]">Practice today to maintain your streak</div>
                   </div>
                 </div>
               </motion.div>

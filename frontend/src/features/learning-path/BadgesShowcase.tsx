@@ -79,9 +79,9 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
 
   if (loading) {
     return (
-      <div className="bg-white border border-[#E2E8F0] rounded-[12px] p-6 shadow-sm">
+      <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-32">
-          <div className="text-[#64748B]">Loading achievements...</div>
+          <div className="text-[#475569]">Loading achievements...</div>
         </div>
       </div>
     );
@@ -89,7 +89,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
 
   if (error || !badgesData) {
     return (
-      <div className="bg-white border border-[#E2E8F0] rounded-[12px] p-6 shadow-sm">
+      <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-32">
           <div className="text-[#DC2626]">{error || "No data available"}</div>
         </div>
@@ -107,24 +107,24 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
   ];
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-[12px] p-6 shadow-sm">
+    <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
       {/* Section Label */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-[#0D9488] tracking-wider uppercase">Achievements</h3>
+        <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Achievements</h3>
       </div>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-[#0F172A] flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-[#0F172A] flex items-center gap-2">
             <Award className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             Achievements
           </h2>
-          <p className="text-sm text-[#64748B] mt-1">
+          <p className="text-base text-[#475569] mt-1">
             Earned by mastering sounds in new words
           </p>
         </div>
-        <div className="bg-[#CCFBF1] text-[#0D9488] px-3 py-1 rounded-full text-sm font-semibold">
+        <div className="bg-[#CCFBF1] text-[#0D9488] px-3 py-1 rounded-full text-sm font-bold">
           {totalBadges} {totalBadges === 1 ? "Badge" : "Badges"}
         </div>
       </div>
@@ -136,11 +136,11 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="inline-block p-4 bg-[#F4F6F8] rounded-full mb-4"
+            className="inline-block p-4 bg-[#F8FAFC] rounded-full mb-4"
           >
             <Lock className="w-8 h-8 text-[#64748B]" strokeWidth={1.75} />
           </motion.div>
-          <p className="text-[#64748B] text-sm">
+          <p className="text-[#475569] text-base">
             Complete your first checkpoint probe to unlock your first badge
           </p>
         </div>
@@ -167,7 +167,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
               className={`relative bg-white border-2 rounded-[12px] p-4 shadow-sm ${
                 isNew
                   ? "border-[#0D9488]"
-                  : "border-[#E2E8F0]"
+                  : "border-[#CBD5E1]"
               }`}
             >
               <div className="relative">
@@ -184,15 +184,15 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
                 </div>
 
                 {/* Content */}
-                <h3 className="font-bold text-[#0F172A] text-sm mb-1">
+                <h3 className="font-bold text-[#0F172A] text-base mb-1">
                   {badge.title}
                 </h3>
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-[#CCFBF1] text-[#0D9488] text-xs font-semibold px-2 py-0.5 rounded-full">
+                  <span className="bg-[#CCFBF1] text-[#0D9488] text-xs font-bold px-2 py-0.5 rounded-full">
                     {badge.phoneme}
                   </span>
                 </div>
-                <p className="text-xs text-[#64748B]">
+                <p className="text-sm text-[#475569]">
                   {badge.description}
                 </p>
 
@@ -202,7 +202,7 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="absolute -top-2 -right-2 bg-[#16A34A] text-white text-xs px-2 py-1 rounded-full font-medium"
+                    className="absolute -top-2 -right-2 bg-[#16A34A] text-white text-xs px-2 py-1 rounded-full font-bold"
                   >
                     New
                   </motion.div>
@@ -218,17 +218,17 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
             key={`upcoming-${index}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.6 }}
-            className="bg-[#F4F6F8] border-2 border-dashed border-[#E2E8F0] rounded-[12px] p-4"
+            className="bg-[#F8FAFC] border-2 border-dashed border-[#CBD5E1] rounded-[12px] p-4"
           >
             <div className="flex items-center justify-center mb-3">
               <div className="p-3 bg-[#E2E8F0] rounded-full">
                 <Lock className="w-6 h-6 text-[#64748B]" strokeWidth={1.75} />
               </div>
             </div>
-            <h3 className="font-semibold text-[#64748B] text-sm mb-1">
+            <h3 className="font-semibold text-[#64748B] text-base mb-1">
               {upcoming.title}
             </h3>
-            <div className="bg-[#E2E8F0] text-[#64748B] text-xs font-semibold px-2 py-0.5 rounded-full inline-block">
+            <div className="bg-[#E2E8F0] text-[#64748B] text-xs font-bold px-2 py-0.5 rounded-full inline-block">
               {upcoming.phoneme}
             </div>
           </motion.div>

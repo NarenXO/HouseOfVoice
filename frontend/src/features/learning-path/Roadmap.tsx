@@ -46,20 +46,20 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
 
     // Accent if going from active to locked
     if (current.status === "active" && next.status === "locked") {
-      return "bg-[#E2E8F0]";
+      return "bg-[#CBD5E1]";
     }
 
     // Gray otherwise
-    return "bg-[#E2E8F0]";
+    return "bg-[#CBD5E1]";
   };
 
   const getNodeStyles = (milestone: Milestone) => {
     switch (milestone.status) {
       case "locked":
         return {
-          bg: "bg-[#F4F6F8]",
-          text: "text-[#64748B]",
-          border: "border-[#E2E8F0]",
+          bg: "bg-[#F1F5F9]",
+          text: "text-[#0F172A]",
+          border: "border-[#CBD5E1]",
           icon: <Lock className="w-6 h-6" strokeWidth={1.75} />,
           animation: "",
         };
@@ -67,7 +67,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         return {
           bg: "bg-[#1E3A5F]",
           text: "text-white",
-          border: "border-[#1E3A5F]",
+          border: "border-[#0D9488]",
           icon: <Target className="w-6 h-6" strokeWidth={1.75} />,
           animation: "",
         };
@@ -89,9 +89,9 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         };
       default:
         return {
-          bg: "bg-[#F4F6F8]",
-          text: "text-[#64748B]",
-          border: "border-[#E2E8F0]",
+          bg: "bg-[#F1F5F9]",
+          text: "text-[#0F172A]",
+          border: "border-[#CBD5E1]",
           icon: <Lock className="w-6 h-6" strokeWidth={1.75} />,
           animation: "",
         };
@@ -142,7 +142,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                className="absolute -bottom-2 bg-white text-[#64748B] px-3 py-1.5 rounded-full text-xs font-medium shadow-sm hover:bg-[#F4F6F8] border border-[#E2E8F0]"
+                className="absolute -bottom-2 bg-white text-[#0F172A] px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm hover:bg-[#F4F6F8] border border-[#CBD5E1]"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUnlockMilestone(milestone.id);
@@ -156,13 +156,13 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         </motion.div>
 
         {/* Label */}
-        <div className={`text-sm font-medium text-center max-w-[100px] ${styles.text}`}>
+        <div className={`text-sm font-semibold text-center max-w-[100px] ${styles.text}`}>
           {milestone.title}
         </div>
 
         {/* Progress indicator for active milestones */}
         {milestone.status === "active" && progressData[milestone.id] && (
-          <div className="bg-[#CCFBF1] text-[#0D9488] text-xs font-semibold px-2 py-1 rounded-full">
+          <div className="bg-[#CCFBF1] text-[#0D9488] text-xs font-bold px-2 py-1 rounded-full">
             {progressData[milestone.id].consecutive_successes}/3
           </div>
         )}

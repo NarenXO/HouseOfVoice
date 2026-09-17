@@ -77,9 +77,9 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
 
   if (loading) {
     return (
-      <div className="bg-white border border-[#E2E8F0] rounded-[12px] p-6 shadow-sm">
+      <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-48">
-          <div className="text-[#64748B]">Loading generalization data...</div>
+          <div className="text-[#475569]">Loading generalization data...</div>
         </div>
       </div>
     );
@@ -87,7 +87,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
 
   if (error || !data) {
     return (
-      <div className="bg-white border border-[#E2E8F0] rounded-[12px] p-6 shadow-sm">
+      <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
         <div className="flex items-center justify-center h-48">
           <div className="text-[#DC2626]">{error || "No data available"}</div>
         </div>
@@ -106,24 +106,24 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
   const strokeDashoffset = circumference - (data.overall_rate * circumference);
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-[12px] p-6 shadow-sm">
+    <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
       {/* Section Label */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-[#0D9488] tracking-wider uppercase">Generalization by context</h3>
+        <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Generalization by context</h3>
       </div>
 
       {/* Card Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-[#0F172A]">
+          <h2 className="text-2xl font-bold text-[#0F172A]">
             Generalization index
           </h2>
-          <p className="text-sm text-[#64748B] mt-1">
+          <p className="text-base text-[#475569] mt-1">
             Untrained word mastery rate
           </p>
         </div>
         <div className="relative group">
-          <Info className="w-5 h-5 text-[#64748B] cursor-help" strokeWidth={1.75} />
+          <Info className="w-5 h-5 text-[#475569] cursor-help" strokeWidth={1.75} />
           <div className="absolute right-0 top-6 w-64 p-3 bg-[#0F172A] text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
             Measures speech accuracy on words never practiced in therapy.
           </div>
@@ -168,10 +168,10 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="text-center"
             >
-              <div className="text-4xl font-bold font-mono tabular-nums text-[#0F172A]" style={{ color: gaugeColor }}>
+              <div className="text-4xl font-extrabold font-mono tabular-nums text-[#0F172A]" style={{ color: gaugeColor }}>
                 {percentage}%
               </div>
-              <div className="text-xs text-[#64748B] mt-1">{statusText}</div>
+              <div className="text-xs text-[#475569] mt-1">{statusText}</div>
             </motion.div>
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
           className="bg-[#CCFBF1] border border-[#0D9488] rounded-lg p-3 mb-6"
         >
           <div className="flex items-center gap-2">
-            <span className="text-sm text-[#0F172A]">
+            <span className="text-base font-semibold text-[#0F172A]">
               {topPhoneme.phoneme} is generalized. Ready for conversational transfer.
             </span>
           </div>
@@ -207,11 +207,11 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               transition={{ duration: 0.2, ease: "easeOut" }}
               className="flex items-center gap-3"
             >
-              <div className="w-12 h-8 flex items-center justify-center bg-[#F4F6F8] rounded-md font-mono text-sm font-semibold text-[#0F172A]">
+              <div className="w-12 h-8 flex items-center justify-center bg-[#F1F5F9] rounded-md font-mono text-sm font-bold text-[#0F172A]">
                 {phoneme.phoneme}
               </div>
               <div className="flex-1">
-                <div className="h-2 bg-[#E2E8F0] rounded-full overflow-hidden">
+                <div className="h-3 bg-[#E2E8F0] rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${phonemePercentage}%` }}
@@ -221,7 +221,7 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
                   />
                 </div>
               </div>
-              <div className="text-xs text-[#64748B] whitespace-nowrap font-mono tabular-nums">
+              <div className="text-sm text-[#475569] whitespace-nowrap font-mono tabular-nums">
                 {phoneme.probes_passed} / {phoneme.probes_attempted} ({phonemePercentage}%)
               </div>
             </motion.div>
@@ -230,20 +230,20 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
       </div>
 
       {/* Overall Stats */}
-      <div className="mt-6 pt-4 border-t border-[#E2E8F0]">
-        <div className="flex justify-between text-sm">
-          <span className="text-[#64748B]">
+      <div className="mt-6 pt-4 border-t border-[#CBD5E1]">
+        <div className="flex justify-between text-base">
+          <span className="text-[#475569]">
             Total probes attempted
           </span>
-          <span className="font-semibold text-[#0F172A] font-mono tabular-nums">
+          <span className="font-bold text-[#0F172A] font-mono tabular-nums">
             {data.total_probes_attempted}
           </span>
         </div>
-        <div className="flex justify-between text-sm mt-2">
-          <span className="text-[#64748B]">
+        <div className="flex justify-between text-base mt-2">
+          <span className="text-[#475569]">
             Total probes passed
           </span>
-          <span className="font-semibold text-[#0F172A] font-mono tabular-nums">
+          <span className="font-bold text-[#0F172A] font-mono tabular-nums">
             {data.total_probes_passed}
           </span>
         </div>

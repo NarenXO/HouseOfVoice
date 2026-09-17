@@ -107,7 +107,7 @@ export default function ProbeSession({
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-xl p-8 text-center">
-          <div className="text-gray-500">Loading checkpoint...</div>
+          <div className="text-[#475569]">Loading checkpoint...</div>
         </div>
       </div>
     );
@@ -119,14 +119,14 @@ export default function ProbeSession({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative"
+        className="bg-white border border-[#CBD5E1] rounded-[12px] shadow-sm max-w-lg w-full p-8 relative"
       >
         {/* Close button */}
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+          className="absolute top-4 right-4 text-[#64748B] hover:text-[#0F172A] transition-colors"
         >
-          <X className="w-6 h-6" />
+          <X className="w-6 h-6" strokeWidth={1.75} />
         </button>
 
         <AnimatePresence mode="wait">
@@ -146,8 +146,8 @@ export default function ProbeSession({
 
               {/* Step Indicator */}
               <div className="flex items-center justify-center gap-2 mb-6">
-                <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-sm font-medium">1</div>
-                <div className="w-8 h-8 rounded-full bg-[#E2E8F0] text-[#64748B] flex items-center justify-center text-sm font-medium">2</div>
+                <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center text-sm font-bold">1</div>
+                <div className="w-8 h-8 rounded-full bg-[#E2E8F0] text-[#0F172A] flex items-center justify-center text-sm font-bold">2</div>
               </div>
 
               <div className="mb-6">
@@ -155,28 +155,28 @@ export default function ProbeSession({
                   <Target className="w-8 h-8 text-[#0D9488]" strokeWidth={1.75} />
                 </div>
                 <h3 className="text-2xl font-bold text-[#0F172A] mb-2">Generalization probe</h3>
-                <p className="text-[#64748B]">Say this word out loud:</p>
+                <p className="text-[#475569]">Say this word out loud:</p>
               </div>
 
-              <div className="bg-white border border-[#E2E8F0] rounded-xl p-8 mb-6">
+              <div className="bg-white border border-[#CBD5E1] rounded-xl p-8 mb-6">
                 <div className="text-6xl font-bold text-[#0F172A] mb-4 font-mono tabular-nums">
                   {probeItem.display_text}
                 </div>
-                <p className="text-[#64748B] text-sm">{probeItem.instructions}</p>
+                <p className="text-[#475569] text-base">{probeItem.instructions}</p>
               </div>
 
               <div className="flex gap-3 justify-center">
                 <button
                   onClick={handleSubmitAttempt}
                   disabled={loading}
-                  className="bg-[#1E3A5F] hover:bg-[#2E5A88] disabled:bg-[#E2E8F0] disabled:text-[#64748B] text-white px-8 py-4 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-sm"
+                  className="bg-[#0D9488] hover:bg-[#0F766E] disabled:bg-[#E2E8F0] disabled:text-[#64748B] text-white px-8 py-4 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
                 >
                   <Mic className="w-5 h-5" strokeWidth={1.75} />
                   Submit
                 </button>
                 <button
                   onClick={onCancel}
-                  className="bg-white hover:bg-[#F4F6F8] text-[#64748B] border border-[#E2E8F0] px-6 py-4 rounded-lg font-medium transition-colors"
+                  className="bg-white hover:bg-[#F4F6F8] text-[#0F172A] border border-[#CBD5E1] px-6 py-4 rounded-lg font-semibold transition-colors"
                 >
                   Cancel
                 </button>
@@ -203,7 +203,7 @@ export default function ProbeSession({
                   <Award className="w-14 h-14 text-[#0D9488]" strokeWidth={1.75} />
                 </motion.div>
                 <h3 className="text-3xl font-bold text-[#0F172A] mb-2">Probe complete</h3>
-                <p className="text-[#64748B] text-lg">
+                <p className="text-[#475569] text-lg">
                   Sound generalized. You have mastered this sound on a new word.
                 </p>
               </div>
@@ -227,7 +227,7 @@ export default function ProbeSession({
 
               <button
                 onClick={handleComplete}
-                className="bg-[#16A34A] hover:bg-[#15803D] text-white px-8 py-4 rounded-lg font-medium transition-colors flex items-center gap-2 mx-auto shadow-sm"
+                className="bg-[#16A34A] hover:bg-[#15803D] text-white px-8 py-4 rounded-lg font-semibold transition-colors flex items-center gap-2 mx-auto shadow-sm"
               >
                 Continue
                 <ArrowRight className="w-5 h-5" strokeWidth={1.75} />

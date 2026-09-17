@@ -249,24 +249,24 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
   const remaining = threshold - progress.consecutive_successes;
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-[12px] shadow-sm p-6">
+    <div className="bg-white border border-[#CBD5E1] rounded-[12px] shadow-sm p-6">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="text-xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-        <p className="text-[#64748B] text-sm mb-4">{milestone.goal}</p>
+        <h3 className="text-2xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
+        <p className="text-[#475569] text-base mb-4">{milestone.goal}</p>
 
         {/* Progress text */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-[#64748B]">
+          <span className="text-base font-semibold text-[#475569]">
             Practice {progress.consecutive_successes} of {threshold} days to unlock checkpoint
           </span>
-          <span className="text-sm font-bold text-[#0D9488] font-mono tabular-nums">
+          <span className="text-base font-bold text-[#0D9488] font-mono tabular-nums">
             {progress.completed_exercises}/{progress.total_exercises}
           </span>
         </div>
 
         {/* Progress bar */}
-        <div className="w-full bg-[#E2E8F0] h-2 rounded-full overflow-hidden">
+        <div className="w-full bg-[#E2E8F0] h-3 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
@@ -286,7 +286,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="bg-[#CCFBF1] border border-[#0D9488] rounded-lg p-3 mb-4"
           >
-            <p className="text-sm font-medium text-[#0F172A]">{notification}</p>
+            <p className="text-base font-semibold text-[#0F172A]">{notification}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -303,12 +303,12 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
             <Target className="w-8 h-8 text-[#0D9488] flex-shrink-0" strokeWidth={1.75} />
             <div className="flex-1">
               <h4 className="font-bold text-[#0F172A] text-lg mb-2">Checkpoint ready</h4>
-              <p className="text-[#64748B] mb-4">
+              <p className="text-[#475569] mb-4">
                 You have completed the required practice sessions. Take the generalization probe to assess progress.
               </p>
               <button
                 onClick={handleTakeCheckpoint}
-                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Target className="w-5 h-5" strokeWidth={1.75} />
                 Take probe checkpoint
@@ -323,18 +323,18 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
         {exercises.map((exercise, index) => (
           <div
             key={exercise.id}
-            className={`p-5 rounded-xl border-2 transition-all ${
+            className={`p-5 rounded-[10px] border-2 transition-all ${
               exercise.done
                 ? "bg-[#CCFBF1] border-[#0D9488]"
-                : "bg-white border-[#E2E8F0] hover:border-[#0D9488] hover:shadow-sm"
+                : "bg-white border-[#CBD5E1] hover:border-[#0D9488] hover:shadow-sm"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h4 className={`font-bold mb-2 ${exercise.done ? "text-[#0D9488] line-through opacity-60" : "text-[#0F172A]"}`}>
+                <h4 className={`font-semibold mb-2 ${exercise.done ? "text-[#0D9488] line-through opacity-60" : "text-[#0F172A]"}`}>
                   Exercise {index + 1}: {exercise.title}
                 </h4>
-                <p className={`text-sm ${exercise.done ? "text-[#0D9488] opacity-60" : "text-[#64748B]"}`}>
+                <p className={`text-base ${exercise.done ? "text-[#0D9488] opacity-60" : "text-[#475569]"}`}>
                   {exercise.instructions}
                 </p>
               </div>
@@ -351,7 +351,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
                 ) : (
                   <button
                     onClick={() => handleMarkDone(index)}
-                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
+                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-5 py-2.5 rounded-lg font-semibold transition-colors shadow-sm"
                   >
                     Mark Done
                   </button>
@@ -363,7 +363,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
       </div>
 
       {/* Streak and CTA */}
-      <div className="flex items-center justify-between pt-4 border-t border-[#E2E8F0]">
+      <div className="flex items-center justify-between pt-4 border-t border-[#CBD5E1]">
         <div className="flex items-center gap-2">
           <Flame className="w-5 h-5 text-[#D97706]" strokeWidth={1.75} />
           <span className="text-[#D97706] font-bold font-mono tabular-nums">
@@ -374,7 +374,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
           onClick={() => {
             alert("Practice session recorded");
           }}
-          className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white px-6 py-3 rounded-lg font-medium transition-colors"
+          className="bg-[#0D9488] hover:bg-[#0F766E] text-white px-6 py-3 rounded-lg font-semibold transition-colors"
         >
           Record Practice Session
         </button>

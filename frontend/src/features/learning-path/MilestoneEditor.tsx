@@ -52,7 +52,7 @@ export default function MilestoneEditor({
         <button
           onClick={onAddMilestone}
           disabled={disabled}
-          className="px-4 py-2 bg-[#1E3A5F] text-white rounded-lg hover:bg-[#2E5A88] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-5 py-2.5 bg-[#0D9488] hover:bg-[#0F766E] text-white rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
         >
           Add Milestone
         </button>
@@ -60,7 +60,7 @@ export default function MilestoneEditor({
 
       {disabled && (
         <div className="bg-[#CCFBF1] border border-[#0D9488] rounded-lg p-4 mb-6">
-          <p className="text-[#0F172A] font-medium">
+          <p className="text-[#0F172A] font-semibold">
             Path is approved and locked. Editing is disabled.
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function MilestoneEditor({
         {milestones.map((milestone) => (
           <div
             key={milestone.id}
-            className={`bg-white border p-4 ${disabled ? 'border-[#E2E8F0] opacity-60' : 'border-[#E2E8F0]'}`}
+            className={`bg-white border p-4 ${disabled ? 'border-[#CBD5E1] opacity-60' : 'border-[#CBD5E1]'}`}
           >
             {editingId === milestone.id ? (
               <div className="space-y-3">
@@ -79,25 +79,25 @@ export default function MilestoneEditor({
                   value={editForm.title || ""}
                   onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
                   placeholder="Milestone title"
-                  className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0D9488]"
+                  className="w-full px-3 py-2 border border-[#CBD5E1] text-[#0F172A] font-medium focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] rounded-[8px]"
                 />
                 <textarea
                   value={editForm.goal || ""}
                   onChange={(e) => setEditForm({ ...editForm, goal: e.target.value })}
                   placeholder="Goal description"
                   rows={2}
-                  className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#0D9488]"
+                  className="w-full px-3 py-2 border border-[#CBD5E1] text-[#0F172A] font-medium focus:outline-none focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] rounded-[8px]"
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={handleSave}
-                    className="px-4 py-2 bg-[#16A34A] text-white rounded-lg hover:bg-[#15803D] transition-colors"
+                    className="px-5 py-2.5 bg-[#16A34A] hover:bg-[#15803D] text-white rounded-lg font-semibold transition-colors shadow-sm"
                   >
                     Save
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="px-4 py-2 bg-white text-[#64748B] border border-[#E2E8F0] rounded-lg hover:bg-[#F4F6F8] transition-colors"
+                    className="px-5 py-2.5 bg-white text-[#0F172A] border border-[#CBD5E1] rounded-lg font-semibold hover:bg-[#F4F6F8] transition-colors"
                   >
                     Cancel
                   </button>
@@ -107,10 +107,10 @@ export default function MilestoneEditor({
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold text-[#0F172A]">{milestone.title}</h3>
-                  <p className="text-sm text-[#64748B] mt-1">{milestone.goal}</p>
+                  <p className="text-base text-[#475569] mt-1">{milestone.goal}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs text-[#64748B]">Order: {milestone.order_index}</span>
-                    <span className="text-xs px-2 py-1 rounded-full bg-[#F4F6F8] text-[#64748B]">
+                    <span className="text-sm text-[#475569]">Order: {milestone.order_index}</span>
+                    <span className="text-sm px-2 py-1 rounded-full bg-[#F1F5F9] text-[#0F172A] font-medium">
                       {milestone.status}
                     </span>
                   </div>
@@ -119,14 +119,14 @@ export default function MilestoneEditor({
                   <button
                     onClick={() => handleEdit(milestone)}
                     disabled={disabled}
-                    className="px-3 py-1 text-sm bg-[#CCFBF1] text-[#0D9488] rounded hover:bg-[#B7EBD6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 text-sm bg-[#CCFBF1] text-[#0D9488] rounded hover:bg-[#B7EBD6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => onDeleteMilestone(milestone.id)}
                     disabled={disabled}
-                    className="px-3 py-1 text-sm bg-[#FEE2E2] text-[#DC2626] rounded hover:bg-[#FECACA] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 text-sm bg-[#FEE2E2] text-[#DC2626] rounded hover:bg-[#FECACA] transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
                   >
                     Delete
                   </button>
