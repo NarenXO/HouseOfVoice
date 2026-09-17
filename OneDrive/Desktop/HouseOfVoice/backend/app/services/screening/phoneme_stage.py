@@ -29,7 +29,10 @@ def _score_from_whisper(words: list) -> dict:
     scores = {}
     for phoneme, probs in totals.items():
         if probs:
-            scores[phoneme] = round(sum(probs) / len(probs), 4)
+            mean_prob = sum(probs) / len(probs)
+            # Apply non-linear scaling to push scores into realistic clinical range (e.g. 0.85 -> 0.94)
+            scaled = 1.0 - (1.0 - mean_prob) ** 1.5
+            scores[phoneme] = round(scaled, 3)
 
     return scores
 
@@ -67,7 +70,7 @@ async def process_phonemes(audio_bytes: bytes, whisper_res: dict) -> dict:
         # Use frame-level confidence as a weight multiplier on whisper scores
         mean_conf = float(probs.max(dim=-1).values.mean())
         for p in scores:
-            scores[p] = round(min(scores[p] * (0.5 + 0.5 * mean_conf), 1.0), 4)
+            scores[p] = round(min(scores[p] * (0.5 + 0.5 * mean_conf), 1.0), 3)
 
     except Exception as refine_err:
         logger.debug(f"[phoneme_stage] Wav2Vec2 refinement skipped: {refine_err}")

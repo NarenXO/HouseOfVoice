@@ -26,32 +26,30 @@ async def process_classification(
     voice_stability = float(voice.get("voice_stability", 0.0))
 
     # --- Fluency Score ---
-    # Weighted: 50% speech ratio, 30% speech rate normalised, 20% voice stability
     wpm_normalized = _clamp(
         (speech_rate - _NORMAL_WPM_MIN) / (_NORMAL_WPM_MAX - _NORMAL_WPM_MIN)
     )
+    
+    if phoneme_scores:
+        mean_confidence = sum(phoneme_scores.values()) / len(phoneme_scores)
+    else:
+        mean_confidence = wpm_normalized
+
+    # Weighted: 40% speech ratio, 30% speech rate, 30% mean confidence
     fluency_score = _clamp(
-        0.50 * speech_ratio + 0.30 * wpm_normalized + 0.20 * voice_stability
+        0.40 * speech_ratio + 0.30 * wpm_normalized + 0.30 * mean_confidence
     )
-    fluency_score = round(fluency_score, 4)
+    fluency_score = round(fluency_score, 3)
 
     # --- Language Score ---
-    # Mean of phoneme scores + speech rate sanity bonus
-    if phoneme_scores:
-        mean_phoneme = sum(phoneme_scores.values()) / len(phoneme_scores)
-    else:
-        mean_phoneme = _clamp(
-            (speech_rate - _NORMAL_WPM_MIN) / (_NORMAL_WPM_MAX - _NORMAL_WPM_MIN)
-        )
-
     rate_sanity = _clamp(wpm_normalized)
-    language_score = _clamp(0.80 * mean_phoneme + 0.20 * rate_sanity)
-    language_score = round(language_score, 4)
+    language_score = _clamp(0.80 * mean_confidence + 0.20 * rate_sanity)
+    language_score = round(language_score, 3)
 
     # --- Severity ---
-    if language_score > 0.75:
+    if language_score > 0.80:
         severity = "mild"
-    elif language_score > 0.50:
+    elif language_score > 0.60:
         severity = "moderate"
     else:
         severity = "severe"

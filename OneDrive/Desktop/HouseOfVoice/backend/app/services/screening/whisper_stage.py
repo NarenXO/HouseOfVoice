@@ -40,7 +40,7 @@ async def process_whisper(audio_bytes: bytes) -> dict:
         except Exception as load_err:
             print(f"[DEBUG AUDIO] librosa.load failed: {load_err}")
             raise ValueError(
-                f"Could not decode audio. Ensure microphone audio is captured correctly. ({load_err})"
+                "⚠️ We couldn't hear you clearly. Please ensure your microphone is working and re-record the clip."
             )
 
         duration = len(audio_data) / sr

@@ -42,9 +42,9 @@ interface Props {
 
 export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
   const [stepIndex, setStepIndex] = useState(0);
+  const [highestStep, setHighestStep] = useState(0);
   const [recordState, setRecordState] = useState<RecordState>('idle');
-  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
-  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [stepData, setStepData] = useState<Record<string, { blob: Blob; url: string }>>({});
   const [elapsed, setElapsed] = useState(0);
   const [clipIds, setClipIds] = useState<Record<string, string>>({});
   const [analyzing, setAnalyzing] = useState(false);
@@ -56,18 +56,25 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
   const streamRef = useRef<MediaStream | null>(null);
 
   const step = STEPS[stepIndex];
+  const audioBlob = stepData[step.id]?.blob || null;
+  const audioUrl = stepData[step.id]?.url || null;
 
   const formatTime = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
 
   const resetRecording = useCallback(() => {
-    if (audioUrl) URL.revokeObjectURL(audioUrl);
-    setAudioBlob(null);
-    setAudioUrl(null);
+    setStepData((prev) => {
+      const next = { ...prev };
+      if (next[step.id]) {
+        URL.revokeObjectURL(next[step.id].url);
+        delete next[step.id];
+      }
+      return next;
+    });
     setElapsed(0);
     setRecordState('idle');
     setError(null);
-  }, [audioUrl]);
+  }, [step.id]);
 
   useEffect(() => {
     return () => {
@@ -75,6 +82,14 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop());
     };
   }, []);
+
+  const navigateToStep = (index: number) => {
+    if (index > highestStep) return;
+    setStepIndex(index);
+    const targetStep = STEPS[index];
+    setRecordState(stepData[targetStep.id] ? 'recorded' : 'idle');
+    setError(null);
+  };
 
   const startRecording = async () => {
     setError(null);
@@ -91,8 +106,10 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       };
       mr.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        setAudioBlob(blob);
-        setAudioUrl(URL.createObjectURL(blob));
+        setStepData((prev) => ({
+          ...prev,
+          [step.id]: { blob, url: URL.createObjectURL(blob) },
+        }));
         setRecordState('recorded');
         stream.getTracks().forEach((t) => t.stop());
         if (timerRef.current) clearInterval(timerRef.current);
@@ -123,9 +140,11 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       setClipIds(newClipIds);
 
       if (stepIndex < STEPS.length - 1) {
-        setStepIndex((i) => i + 1);
-        resetRecording();
-        setRecordState('idle');
+        const nextIndex = stepIndex + 1;
+        setStepIndex(nextIndex);
+        setHighestStep((prev) => Math.max(prev, nextIndex));
+        const nextStep = STEPS[nextIndex];
+        setRecordState(stepData[nextStep.id] ? 'recorded' : 'idle');
       } else {
         // All steps done → run pipeline
         isPipelineError = true;
@@ -135,8 +154,8 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       }
     } catch (err) {
       let msg = err instanceof Error ? err.message : 'Upload failed. Please try again.';
-      if (msg.includes('No speech detected') || msg.includes('silent')) {
-        msg = '⚠️ Analysis Failed: No speech detected in your audio. Please re-record your clips and speak clearly into the microphone.';
+      if (msg.toLowerCase().includes('no speech') || msg.toLowerCase().includes('silent') || msg.toLowerCase().includes('could not decode') || msg.toLowerCase().includes('couldn\'t hear you clearly')) {
+        msg = 'Analysis Failed: No speech detected in your audio. Please re-record your clips and speak clearly into the microphone.';
       }
       setError(msg);
 
@@ -148,9 +167,6 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
       }
     }
   };
-
-  const severityColor = (sev: string) =>
-    sev === 'severe' ? 'bg-red-500' : sev === 'moderate' ? 'bg-yellow-500' : 'bg-emerald-500';
 
   if (analyzing) {
     return (
@@ -195,21 +211,27 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
         </div>
         {/* Step tabs */}
         <div className="flex gap-2 mt-4">
-          {STEPS.map((s, i) => (
-            <div
-              key={s.id}
-              className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition ${
-                i < stepIndex
-                  ? 'bg-white/30 text-white'
-                  : i === stepIndex
-                  ? 'bg-white text-indigo-700'
-                  : 'text-indigo-200'
-              }`}
-            >
-              <span>{s.icon}</span>
-              <span className="hidden sm:inline">{s.title}</span>
-            </div>
-          ))}
+          {STEPS.map((s, i) => {
+            const isClickable = i <= highestStep;
+            return (
+              <div
+                key={s.id}
+                onClick={() => { if (isClickable) navigateToStep(i); }}
+                className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full transition ${
+                  isClickable ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'
+                } ${
+                  i === stepIndex
+                    ? 'bg-white text-indigo-700'
+                    : isClickable
+                    ? 'bg-white/30 text-white hover:bg-white/40'
+                    : 'text-indigo-200'
+                }`}
+              >
+                <span>{s.icon}</span>
+                <span className="hidden sm:inline">{s.title}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -230,8 +252,9 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
         </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
-            {error}
+          <div className="bg-red-50 border-l-4 border-red-500 text-red-800 p-4 rounded-r-lg shadow-sm flex items-start gap-3">
+            <span className="text-xl leading-none mt-0.5">🛑</span>
+            <div className="text-sm font-medium leading-relaxed">{error}</div>
           </div>
         )}
 
@@ -274,6 +297,15 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
                 >
                   🔄 Re-record
                 </button>
+                {stepIndex > 0 && (
+                  <button
+                    onClick={() => navigateToStep(stepIndex - 1)}
+                    disabled={recordState === 'uploading'}
+                    className="flex-1 border-2 border-indigo-200 hover:border-indigo-400 text-indigo-700 font-semibold py-2.5 rounded-xl transition disabled:opacity-40"
+                  >
+                    ← Back
+                  </button>
+                )}
                 <button
                   onClick={handleContinue}
                   disabled={recordState === 'uploading'}

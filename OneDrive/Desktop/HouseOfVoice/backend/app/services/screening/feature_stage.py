@@ -26,7 +26,7 @@ async def process_features(audio_bytes: bytes, whisper_res: dict) -> dict:
     word_count = len(whisper_res.get("words", []))
     duration_s = whisper_res.get("duration", 5.0)
     duration_min = max(duration_s / 60.0, 1e-6)
-    speech_rate_wpm = round(word_count / duration_min, 2)
+    speech_rate_wpm = round(word_count / duration_min, 3)
 
     # Mean pitch using librosa's pyin
     f0, voiced_flag, _ = librosa.pyin(

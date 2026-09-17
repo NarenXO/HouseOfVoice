@@ -36,12 +36,14 @@ const SEVERITY_CONFIG = {
 type SeverityKey = keyof typeof SEVERITY_CONFIG;
 
 function ScoreGauge({ score, label, color }: { score: number; label: string; color: string }) {
-  const pct = Math.round(score <= 1 ? score * 100 : score);
+  const rawPct = score <= 1 ? score * 100 : score;
+  const pctStr = rawPct.toFixed(1);
+  const pct = Math.round(rawPct);
   return (
     <div className="bg-white rounded-xl border border-slate-200 p-5 flex flex-col gap-3">
       <div className="flex justify-between items-baseline">
         <span className="text-sm font-semibold text-slate-600">{label}</span>
-        <span className="text-2xl font-bold text-slate-800">{pct}%</span>
+        <span className="text-2xl font-bold text-slate-800">{pctStr}%</span>
       </div>
       <div className="h-3 bg-slate-100 rounded-full overflow-hidden">
         <div
@@ -57,7 +59,9 @@ function ScoreGauge({ score, label, color }: { score: number; label: string; col
 }
 
 function PhonemeBar({ phoneme, score }: { phoneme: string; score: number }) {
-  const pct = Math.round(score <= 1 ? score * 100 : score);
+  const rawPct = score <= 1 ? score * 100 : score;
+  const pctStr = rawPct.toFixed(1);
+  const pct = Math.round(rawPct);
   const color =
     score >= 0.7 ? 'bg-emerald-500' : score >= 0.5 ? 'bg-amber-400' : 'bg-red-400';
   const textColor =
@@ -69,7 +73,7 @@ function PhonemeBar({ phoneme, score }: { phoneme: string; score: number }) {
     <div className={`rounded-lg p-3 ${bgColor}`}>
       <div className="flex justify-between items-center mb-2">
         <span className="font-mono font-bold text-slate-700 text-sm">/{phoneme}/</span>
-        <span className={`text-xs font-semibold ${textColor}`}>{pct}%</span>
+        <span className={`text-xs font-semibold ${textColor}`}>{pctStr}%</span>
       </div>
       <div className="h-2 bg-white/60 rounded-full overflow-hidden">
         <div
