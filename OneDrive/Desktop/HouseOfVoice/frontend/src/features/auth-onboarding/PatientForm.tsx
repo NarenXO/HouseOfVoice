@@ -14,11 +14,21 @@ interface PatientFormData {
 
 interface PatientFormProps {
   onSuccess: (userId: string) => void;
+  demoMode?: boolean;
 }
 
-export function PatientForm({ onSuccess }: PatientFormProps) {
+export function PatientForm({ onSuccess, demoMode = false }: PatientFormProps) {
   const { t } = useLanguage();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PatientFormData>();
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<PatientFormData>({
+    defaultValues: demoMode ? {
+      email: 'alex.rivera@example.com',
+      password: 'demo123',
+      name: 'Alex Rivera',
+      dob: '2016-04-12',
+      gender: 'male',
+      phone: '+1234567890'
+    } : undefined
+  });
 
   const onSubmit = async (data: PatientFormData) => {
     try {

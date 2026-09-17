@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Shield, Stethoscope, Users, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
+import { User, Shield, Stethoscope, Users, CheckCircle, ArrowRight, ArrowLeft, Zap } from 'lucide-react';
 import { RoleSelector } from './RoleSelector';
 import { PatientForm } from './PatientForm';
 import { GuardianForm } from './GuardianForm';
@@ -26,6 +26,7 @@ export function AuthOnboarding() {
   const [currentStep, setCurrentStep] = useState<Step>('role');
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [demoMode, setDemoMode] = useState(false);
   const { t } = useLanguage();
 
   const handleRegistrationSuccess = (newUserId: string) => {
@@ -68,14 +69,26 @@ export function AuthOnboarding() {
     return steps.findIndex(step => step.id === currentStep);
   };
 
+  const handleAutofillDemo = () => {
+    setDemoMode(true);
+    setSelectedRole('patient');
+    setCurrentStep('registration');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-teal-50 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-8 relative"
         >
+          <button
+            onClick={handleAutofillDemo}
+            className="absolute top-0 right-0 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1 transition-colors"
+          >
+            <Zap className="w-4 h-4" /> Autofill Demo Data
+          </button>
           <h1 className="text-4xl font-bold text-indigo-600 mb-2">🏠 HouseOfVoice</h1>
           <p className="text-gray-600">{t('welcome')} - {t('register')}</p>
         </motion.div>
@@ -141,7 +154,7 @@ export function AuthOnboarding() {
               </button>
 
               {selectedRole === 'patient' && (
-                <PatientForm onSuccess={handleRegistrationSuccess} />
+                <PatientForm onSuccess={handleRegistrationSuccess} demoMode={demoMode} />
               )}
               {selectedRole === 'guardian' && (
                 <GuardianForm onSuccess={handleRegistrationSuccess} />
@@ -168,7 +181,7 @@ export function AuthOnboarding() {
               >
                 <ArrowLeft className="w-4 h-4" /> Back to registration
               </button>
-              <CommunicationProfileForm userId={userId} onSuccess={handleCommunicationSuccess} />
+              <CommunicationProfileForm userId={userId} onSuccess={handleCommunicationSuccess} demoMode={demoMode} />
             </motion.div>
           )}
 
@@ -185,7 +198,7 @@ export function AuthOnboarding() {
               >
                 <ArrowLeft className="w-4 h-4" /> Back to communication profile
               </button>
-              <IntakeForm userId={userId} onSuccess={handleIntakeSuccess} />
+              <IntakeForm userId={userId} onSuccess={handleIntakeSuccess} demoMode={demoMode} />
             </motion.div>
           )}
 
@@ -202,7 +215,7 @@ export function AuthOnboarding() {
               >
                 <ArrowLeft className="w-4 h-4" /> Back to intake
               </button>
-              <ConsentForm userId={userId} onSuccess={handleConsentSuccess} />
+              <ConsentForm userId={userId} onSuccess={handleConsentSuccess} demoMode={demoMode} />
             </motion.div>
           )}
 

@@ -18,6 +18,7 @@ interface CommunicationProfileFormData {
 interface CommunicationProfileFormProps {
   userId: string;
   onSuccess: () => void;
+  demoMode?: boolean;
 }
 
 const languages = [
@@ -48,13 +49,20 @@ const comfortLevels = [
   { value: 'high', label: 'High', icon: Smile, description: 'Very comfortable meeting new people' }
 ];
 
-export function CommunicationProfileForm({ userId, onSuccess }: CommunicationProfileFormProps) {
+export function CommunicationProfileForm({ userId, onSuccess, demoMode = false }: CommunicationProfileFormProps) {
   const { t, setLanguage } = useLanguage();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CommunicationProfileFormData>();
-  const [selectedReading, setSelectedReading] = useState('developing');
-  const [selectedTyping, setSelectedTyping] = useState('developing');
-  const [selectedMethod, setSelectedMethod] = useState('voice');
-  const [selectedComfort, setSelectedComfort] = useState('medium');
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<CommunicationProfileFormData>({
+    defaultValues: demoMode ? {
+      primary_language: 'English',
+      secondary_language: 'Spanish',
+      preferred_therapy_language: 'English',
+      guardian_assistance_required: true
+    } : undefined
+  });
+  const [selectedReading, setSelectedReading] = useState(demoMode ? 'developing' : 'developing');
+  const [selectedTyping, setSelectedTyping] = useState(demoMode ? 'none' : 'developing');
+  const [selectedMethod, setSelectedMethod] = useState(demoMode ? 'voice' : 'voice');
+  const [selectedComfort, setSelectedComfort] = useState(demoMode ? 'medium' : 'medium');
 
   const onSubmit = async (data: CommunicationProfileFormData) => {
     try {
@@ -272,6 +280,7 @@ export function CommunicationProfileForm({ userId, onSuccess }: CommunicationPro
             <input
               type="checkbox"
               {...register('guardian_assistance_required')}
+              defaultChecked={demoMode}
               className="sr-only peer"
             />
             <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>

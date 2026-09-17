@@ -13,13 +13,14 @@ interface ConsentFormData {
 interface ConsentFormProps {
   userId: string;
   onSuccess: () => void;
+  demoMode?: boolean;
 }
 
-export function ConsentForm({ userId, onSuccess }: ConsentFormProps) {
+export function ConsentForm({ userId, onSuccess, demoMode = false }: ConsentFormProps) {
   const { t } = useLanguage();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ConsentFormData>();
-  const [recordingConsent, setRecordingConsent] = useState<boolean | null>(null);
-  const [supervisorConsent, setSupervisorConsent] = useState<boolean | null>(null);
+  const [recordingConsent, setRecordingConsent] = useState<boolean | null>(demoMode ? true : null);
+  const [supervisorConsent, setSupervisorConsent] = useState<boolean | null>(demoMode ? true : null);
 
   const onSubmit = async (data: ConsentFormData) => {
     try {

@@ -15,6 +15,7 @@ interface IntakeFormData {
 interface IntakeFormProps {
   userId: string;
   onSuccess: () => void;
+  demoMode?: boolean;
 }
 
 const challengeOptions = [
@@ -26,10 +27,18 @@ const challengeOptions = [
   { id: 'reading_aloud', label: 'Reading Aloud' }
 ];
 
-export function IntakeForm({ userId, onSuccess }: IntakeFormProps) {
+export function IntakeForm({ userId, onSuccess, demoMode = false }: IntakeFormProps) {
   const { t } = useLanguage();
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<IntakeFormData>();
-  const [selectedChallenges, setSelectedChallenges] = useState<string[]>([]);
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<IntakeFormData>({
+    defaultValues: demoMode ? {
+      primary_concern: "Difficulty with 's' and 'th' phonemes, stuttering when excited",
+      medical_history: "None",
+      prior_therapy: "None",
+      medications: "None",
+      therapy_goals: "Clear articulation at school"
+    } : undefined
+  });
+  const [selectedChallenges, setSelectedChallenges] = useState<string[]>(demoMode ? ['school', 'public_speaking'] : []);
 
   const toggleChallenge = (challengeId: string) => {
     setSelectedChallenges(prev => 
