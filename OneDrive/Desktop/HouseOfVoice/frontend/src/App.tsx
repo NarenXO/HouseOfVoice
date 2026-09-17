@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 // import { MatchingFlow } from './features/matching/MatchingFlow'
 // import { LearningDashboard } from './features/learning/LearningDashboard'
 // import { SessionRoom } from './features/session/SessionRoom'
-// import { DocsDashboard } from './features/docs/DocsDashboard'
+import { DashboardDocs } from './features/dashboard-docs'
 
 function Home() {
   return (
@@ -26,7 +26,7 @@ export default function App() {
         {/* <Route path="/matching/*" element={<MatchingFlow />} /> */}
         {/* <Route path="/learning/*" element={<LearningDashboard />} /> */}
         {/* <Route path="/session/*" element={<SessionRoom />} /> */}
-        {/* <Route path="/docs/*" element={<DocsDashboard />} /> */}
+        <Route path="/docs" element={<DashboardDocs />} />
       </Routes>
     </BrowserRouter>
   )
