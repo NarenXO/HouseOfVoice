@@ -7,9 +7,10 @@ interface RoadmapProps {
   milestones: Milestone[];
   onMilestoneClick: (milestone: Milestone) => void;
   onUnlockMilestone: (milestoneId: string) => void;
+  progressData?: { [milestoneId: string]: { consecutive_successes: number; checkpoint_ready: boolean } };
 }
 
-export default function Roadmap({ milestones, onMilestoneClick, onUnlockMilestone }: RoadmapProps) {
+export default function Roadmap({ milestones, onMilestoneClick, onUnlockMilestone, progressData = {} }: RoadmapProps) {
   const [hoveredMilestone, setHoveredMilestone] = useState<string | null>(null);
 
   // Sort milestones by order_index
@@ -138,6 +139,13 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 <div className={`text-sm font-medium text-center max-w-[100px] ${styles.text}`}>
                   {milestone.title}
                 </div>
+
+                {/* Progress indicator for active milestones */}
+                {milestone.status === "active" && progressData[milestone.id] && (
+                  <div className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full">
+                    {progressData[milestone.id].consecutive_successes}/3
+                  </div>
+                )}
               </div>
 
               {/* Connector line (after node, except for last) */}
@@ -201,6 +209,13 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 <div className={`text-sm font-medium text-center max-w-[100px] ${styles.text}`}>
                   {milestone.title}
                 </div>
+
+                {/* Progress indicator for active milestones */}
+                {milestone.status === "active" && progressData[milestone.id] && (
+                  <div className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded-full">
+                    {progressData[milestone.id].consecutive_successes}/3
+                  </div>
+                )}
               </div>
 
               {/* Connector line (vertical, except for last) */}

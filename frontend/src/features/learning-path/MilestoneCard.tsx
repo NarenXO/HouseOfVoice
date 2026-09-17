@@ -1,13 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Lock, Star } from "lucide-react";
 import { Milestone, Exercise } from "./types";
+import PracticePanel from "./PracticePanel";
 
 interface MilestoneCardProps {
   milestone: Milestone | null;
   onUnlockMilestone: (milestoneId: string) => void;
+  caseId: string;
+  onProgressUpdate?: (milestoneId: string, consecutiveSuccesses: number, checkpointReady: boolean) => void;
 }
 
-export default function MilestoneCard({ milestone, onUnlockMilestone }: MilestoneCardProps) {
+export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, onProgressUpdate }: MilestoneCardProps) {
   if (!milestone) {
     return null;
   }
@@ -117,28 +120,32 @@ export default function MilestoneCard({ milestone, onUnlockMilestone }: Mileston
           {/* Banner */}
           {getBanner()}
 
-          {/* Exercises List */}
-          <div className="space-y-3">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Exercises</h4>
-            {mockExercises.map((exercise) => (
-              <div
-                key={exercise.id}
-                className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
-              >
-                <div className="pt-1">
-                  {exercise.done ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  ) : (
-                    <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
-                  )}
+          {/* Practice Panel for active milestones, read-only list for others */}
+          {milestone.status === "active" ? (
+            <PracticePanel milestone={milestone} caseId={caseId} onProgressUpdate={onProgressUpdate} />
+          ) : (
+            <div className="space-y-3">
+              <h4 className="text-sm font-semibold text-gray-700 mb-2">Exercises</h4>
+              {mockExercises.map((exercise) => (
+                <div
+                  key={exercise.id}
+                  className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg"
+                >
+                  <div className="pt-1">
+                    {exercise.done ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    ) : (
+                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-900 text-sm">{exercise.title}</p>
+                    <p className="text-gray-600 text-xs mt-1">{exercise.instructions}</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="font-medium text-gray-900 text-sm">{exercise.title}</p>
-                  <p className="text-gray-600 text-xs mt-1">{exercise.instructions}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

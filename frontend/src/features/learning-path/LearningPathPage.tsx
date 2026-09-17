@@ -13,6 +13,7 @@ export default function LearningPathPage() {
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [progressData, setProgressData] = useState<{ [milestoneId: string]: { consecutive_successes: number; checkpoint_ready: boolean } }>({});
 
   // Mock case ID - in production this would come from auth context
   const caseId = "case_demo_001";
@@ -27,6 +28,24 @@ export default function LearningPathPage() {
       // Try to fetch from API
       const response = await axios.get(`${API_BASE}/learning/paths/${caseId}/roadmap`);
       setLearningPath(response.data);
+
+      // Fetch progress data for active milestones
+      const activeMilestones = response.data.milestones.filter((m: Milestone) => m.status === "active");
+      const progressPromises = activeMilestones.map((m: Milestone) =>
+        axios.get(`${API_BASE}/learning/milestones/${m.id}/progress`)
+      );
+
+      const progressResponses = await Promise.all(progressPromises);
+      const newProgressData: { [milestoneId: string]: { consecutive_successes: number; checkpoint_ready: boolean } } = {};
+
+      activeMilestones.forEach((m: Milestone, index: number) => {
+        newProgressData[m.id] = {
+          consecutive_successes: progressResponses[index].data.consecutive_successes,
+          checkpoint_ready: progressResponses[index].data.checkpoint_ready,
+        };
+      });
+
+      setProgressData(newProgressData);
     } catch (err) {
       // Fallback to mock data
       console.log("API unavailable, using mock data");
@@ -88,6 +107,16 @@ export default function LearningPathPage() {
         }
       }
     }
+  };
+
+  const handleProgressUpdate = (milestoneId: string, consecutiveSuccesses: number, checkpointReady: boolean) => {
+    setProgressData(prev => ({
+      ...prev,
+      [milestoneId]: {
+        consecutive_successes: consecutiveSuccesses,
+        checkpoint_ready: checkpointReady,
+      }
+    }));
   };
 
   const handleUpdateMilestone = (milestone: Milestone) => {
@@ -205,12 +234,15 @@ export default function LearningPathPage() {
               milestones={learningPath.milestones}
               onMilestoneClick={handleMilestoneClick}
               onUnlockMilestone={handleUnlockMilestone}
+              progressData={progressData}
             />
 
             {/* Milestone Detail Card */}
             <MilestoneCard
               milestone={selectedMilestone}
               onUnlockMilestone={handleUnlockMilestone}
+              caseId={caseId}
+              onProgressUpdate={handleProgressUpdate}
             />
           </div>
         ) : (

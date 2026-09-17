@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
-from app.services.learning import MilestoneStateMachine
+from app.services.learning import MilestoneStateMachine, record_practice_attempt, update_streak, get_practice_progress, get_streak
 from app.models.shared import Milestone
 
 router = APIRouter()
@@ -34,6 +34,12 @@ class UnlockRequest(BaseModel):
     case_id: str
 
 
+class PracticeAttemptRequest(BaseModel):
+    case_id: str
+    exercise_index: int
+    audio_or_text: str = ""
+
+
 @router.get("/ping")
 def ping():
     return {"module": "learning", "status": "ok"}
@@ -60,8 +66,59 @@ def unlock_milestone(milestone_id: str, request: UnlockRequest):
         raise HTTPException(status_code=400, detail=str(e))
 
 
+@router.post("/milestones/{milestone_id}/practice-attempt")
+async def practice_attempt(milestone_id: str, request: PracticeAttemptRequest):
+    """
+    Record a practice attempt for a milestone exercise.
+
+    Only active milestones accept practice attempts. The system tracks
+    consecutive successful attempts and signals when the checkpoint is ready.
+    """
+    milestone = store.get_milestone(milestone_id)
+
+    if not milestone:
+        raise HTTPException(status_code=404, detail="Milestone not found")
+
+    if milestone.status != "active":
+        raise HTTPException(
+            status_code=400,
+            detail=f"Only active milestones accept practice attempts. Current status: {milestone.status}"
+        )
+
+    # Record the practice attempt
+    attempt_result = await record_practice_attempt(
+        milestone_id=milestone_id,
+        case_id=request.case_id,
+        exercise_index=request.exercise_index,
+        audio_or_text=request.audio_or_text
+    )
+
+    # Update streak
+    streak_data = await update_streak(request.case_id)
+
+    return {
+        "attempt_id": attempt_result["attempt_id"],
+        "passed": attempt_result["passed"],
+        "exercise_done": attempt_result["exercise_done"],
+        "consecutive_successes": attempt_result["consecutive_successes"],
+        "checkpoint_ready": attempt_result["checkpoint_ready"],
+        "streak": streak_data
+    }
+
+
+@router.get("/milestones/{milestone_id}/progress")
+async def get_progress(milestone_id: str):
+    """
+    Get practice progress for a milestone.
+
+    Returns completion status, consecutive successes, and checkpoint readiness.
+    """
+    progress_data = await get_practice_progress(milestone_id)
+    return progress_data
+
+
 @router.get("/paths/{case_id}/roadmap")
-def get_roadmap(case_id: str):
+async def get_roadmap(case_id: str):
     """
     Get the full learning path roadmap for a patient case.
 
@@ -70,51 +127,67 @@ def get_roadmap(case_id: str):
     """
     path_data = store.get_path(case_id)
 
+    # Get streak from practice tracker
+    streak_data = await get_streak(case_id)
+
     if not path_data:
-        # Return demo data if no path exists
+        # Initialize demo milestones in store for practice attempts
+        demo_milestones = [
+            Milestone(
+                id="m1",
+                path_id=f"path_{case_id}",
+                order_index=1,
+                title="s - start of words",
+                goal="Produce /s/ correctly at word-initial position",
+                status="generalized",
+                linked_demo_id="mod_s_start",
+            ),
+            Milestone(
+                id="m2",
+                path_id=f"path_{case_id}",
+                order_index=2,
+                title="s - end of words",
+                goal="Produce /s/ correctly at word-final position",
+                status="trained",
+                linked_demo_id="mod_s_end",
+            ),
+            Milestone(
+                id="m3",
+                path_id=f"path_{case_id}",
+                order_index=3,
+                title="short sentences with s",
+                goal="Use /s/ correctly in short sentences",
+                status="active",
+                linked_demo_id=None,
+            ),
+            Milestone(
+                id="m4",
+                path_id=f"path_{case_id}",
+                order_index=4,
+                title="stories with s",
+                goal="Use /s/ correctly in longer narratives",
+                status="locked",
+                linked_demo_id=None,
+            ),
+        ]
+
+        # Store milestones for practice attempts AND store the path
+        for milestone in demo_milestones:
+            store.set_milestone(milestone.id, milestone)
+
+        store.set_path(case_id, {
+            "path_id": f"path_{case_id}",
+            "case_id": case_id,
+            "is_live": False,
+            "milestones": [m.model_dump() for m in demo_milestones],
+        })
+
         return {
             "path_id": f"path_{case_id}",
             "case_id": case_id,
             "is_live": False,
-            "milestones": [
-                {
-                    "id": "m1",
-                    "path_id": f"path_{case_id}",
-                    "order_index": 1,
-                    "title": "s - start of words",
-                    "goal": "Produce /s/ correctly at word-initial position",
-                    "status": "generalized",
-                    "linked_demo_id": "mod_s_start",
-                },
-                {
-                    "id": "m2",
-                    "path_id": f"path_{case_id}",
-                    "order_index": 2,
-                    "title": "s - end of words",
-                    "goal": "Produce /s/ correctly at word-final position",
-                    "status": "trained",
-                    "linked_demo_id": "mod_s_end",
-                },
-                {
-                    "id": "m3",
-                    "path_id": f"path_{case_id}",
-                    "order_index": 3,
-                    "title": "short sentences with s",
-                    "goal": "Use /s/ correctly in short sentences",
-                    "status": "active",
-                    "linked_demo_id": None,
-                },
-                {
-                    "id": "m4",
-                    "path_id": f"path_{case_id}",
-                    "order_index": 4,
-                    "title": "stories with s",
-                    "goal": "Use /s/ correctly in longer narratives",
-                    "status": "locked",
-                    "linked_demo_id": None,
-                },
-            ],
-            "streak": {"current_streak_days": 2},
+            "milestones": [m.model_dump() for m in demo_milestones],
+            "streak": streak_data,
         }
 
     # Sort milestones by order_index
@@ -125,6 +198,6 @@ def get_roadmap(case_id: str):
         "case_id": case_id,
         "is_live": path_data.get("is_live", False),
         "milestones": sorted_milestones,
-        "streak": {"current_streak_days": 2},  # Hardcoded for now, real logic in Phase 7
+        "streak": streak_data,
     }
 
