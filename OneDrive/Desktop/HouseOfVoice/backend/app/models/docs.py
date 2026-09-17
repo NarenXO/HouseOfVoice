@@ -35,3 +35,21 @@ class AIDraftResponse(BaseModel):
     parent_summary: str
     approved: bool = False
     created_at: datetime
+
+
+class DashboardMetric(BaseModel):
+    label: str
+    data: list[dict]
+
+
+class DashboardResponse(BaseModel):
+    case_id: str
+    speech_clarity: DashboardMetric
+    fluency: DashboardMetric
+    pronunciation: DashboardMetric
+    voice_stability: DashboardMetric
+    attendance: DashboardMetric
+    milestone_progress: DashboardMetric
+    generalization_rate: dict[str, list[dict]]
+    isolation_forest_alert: bool
+    alert_message: str | None = None

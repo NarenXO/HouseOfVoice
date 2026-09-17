@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
-from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse
-from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case
+from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse
+from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard
 import json
 from pathlib import Path
 
@@ -84,3 +84,9 @@ async def get_ai_drafts(case_id: str):
     
     drafts = get_drafts_by_case(case_id)
     return drafts
+
+
+@router.get("/dashboard/{case_id}", response_model=DashboardResponse)
+async def get_dashboard_data(case_id: str):
+    dashboard_data = get_dashboard(case_id)
+    return dashboard_data
