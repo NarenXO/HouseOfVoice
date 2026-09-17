@@ -2,12 +2,12 @@ import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-do
 import { LanguageProvider } from './shared/LanguageContext'
 import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding'
 import DashboardDocs from './features/dashboard-docs/DashboardDocs'
-import { Activity, UserCheck, LayoutDashboard, Users } from 'lucide-react'
+import { Activity, UserCheck, LayoutDashboard, Users, BookOpen } from 'lucide-react'
 
 /* Feature imports — uncomment during integration */
 // import { ScreeningFlow } from './features/screening/ScreeningFlow'
 // import { MatchingFlow } from './features/matching/MatchingFlow'
-// import { LearningDashboard } from './features/learning/LearningDashboard'
+// import { LearningPathPage } from './features/learning-path/LearningPathPage'
 // import { SessionRoom } from './features/session/SessionRoom'
 
 function Header() {
@@ -16,6 +16,7 @@ function Header() {
   const navItems = [
     { path: '/', label: 'Onboarding', icon: UserCheck },
     { path: '/docs', label: 'Progress Dashboard', icon: LayoutDashboard },
+    // { path: '/learning', label: 'Learning Path', icon: BookOpen },
     { path: '/matching', label: 'Therapist Matching', icon: Users },
   ];
 
@@ -79,6 +80,7 @@ export default function App() {
               <Route path="/" element={<AuthOnboarding />} />
               <Route path="/auth/*" element={<AuthOnboarding />} />
               <Route path="/docs/*" element={<DashboardDocs />} />
+              {/* <Route path="/learning/*" element={<LearningPathPage />} /> */}
               <Route path="/matching" element={
                 <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
                   <h2 className="text-3xl font-bold text-[#0F172A] mb-4">Therapist Matching</h2>
@@ -87,7 +89,6 @@ export default function App() {
                 </div>
               } />
               {/* <Route path="/screening/*" element={<ScreeningFlow />} /> */}
-              {/* <Route path="/learning/*" element={<LearningDashboard />} /> */}
               {/* <Route path="/session/*" element={<SessionRoom />} /> */}
             </Routes>
           </main>
