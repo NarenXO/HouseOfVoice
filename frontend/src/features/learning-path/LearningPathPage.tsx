@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Roadmap from "./Roadmap";
 import MilestoneCard from "./MilestoneCard";
 import MilestoneEditor from "./MilestoneEditor";
+import GeneralizationGauge from "./GeneralizationGauge";
 import { Milestone, LearningPath } from "./types";
 import axios from "axios";
 
@@ -14,6 +15,7 @@ export default function LearningPathPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<{ [milestoneId: string]: { consecutive_successes: number; checkpoint_ready: boolean } }>({});
+  const [refreshKey, setRefreshKey] = useState(0);
 
   // Mock case ID - in production this would come from auth context
   const caseId = "case_demo_001";
@@ -119,6 +121,11 @@ export default function LearningPathPage() {
     }));
   };
 
+  const handleProbeComplete = () => {
+    // Increment refresh key to trigger gauge update
+    setRefreshKey(prev => prev + 1);
+  };
+
   const handleUpdateMilestone = (milestone: Milestone) => {
     if (learningPath) {
       const updatedMilestones = learningPath.milestones.map((m) =>
@@ -216,6 +223,11 @@ export default function LearningPathPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === "roadmap" ? (
           <div>
+            {/* Generalization Gauge - Prominent Position */}
+            <div className="mb-6">
+              <GeneralizationGauge caseId={caseId} refreshTrigger={refreshKey} />
+            </div>
+
             {/* Streak Banner */}
             {learningPath.streak && (
               <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 mb-6 text-white">
@@ -243,6 +255,7 @@ export default function LearningPathPage() {
               onUnlockMilestone={handleUnlockMilestone}
               caseId={caseId}
               onProgressUpdate={handleProgressUpdate}
+              onProbeComplete={handleProbeComplete}
             />
           </div>
         ) : (

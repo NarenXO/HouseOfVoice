@@ -12,6 +12,7 @@ interface PracticePanelProps {
   caseId: string;
   onCheckpointReady?: () => void;
   onProgressUpdate?: (milestoneId: string, consecutiveSuccesses: number, checkpointReady: boolean) => void;
+  onProbeComplete?: () => void;
 }
 
 interface PracticeProgress {
@@ -27,7 +28,7 @@ interface StreakData {
   last_practice_date: string | null;
 }
 
-export default function PracticePanel({ milestone, caseId, onCheckpointReady, onProgressUpdate }: PracticePanelProps) {
+export default function PracticePanel({ milestone, caseId, onCheckpointReady, onProgressUpdate, onProbeComplete }: PracticePanelProps) {
   const [progress, setProgress] = useState<PracticeProgress | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -158,6 +159,11 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
 
   const handleProbeComplete = (status: "generalized" | "trained", extraItems?: string[]) => {
     setShowProbeSession(false);
+
+    // Trigger gauge refresh
+    if (onProbeComplete) {
+      onProbeComplete();
+    }
 
     if (status === "generalized") {
       // Refresh roadmap and milestone cards

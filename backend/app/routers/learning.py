@@ -13,6 +13,7 @@ from app.services.learning import (
     serve_probe,
     score_probe,
     get_probe_statistics,
+    get_all_phoneme_statistics,
 )
 from app.models.shared import Milestone
 
@@ -279,6 +280,17 @@ async def checkpoint(milestone_id: str, request: CheckpointRequest):
     }
 
 
+@router.get("/generalization/{case_id}")
+async def get_generalization_summary(case_id: str):
+    """
+    Get generalization statistics summary for all phonemes for a case.
+
+    Returns overall statistics and per-phoneme breakdown.
+    """
+    stats = get_all_phoneme_statistics(case_id)
+    return stats
+
+
 @router.get("/generalization/{case_id}/{phoneme}")
 async def get_generalization_stats(case_id: str, phoneme: str):
     """
@@ -288,6 +300,8 @@ async def get_generalization_stats(case_id: str, phoneme: str):
     """
     # Decode URL-encoded phoneme (e.g., %2Fs%2F -> /s/)
     decoded_phoneme = unquote(phoneme)
-    stats = get_probe_statistics(case_id, decoded_phoneme)
+    # Remove slashes if present for consistency with probe_engine
+    normalized_phoneme = decoded_phoneme.strip("/")
+    stats = get_probe_statistics(case_id, normalized_phoneme)
     return stats
 
