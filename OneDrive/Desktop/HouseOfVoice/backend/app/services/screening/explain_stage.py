@@ -29,10 +29,9 @@ def _rule_based_recommendations(metrics: dict) -> List[str]:
     severity: str = metrics.get("overall_severity", "mild")
     recs = []
 
-    for phoneme, (threshold, message) in _PHONEME_RULES.items():
-        score = phoneme_scores.get(phoneme, 1.0)
-        if score < threshold:
-            recs.append(message)
+    for phoneme, score in phoneme_scores.items():
+        if phoneme in _PHONEME_RULES and score < _PHONEME_RULES[phoneme][0]:
+            recs.append(_PHONEME_RULES[phoneme][1])
 
     if severity in _SEVERITY_RECS:
         recs.append(_SEVERITY_RECS[severity])
@@ -48,38 +47,43 @@ async def process_explanation(metrics: dict) -> List[str]:
     gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 
     if gemini_key:
-        try:
-            import google.generativeai as genai
+        import google.generativeai as genai
+        genai.configure(api_key=gemini_key)
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
-            genai.configure(api_key=gemini_key)
-            model = genai.GenerativeModel("gemini-1.5-flash")
+        phoneme_scores = metrics.get("phoneme_scores", {})
+        severity = metrics.get("overall_severity", "mild")
+        fluency = metrics.get("fluency_score", 0.72)
+        language = metrics.get("language_score", 0.65)
 
-            phoneme_scores = metrics.get("phoneme_scores", {})
-            severity = metrics.get("overall_severity", "mild")
-            fluency = metrics.get("fluency_score", 0.72)
-            language = metrics.get("language_score", 0.65)
+        lowest_phonemes = []
+        if phoneme_scores:
+            lowest_phonemes = sorted(phoneme_scores.items(), key=lambda x: x[1])[:2]
+            lowest_str = ", ".join([f"/{p}/ ({s})" for p, s in lowest_phonemes])
+        else:
+            lowest_str = "None specifically detected"
 
-            prompt = (
-                f"You are a licensed speech-language pathologist.\n"
-                f"A child patient has been assessed with the following metrics:\n"
-                f"- Overall severity: {severity}\n"
-                f"- Fluency score: {fluency:.2f} (0=poor, 1=excellent)\n"
-                f"- Language score: {language:.2f} (0=poor, 1=excellent)\n"
-                f"- Phoneme accuracy scores: {phoneme_scores}\n\n"
-                f"Provide exactly 2 to 3 specific, evidence-based therapy recommendations "
-                f"for the therapist. Output only the recommendations as a numbered list "
-                f"with no additional commentary. Each item on its own line, starting with '1.', '2.', '3.'."
-            )
+        prompt = (
+            f"You are a licensed speech-language pathologist.\n"
+            f"A child patient has been assessed with the following metrics:\n"
+            f"- Overall severity: {severity}\n"
+            f"- Fluency score: {fluency:.2f} (0=poor, 1=excellent)\n"
+            f"- Language score: {language:.2f} (0=poor, 1=excellent)\n"
+            f"- Phoneme accuracy scores: {phoneme_scores}\n"
+            f"- Lowest scoring phonemes actually detected: {lowest_str}\n\n"
+            f"Provide exactly 2 to 3 specific, evidence-based therapy recommendations "
+            f"for the therapist. Specifically cite the lowest-scoring phonemes actually detected. "
+            f"Output only the recommendations as a numbered list "
+            f"with no additional commentary. Each item on its own line, starting with '1.', '2.', '3.'."
+        )
 
-            response = model.generate_content(prompt)
-            lines = [
-                line.strip().lstrip("123456789. )")
-                for line in response.text.strip().splitlines()
-                if line.strip() and line.strip()[0].isdigit()
-            ]
-            if lines:
-                return lines[:3]
-        except Exception as e:
-            logger.warning(f"[explain_stage] Gemini call failed: {e}. Using rule-based fallback.")
+        response = model.generate_content(prompt)
+        lines = [
+            line.strip().lstrip("123456789. )")
+            for line in response.text.strip().splitlines()
+            if line.strip() and line.strip()[0].isdigit()
+        ]
+        if lines:
+            return lines[:3]
 
     return _rule_based_recommendations(metrics)

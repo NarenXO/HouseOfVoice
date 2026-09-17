@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/screening", tags=["screening"])
 
 # --- Environment & Storage Setup ---
-USE_MOCKS = os.getenv("USE_MOCKS", "True").lower() == "true"
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY") or os.getenv("SUPABASE_SERVICE_ROLE_KEY")
 SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "baseline-recordings")
@@ -55,18 +54,25 @@ async def create_baseline_recording(
     recorded_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
     
     storage_url = None
-    if not USE_MOCKS:
-        supabase = get_supabase_client()
-        if supabase:
-            try:
-                file_path = f"{case_id}/{prompt_type.value}_{clip_id}.wav"
-                supabase.storage.from_(SUPABASE_BUCKET).upload(file_path, file_bytes)
-                storage_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(file_path)
-            except Exception as e:
-                logger.error(f"Supabase upload failed: {e}")
-                
+    supabase = get_supabase_client()
+    if supabase:
+        try:
+            file_path = f"{case_id}/{prompt_type.value}_{clip_id}.wav"
+            supabase.storage.from_(SUPABASE_BUCKET).upload(file_path, file_bytes)
+            storage_url = supabase.storage.from_(SUPABASE_BUCKET).get_public_url(file_path)
+        except Exception as e:
+            logger.error(f"Supabase upload failed: {e}")
+    
     if not storage_url:
-        storage_url = f"https://mock-storage.houseofvoice.internal/{case_id}/{prompt_type.value}_{clip_id}.wav"
+        # Fallback to local storage
+        from pathlib import Path
+        import tempfile
+        local_dir = Path("backend/tmp/screening") / case_id
+        local_dir.mkdir(parents=True, exist_ok=True)
+        local_path = local_dir / f"{clip_id}.wav"
+        with open(local_path, "wb") as f:
+            f.write(file_bytes)
+        storage_url = f"local://{local_path.absolute()}"
         
     _RECORDINGS_DB[clip_id] = {
         "clip_id": clip_id,
@@ -87,23 +93,26 @@ async def create_baseline_recording(
 
 @router.post("/run-pipeline", response_model=ScreeningResultDB)
 async def run_pipeline(request: RunPipelineRequest):
-    clip_urls = {}
+    clip_data = {}
     for p_type, c_id in request.clip_ids.items():
         if c_id in _RECORDINGS_DB:
-            clip_urls[p_type] = _RECORDINGS_DB[c_id]["storage_url"]
+            clip_data[p_type] = {
+                "url": _RECORDINGS_DB[c_id]["storage_url"],
+                "bytes": _RECORDINGS_DB[c_id]["raw_bytes"]
+            }
         else:
-            clip_urls[p_type] = f"https://mock-storage.houseofvoice.internal/{request.case_id}/fallback_{c_id}.wav"
+            clip_data[p_type] = {
+                "url": f"https://mock-storage.houseofvoice.internal/{request.case_id}/fallback_{c_id}.wav",
+                "bytes": None
+            }
             
     try:
-        result = await run_full_pipeline(request.case_id, clip_urls)
+        result = await run_full_pipeline(request.case_id, clip_data)
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Pipeline error: {e}")
-        from pathlib import Path
-        mock_path = Path(__file__).resolve().parent.parent.parent.parent / "shared" / "mocks" / "screening_result.mock.json"
-        with open(mock_path, "r", encoding="utf-8") as f:
-            result = json.load(f)
-        result["case_id"] = request.case_id
-        result["created_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        logger.error(f"[screening] Pipeline error: {e}")
+        raise HTTPException(status_code=400, detail="Failed to run pipeline")
         
     _RESULTS_DB[request.case_id] = result
     return ScreeningResultDB(**result)
@@ -113,13 +122,4 @@ async def get_screening_result(case_id: str):
     if case_id in _RESULTS_DB:
         return ScreeningResultDB(**_RESULTS_DB[case_id])
         
-    if USE_MOCKS:
-        from pathlib import Path
-        mock_path = Path(__file__).resolve().parent.parent.parent.parent / "shared" / "mocks" / "screening_result.mock.json"
-        if mock_path.exists():
-            with open(mock_path, "r", encoding="utf-8") as f:
-                result = json.load(f)
-            result["case_id"] = case_id
-            return ScreeningResultDB(**result)
-            
     raise HTTPException(status_code=404, detail=f"ScreeningResult for case_id '{case_id}' not found.")

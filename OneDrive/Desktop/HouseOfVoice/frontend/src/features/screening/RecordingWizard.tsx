@@ -116,6 +116,7 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
     if (!audioBlob) return;
     setRecordState('uploading');
     setError(null);
+    let isPipelineError = false;
     try {
       const res = await uploadRecording(caseId, step.id, audioBlob);
       const newClipIds = { ...clipIds, [step.id]: res.clip_id };
@@ -127,13 +128,26 @@ export const RecordingWizard: React.FC<Props> = ({ caseId, onComplete }) => {
         setRecordState('idle');
       } else {
         // All steps done → run pipeline
+        isPipelineError = true;
         setAnalyzing(true);
         const result = await runPipeline(caseId, newClipIds);
         onComplete(result);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed. Please try again.');
-      setRecordState('recorded');
+      let msg = err instanceof Error ? err.message : 'Upload failed. Please try again.';
+      if (msg.includes('No speech detected') || msg.includes('silent')) {
+        msg = '⚠️ Analysis Failed: No speech detected in your audio. Please re-record your clips and speak clearly into the microphone.';
+      }
+      setError(msg);
+
+      if (isPipelineError) {
+        setAnalyzing(false);
+        setStepIndex(0);
+        setClipIds({});
+        resetRecording();
+      } else {
+        setRecordState('recorded');
+      }
     }
   };
 

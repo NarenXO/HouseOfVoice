@@ -9,25 +9,25 @@ import os
 
 logger = logging.getLogger(__name__)
 
-_FALLBACK = {
-    "transcript": "The quick brown fox jumps over the lazy dog.",
-    "words": [
-        {"word": "The", "start": 0.0, "end": 0.2, "probability": 0.95},
-        {"word": "quick", "start": 0.2, "end": 0.5, "probability": 0.93},
-        {"word": "brown", "start": 0.5, "end": 0.8, "probability": 0.91},
-        {"word": "fox", "start": 0.8, "end": 1.0, "probability": 0.94},
-    ],
-    "duration": 5.0,
-    "language": "en",
-}
-
-
 async def process_whisper(audio_bytes: bytes) -> dict:
-    """Transcribe audio bytes with faster-whisper. Falls back gracefully on any error."""
+    """Transcribe audio bytes with faster-whisper. Raises ValueError on silence."""
+    import io
+    import numpy as np
+    import soundfile as sf
+    from faster_whisper import WhisperModel
+
+    audio_data, sr = sf.read(io.BytesIO(audio_bytes), dtype="float32")
+    if audio_data.ndim > 1:
+        audio_data = audio_data.mean(axis=1)
+
+    duration = len(audio_data) / sr
+    mean_rms = float(np.sqrt(np.mean(audio_data ** 2)))
+
+    if mean_rms < 0.005 or duration < 0.8:
+        raise ValueError("Audio is silent or too short.")
+
     tmp_path = None
     try:
-        from faster_whisper import WhisperModel
-
         # Write bytes to a temp file
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
             tmp.write(audio_bytes)
@@ -52,16 +52,16 @@ async def process_whisper(audio_bytes: bytes) -> dict:
                         "probability": float(w.probability),
                     })
 
+        transcript_text = full_text.strip()
+        if not transcript_text or not words:
+            raise ValueError("No speech detected in audio clip.")
+
         return {
-            "transcript": full_text.strip(),
+            "transcript": transcript_text,
             "words": words,
-            "duration": float(last_end) if last_end > 0 else 5.0,
+            "duration": float(last_end) if last_end > 0 else duration,
             "language": info.language,
         }
-
-    except Exception as e:
-        logger.warning(f"[whisper_stage] Error during transcription: {e}. Using fallback.")
-        return dict(_FALLBACK)
 
     finally:
         if tmp_path and os.path.exists(tmp_path):

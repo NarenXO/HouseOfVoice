@@ -12,44 +12,40 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-USE_MOCKS = os.getenv("USE_MOCKS", "True").lower() == "true"
-
-MOCK_FILE_PATH = (
-    Path(__file__).resolve().parent.parent.parent.parent.parent / "shared" / "mocks" / "screening_result.mock.json"
-)
-
-
-def _load_mock(case_id: str) -> dict:
-    with open(MOCK_FILE_PATH, "r", encoding="utf-8") as f:
-        data = json.load(f)
-    data["case_id"] = case_id
-    data["created_at"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-    return data
-
-
-def _fetch_audio_bytes(clip_urls: dict) -> bytes:
+def _fetch_audio_bytes(clip_data: dict) -> bytes:
     """
-    Try to fetch audio bytes from the best available clip URL.
+    Try to fetch audio bytes from the best available clip.
     Priority: spontaneous > sentence > picture > first available.
-    If all fail (e.g. mock URLs), return minimal silent WAV bytes.
+    If all fail, return minimal silent WAV bytes.
     """
     priority = ["spontaneous", "sentence", "picture"]
-    ordered_urls = []
+    ordered_clips = []
     for key in priority:
-        if key in clip_urls:
-            ordered_urls.append(clip_urls[key])
-    # Also add any remaining URLs not in priority list
-    for key, url in clip_urls.items():
+        if key in clip_data:
+            ordered_clips.append(clip_data[key])
+    for key, data in clip_data.items():
         if key not in priority:
-            ordered_urls.append(url)
+            ordered_clips.append(data)
 
-    for url in ordered_urls:
+    for data in ordered_clips:
+        if data.get("bytes"):
+            return data["bytes"]
+            
+        url = data.get("url")
         if url and not url.startswith("https://mock-storage"):
-            try:
-                with urllib.request.urlopen(url, timeout=5) as resp:
-                    return resp.read()
-            except Exception as e:
-                logger.debug(f"[pipeline] Could not fetch {url}: {e}")
+            if url.startswith("local://"):
+                try:
+                    local_path = url.replace("local://", "")
+                    with open(local_path, "rb") as f:
+                        return f.read()
+                except Exception as e:
+                    logger.debug(f"[pipeline] Could not read local file {url}: {e}")
+            else:
+                try:
+                    with urllib.request.urlopen(url, timeout=5) as resp:
+                        return resp.read()
+                except Exception as e:
+                    logger.debug(f"[pipeline] Could not fetch {url}: {e}")
 
     # Return minimal valid WAV (44-byte header, 1 second silence at 16kHz)
     logger.warning("[pipeline] No real audio available; using silent WAV stub.")
@@ -81,16 +77,12 @@ def _make_silent_wav(sample_rate: int = 16000, duration_s: int = 1) -> bytes:
     return header + b"\x00" * data_size
 
 
-async def run_full_pipeline(case_id: str, clip_urls: dict) -> dict:
+async def run_full_pipeline(case_id: str, clip_data: dict) -> dict:
     """
     Orchestrate the 7-stage screening pipeline.
     Returns a dict matching the frozen ScreeningResult contract.
     """
-    if USE_MOCKS:
-        logger.info(f"[pipeline] USE_MOCKS=True → returning mock fixture for case_id={case_id}")
-        return _load_mock(case_id)
-
-    logger.info(f"[pipeline] Running live pipeline for case_id={case_id}")
+    logger.info(f"[screening] LIVE mode active. Running live pipeline for case_id={case_id}")
 
     try:
         from app.services.screening import (
@@ -103,19 +95,27 @@ async def run_full_pipeline(case_id: str, clip_urls: dict) -> dict:
             explain_stage,
         )
     except ImportError as e:
-        logger.error(f"[pipeline] Stage import failed: {e}. Returning mock.")
-        return _load_mock(case_id)
+        logger.error(f"[pipeline] Stage import failed: {e}")
+        raise
 
-    audio_bytes = _fetch_audio_bytes(clip_urls)
+    audio_bytes = _fetch_audio_bytes(clip_data)
 
-    # Stage 1 – Whisper
-    whisper_res = await whisper_stage.process_whisper(audio_bytes)
-    logger.info(f"[pipeline] Whisper done: lang={whisper_res.get('language')}, "
-                f"words={len(whisper_res.get('words', []))}")
+    try:
+        # Stage 1 – Whisper
+        whisper_res = await whisper_stage.process_whisper(audio_bytes)
+        logger.info(f"[pipeline] Whisper done: lang={whisper_res.get('language')}, "
+                    f"words={len(whisper_res.get('words', []))}")
 
-    # Stage 2 – VAD
-    vad_res = await vad_stage.process_vad(audio_bytes)
-    logger.info(f"[pipeline] VAD done: speech_ratio={vad_res.get('speech_ratio')}")
+        # Stage 2 – VAD
+        vad_res = await vad_stage.process_vad(audio_bytes)
+        logger.info(f"[pipeline] VAD done: speech_ratio={vad_res.get('speech_ratio')}")
+    except ValueError as e:
+        import fastapi
+        logger.warning(f"[pipeline] Silence detected: {e}")
+        raise fastapi.HTTPException(
+            status_code=400, 
+            detail="No speech detected in your recording. Please record again and speak clearly into your microphone."
+        )
 
     # Stage 3 – Features
     feat_res = await feature_stage.process_features(audio_bytes, whisper_res)
