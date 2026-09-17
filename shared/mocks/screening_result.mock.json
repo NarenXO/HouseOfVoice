@@ -1,0 +1,12 @@
+{
+  "caseId": "case_demo_001",
+  "speechRate": 3.2,
+  "pauseFrequency": 0.18,
+  "pronunciationScore": 0.71,
+  "fluencyScore": 0.68,
+  "voiceStability": 0.82,
+  "clarityScore": 0.74,
+  "confidenceLevel": 0.77,
+  "flaggedErrors": ["s - end of words", "th - start of words", "r - blends"],
+  "plainLanguageSummary": "Mild articulation difficulty on /s/ at word-final position and /th/ at word-initial position. Fluency and voice stability are within normal range."
+}

@@ -1,0 +1,50 @@
+# ============================================================
+# Consolidated dependencies for ALL six workstreams.
+# This file is pre-agreed and frozen for the hackathon — nobody
+# needs to edit it, so it can never cause a merge conflict.
+# If you discover you need something not listed here, add it to
+# the "ADD-ONS" section at the bottom of your OWN branch and flag
+# it to Naren before merge.
+# ============================================================
+
+# --- Core API ---
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+python-dotenv
+python-multipart
+httpx
+
+# --- Data / Auth / Storage ---
+supabase
+
+# --- Screening pipeline (Salman) ---
+faster-whisper
+silero-vad
+torch
+torchaudio
+librosa
+transformers
+resemblyzer
+scikit-learn
+numpy
+pandas
+
+# --- Reasoning / LLM (used by Kavya, Sameer, Sai Pranav, Sanjeevi) ---
+google-generativeai
+
+# --- Realtime (Sai Pranav) ---
+websockets
+
+# --- TTS (Sai Pranav) ---
+# Piper and Coqui are run as CLI/binary tools per their own docs,
+# not pure pip installs — see PIPER_SETUP notes in your prompt.
+
+# ============================================================
+# ADD-ONS (append only, one block per person, with your name)
+# ============================================================
+
+# --- Testing (Sai Pranav - Phase 8) ---
+pytest
+httpx
