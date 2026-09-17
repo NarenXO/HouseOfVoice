@@ -21,3 +21,17 @@ class SessionNoteResponse(BaseModel):
     homework_assigned: str
     clinical_observations: str
     created_at: datetime
+
+
+class AIDraftRequest(BaseModel):
+    session_note_id: str
+
+
+class AIDraftResponse(BaseModel):
+    id: str
+    session_note_id: str
+    soap_note: str
+    session_summary: str
+    parent_summary: str
+    approved: bool = False
+    created_at: datetime

@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, HTTPException
-from app.models.docs import SessionNoteCreate, SessionNoteResponse
-from app.services.docs import save_note, get_notes_by_case, get_note_by_session
+from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse
+from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case
 import json
 from pathlib import Path
 
@@ -55,3 +55,32 @@ async def get_session_notes(case_id: str):
     
     notes = get_notes_by_case(case_id)
     return notes
+
+
+@router.post("/session-notes/draft", response_model=AIDraftResponse)
+async def generate_ai_draft(request: AIDraftRequest):
+    if USE_MOCKS:
+        _seed_mock_data()
+    
+    try:
+        draft = generate_draft(request.session_note_id)
+        return draft
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post("/session-notes/draft/{draft_id}/approve", response_model=AIDraftResponse)
+async def approve_ai_draft(draft_id: str):
+    approved_draft = approve_draft(draft_id)
+    if not approved_draft:
+        raise HTTPException(status_code=404, detail="Draft not found")
+    return approved_draft
+
+
+@router.get("/session-notes/drafts/{case_id}", response_model=List[AIDraftResponse])
+async def get_ai_drafts(case_id: str):
+    if USE_MOCKS:
+        _seed_mock_data()
+    
+    drafts = get_drafts_by_case(case_id)
+    return drafts

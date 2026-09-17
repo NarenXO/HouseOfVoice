@@ -15,7 +15,7 @@ interface NoteData {
   clinical_observations: string;
 }
 
-interface SavedNote {
+export interface SavedNote {
   id: string;
   case_id: string;
   session_id: string;
