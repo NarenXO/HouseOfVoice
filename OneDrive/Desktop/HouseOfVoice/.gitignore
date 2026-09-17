@@ -7,3 +7,4 @@ frontend/.env
 backend/.env
 dist/
 .DS_Store
+*.wav
