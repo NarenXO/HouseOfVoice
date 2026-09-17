@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Flame, Target } from "lucide-react";
+import { CheckCircle2, Flame, Target, Zap } from "lucide-react";
 import { Milestone, Exercise } from "./types";
 import axios from "axios";
 import ProbeSession from "./ProbeSession";
@@ -13,6 +13,7 @@ interface PracticePanelProps {
   onCheckpointReady?: () => void;
   onProgressUpdate?: (milestoneId: string, consecutiveSuccesses: number, checkpointReady: boolean) => void;
   onProbeComplete?: () => void;
+  autoFillTrigger?: number;
 }
 
 interface PracticeProgress {
@@ -28,7 +29,7 @@ interface StreakData {
   last_practice_date: string | null;
 }
 
-export default function PracticePanel({ milestone, caseId, onCheckpointReady, onProgressUpdate, onProbeComplete }: PracticePanelProps) {
+export default function PracticePanel({ milestone, caseId, onCheckpointReady, onProgressUpdate, onProbeComplete, autoFillTrigger }: PracticePanelProps) {
   const [progress, setProgress] = useState<PracticeProgress | null>(null);
   const [streak, setStreak] = useState<StreakData | null>(null);
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -48,6 +49,34 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
     setExercises(mockExercises);
     fetchProgress();
   }, [milestone.id]);
+
+  // Handle auto-fill trigger from parent
+  useEffect(() => {
+    if (autoFillTrigger && autoFillTrigger > 0) {
+      handleAutoFill();
+    }
+  }, [autoFillTrigger]);
+
+  const handleAutoFill = () => {
+    // IMMEDIATE local state updates (synchronous)
+    const updatedExercises = mockExercises.map((ex) => ({ ...ex, done: true }));
+    setExercises(updatedExercises);
+    setProgress({
+      total_exercises: 3,
+      completed_exercises: 3,
+      consecutive_successes: 3,
+      checkpoint_ready: true,
+      recent_attempts: [],
+    });
+
+    // Notify parent immediately
+    if (onProgressUpdate) {
+      onProgressUpdate(milestone.id, 3, true);
+    }
+
+    setNotification("⚡ Quick Demo: All exercises completed!");
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const fetchProgress = async () => {
     try {
@@ -84,73 +113,64 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
   };
 
   const handleMarkDone = async (exerciseIndex: number) => {
-    try {
-      const response = await axios.post(
-        `${API_BASE}/learning/milestones/${milestone.id}/practice-attempt`,
-        {
-          case_id: caseId,
-          exercise_index: exerciseIndex,
-          audio_or_text: "",
-        }
-      );
+    // IMMEDIATE local state updates (happen synchronously)
+    const updatedExercises = exercises.map((ex, index) =>
+      index === exerciseIndex ? { ...ex, done: true } : ex
+    );
+    setExercises(updatedExercises);
 
-      // Update exercise completion
-      const updatedExercises = exercises.map((ex, index) =>
-        index === exerciseIndex ? { ...ex, done: true } : ex
-      );
-      setExercises(updatedExercises);
+    const completedCount = updatedExercises.filter((ex) => ex.done).length;
+    const checkpointReady = completedCount >= 3;
 
-      // Update progress
+    // Update progress immediately
+    setProgress({
+      total_exercises: 3,
+      completed_exercises: completedCount,
+      consecutive_successes: completedCount,
+      checkpoint_ready: checkpointReady,
+      recent_attempts: [],
+    });
+
+    // Notify parent immediately
+    if (onProgressUpdate) {
+      onProgressUpdate(milestone.id, completedCount, checkpointReady);
+    }
+
+    // Show notification immediately
+    const threshold = 3;
+    const remaining = threshold - completedCount;
+    if (remaining > 0) {
+      setNotification(`Great job! ${remaining} more practice session${remaining > 1 ? 's' : ''} to checkpoint`);
+    } else {
+      setNotification("🎯 Checkpoint ready! You've mastered the exercises!");
+    }
+
+    // Clear notification after 3 seconds
+    setTimeout(() => setNotification(null), 3000);
+
+    // Check if checkpoint is ready immediately
+    if (checkpointReady && onCheckpointReady) {
+      onCheckpointReady();
+    }
+
+    // Try API call but don't wait for it - fire and forget
+    axios.post(
+      `${API_BASE}/learning/milestones/${milestone.id}/practice-attempt`,
+      {
+        case_id: caseId,
+        exercise_index: exerciseIndex,
+        audio_or_text: "",
+      }
+    ).then(response => {
+      // Update with server response if successful
       setProgress(response.data);
       setStreak(response.data.streak);
-
-      // Notify parent of progress update
       if (onProgressUpdate) {
         onProgressUpdate(milestone.id, response.data.consecutive_successes, response.data.checkpoint_ready);
       }
-
-      // Show notification
-      const consecutiveCount = response.data.consecutive_successes;
-      const threshold = 3;
-      const remaining = threshold - consecutiveCount;
-      if (remaining > 0) {
-        setNotification(`Great job! ${remaining} more practice session${remaining > 1 ? 's' : ''} to checkpoint`);
-      } else {
-        setNotification("🎯 Checkpoint ready! You've mastered the exercises!");
-      }
-
-      // Clear notification after 3 seconds
-      setTimeout(() => setNotification(null), 3000);
-
-      // Check if checkpoint is ready
-      if (response.data.checkpoint_ready && onCheckpointReady) {
-        onCheckpointReady();
-      }
-    } catch (err) {
-      console.error("Failed to record practice attempt:", err);
-      // Fallback: update local state for demo
-      const updatedExercises = exercises.map((ex, index) =>
-        index === exerciseIndex ? { ...ex, done: true } : ex
-      );
-      setExercises(updatedExercises);
-
-      const completedCount = updatedExercises.filter((ex) => ex.done).length;
-      setProgress({
-        total_exercises: 3,
-        completed_exercises: completedCount,
-        consecutive_successes: completedCount,
-        checkpoint_ready: completedCount >= 3,
-        recent_attempts: [],
-      });
-
-      // Notify parent of progress update
-      if (onProgressUpdate) {
-        onProgressUpdate(milestone.id, completedCount, completedCount >= 3);
-      }
-
-      setNotification("Great job! Practice recorded (demo mode)");
-      setTimeout(() => setNotification(null), 3000);
-    }
+    }).catch(err => {
+      console.log("Practice attempt API call failed (non-critical):", err);
+    });
   };
 
   const handleTakeCheckpoint = () => {
@@ -275,19 +295,26 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-purple-50 border border-purple-300 rounded-lg p-4 mb-4"
+          className="bg-gradient-to-r from-purple-600 to-purple-800 border border-purple-400 rounded-xl p-6 mb-6 shadow-lg"
         >
-          <div className="flex items-start gap-3">
-            <Target className="w-5 h-5 text-purple-600 mt-0.5" />
+          <div className="flex items-start gap-4">
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="flex-shrink-0"
+            >
+              <Target className="w-8 h-8 text-white" />
+            </motion.div>
             <div className="flex-1">
-              <h4 className="font-semibold text-purple-800 mb-1">🎯 Checkpoint Ready!</h4>
-              <p className="text-sm text-purple-700 mb-3">
-                You've mastered the trained words. Your therapist will test you on a new word next session.
+              <h4 className="font-bold text-white text-lg mb-2">🎯 Checkpoint Ready!</h4>
+              <p className="text-purple-100 mb-4">
+                You've mastered the trained words. Take the generalization test to earn your badge!
               </p>
               <button
                 onClick={handleTakeCheckpoint}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="bg-white text-purple-700 hover:bg-purple-50 px-6 py-3 rounded-lg font-bold transition-colors flex items-center gap-2 shadow-md"
               >
+                <Zap className="w-5 h-5" />
                 Take Checkpoint
               </button>
             </div>
@@ -296,19 +323,19 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
       )}
 
       {/* Exercises */}
-      <div className="space-y-3 mb-6">
+      <div className="space-y-4 mb-6">
         {exercises.map((exercise, index) => (
           <div
             key={exercise.id}
-            className={`p-4 rounded-lg border transition-all ${
+            className={`p-5 rounded-xl border-2 transition-all ${
               exercise.done
-                ? "bg-green-50 border-green-200"
-                : "bg-gray-50 border-gray-200 hover:border-blue-300"
+                ? "bg-green-50 border-green-300"
+                : "bg-white border-gray-200 hover:border-blue-400 hover:shadow-md"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h4 className={`font-medium mb-1 ${exercise.done ? "text-green-800 line-through opacity-60" : "text-gray-900"}`}>
+                <h4 className={`font-bold mb-2 ${exercise.done ? "text-green-800 line-through opacity-60" : "text-gray-900"}`}>
                   Exercise {index + 1}: {exercise.title}
                 </h4>
                 <p className={`text-sm ${exercise.done ? "text-green-700 opacity-60" : "text-gray-600"}`}>
@@ -320,14 +347,14 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full"
+                    className="flex items-center justify-center w-10 h-10 bg-green-500 rounded-full"
                   >
-                    <CheckCircle2 className="w-5 h-5 text-white" />
+                    <CheckCircle2 className="w-6 h-6 text-white" />
                   </motion.div>
                 ) : (
                   <button
                     onClick={() => handleMarkDone(index)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-bold transition-colors shadow-md hover:shadow-lg"
                   >
                     Mark Done
                   </button>

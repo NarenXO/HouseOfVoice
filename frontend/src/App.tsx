@@ -11,6 +11,7 @@
  * team's frontend together.
  */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LearningPathPage from "./features/learning-path/LearningPathPage";
 
 // import { authRoutes } from "./features/auth-onboarding/routes";
 // import { screeningRoutes } from "./features/screening/routes";
@@ -32,7 +33,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div className="p-8 text-lg">HouseOfVoice — integration pending</div>} />
+        <Route path="/" element={<LearningPathPage />} />
         {/* {allRoutes.map((r) => (
           <Route key={r.path} path={r.path} element={r.element} />
         ))} */}

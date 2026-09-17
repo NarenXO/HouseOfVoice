@@ -12,6 +12,7 @@ import { jsx as _jsx } from "react/jsx-runtime";
  * team's frontend together.
  */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LearningPathPage from "./features/learning-path/LearningPathPage";
 // import { authRoutes } from "./features/auth-onboarding/routes";
 // import { screeningRoutes } from "./features/screening/routes";
 // import { matchingRoutes } from "./features/matching-booking-plan/routes";
@@ -27,6 +28,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 //   ...dashboardRoutes,
 // ];
 function App() {
-    return (_jsx(BrowserRouter, { children: _jsx(Routes, { children: _jsx(Route, { path: "/", element: _jsx("div", { className: "p-8 text-lg", children: "HouseOfVoice \u2014 integration pending" }) }) }) }));
+    return (_jsx(BrowserRouter, { children: _jsx(Routes, { children: _jsx(Route, { path: "/", element: _jsx(LearningPathPage, {}) }) }) }));
 }
 export default App;

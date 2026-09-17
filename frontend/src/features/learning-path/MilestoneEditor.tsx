@@ -6,6 +6,7 @@ interface MilestoneEditorProps {
   onUpdateMilestone: (milestone: Milestone) => void;
   onAddMilestone: () => void;
   onDeleteMilestone: (milestoneId: string) => void;
+  disabled?: boolean;
 }
 
 export default function MilestoneEditor({
@@ -13,11 +14,13 @@ export default function MilestoneEditor({
   onUpdateMilestone,
   onAddMilestone,
   onDeleteMilestone,
+  disabled = false,
 }: MilestoneEditorProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<Milestone>>({});
 
   const handleEdit = (milestone: Milestone) => {
+    if (disabled) return;
     setEditingId(milestone.id);
     setEditForm(milestone);
   };
@@ -43,22 +46,31 @@ export default function MilestoneEditor({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6">
+    <div className="w-full max-w-4xl mx-auto p-6 pb-24">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Edit Learning Path</h2>
+        <h2 className="text-2xl font-bold text-gray-900">🩺 Clinician Mode - Edit Learning Path</h2>
         <button
           onClick={onAddMilestone}
-          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          disabled={disabled}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Add Milestone
         </button>
       </div>
 
+      {disabled && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-yellow-800 font-medium">
+            ⚠️ Path is approved and locked. Editing is disabled.
+          </p>
+        </div>
+      )}
+
       <div className="space-y-4">
         {milestones.map((milestone) => (
           <div
             key={milestone.id}
-            className="bg-white rounded-lg shadow border border-gray-200 p-4"
+            className={`bg-white rounded-lg shadow border p-4 ${disabled ? 'border-gray-300 opacity-60' : 'border-gray-200'}`}
           >
             {editingId === milestone.id ? (
               <div className="space-y-3">
@@ -106,13 +118,15 @@ export default function MilestoneEditor({
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(milestone)}
-                    className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                    disabled={disabled}
+                    className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => onDeleteMilestone(milestone.id)}
-                    className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                    disabled={disabled}
+                    className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     Delete
                   </button>

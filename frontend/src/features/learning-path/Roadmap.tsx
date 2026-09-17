@@ -141,14 +141,14 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                className="absolute -bottom-2 bg-white text-gray-700 px-2 py-1 rounded-full text-xs font-semibold shadow-md hover:bg-gray-100"
+                className="absolute -bottom-2 bg-white text-gray-700 px-3 py-1.5 rounded-full text-xs font-bold shadow-md hover:bg-gray-100 border border-gray-300"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUnlockMilestone(milestone.id);
                 }}
                 title="Unlock anyway?"
               >
-                Unlock
+                Unlock Anyway
               </motion.button>
             )}
 

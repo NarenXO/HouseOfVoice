@@ -9,9 +9,10 @@ interface MilestoneCardProps {
   caseId: string;
   onProgressUpdate?: (milestoneId: string, consecutiveSuccesses: number, checkpointReady: boolean) => void;
   onProbeComplete?: () => void;
+  autoFillTrigger?: number;
 }
 
-export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, onProgressUpdate, onProbeComplete }: MilestoneCardProps) {
+export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, onProgressUpdate, onProbeComplete, autoFillTrigger }: MilestoneCardProps) {
   if (!milestone) {
     return null;
   }
@@ -123,7 +124,7 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
 
           {/* Practice Panel for active milestones, read-only list for others */}
           {milestone.status === "active" ? (
-            <PracticePanel milestone={milestone} caseId={caseId} onProgressUpdate={onProgressUpdate} onProbeComplete={onProbeComplete} />
+            <PracticePanel milestone={milestone} caseId={caseId} onProgressUpdate={onProgressUpdate} onProbeComplete={onProbeComplete} autoFillTrigger={autoFillTrigger} />
           ) : (
             <div className="space-y-3">
               <h4 className="text-sm font-semibold text-gray-700 mb-2">Exercises</h4>
