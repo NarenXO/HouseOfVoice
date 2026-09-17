@@ -1,0 +1,9 @@
+{
+  "pathId": "path_demo_001",
+  "caseId": "case_demo_001",
+  "milestones": [
+    { "id": "m1", "pathId": "path_demo_001", "orderIndex": 1, "title": "s - start of words", "goal": "Produce /s/ correctly at word-initial position", "status": "generalized", "linkedDemoId": "mod_s_start" },
+    { "id": "m2", "pathId": "path_demo_001", "orderIndex": 2, "title": "s - end of words", "goal": "Produce /s/ correctly at word-final position", "status": "trained", "linkedDemoId": "mod_s_end" },
+    { "id": "m3", "pathId": "path_demo_001", "orderIndex": 3, "title": "short sentences with s", "goal": "Use /s/ correctly in short sentences", "status": "locked", "linkedDemoId": null }
+  ]
+}
