@@ -11,11 +11,12 @@
  * team's frontend together.
  */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import LearningPathPage from "./features/learning-path/LearningPathPage";
 
 // import { authRoutes } from "./features/auth-onboarding/routes";
 // import { screeningRoutes } from "./features/screening/routes";
 // import { matchingRoutes } from "./features/matching-booking-plan/routes";
-// import { learningRoutes } from "./features/learning-path/routes";
+import { learningRoutes } from "./features/learning-path/routes";
 import { sessionRoutes } from "./features/session-smartboard/routes";
 // import { dashboardRoutes } from "./features/dashboard-docs/routes";
 
@@ -23,7 +24,7 @@ const allRoutes = [
   // ...authRoutes,
   // ...screeningRoutes,
   // ...matchingRoutes,
-  // ...learningRoutes,
+  ...learningRoutes,
   ...sessionRoutes,
   // ...dashboardRoutes,
 ];
@@ -32,7 +33,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<div className="p-8 text-lg">HouseOfVoice — integration pending</div>} />
+        <Route path="/" element={<LearningPathPage />} />
+        <Route path="/learning" element={<LearningPathPage />} />
+        <Route path="/path" element={<LearningPathPage />} />
         {allRoutes.map((r) => (
           <Route key={r.path} path={r.path} element={r.element} />
         ))}

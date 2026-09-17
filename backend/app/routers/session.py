@@ -23,7 +23,6 @@ router = APIRouter()
 # In-memory store for active WebSocket connections per session
 active_connections: Dict[str, List[WebSocket]] = {}
 
-
 @router.get("/ping")
 def ping():
     return {"module": "session", "status": "ok"}
