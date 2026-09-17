@@ -1,4 +1,5 @@
-// Placeholder for dashboard-docs feature
+import SessionNoteForm from './SessionNoteForm';
+
 export default function DashboardDocs() {
-  return <div>Dashboard Docs Placeholder</div>;
+  return <SessionNoteForm />;
 }
