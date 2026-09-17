@@ -34,7 +34,7 @@ interface DashboardData {
   milestone_progress: DashboardMetric;
   generalization_rate: Record<string, MetricPoint[]>;
   isolation_forest_alert: boolean;
-  alert_message: string | None;
+  alert_message: string | null;
 }
 
 const PHONEME_COLORS: Record<string, string> = {
@@ -54,7 +54,7 @@ export const Dashboard: React.FC<{ caseId?: string }> = ({ caseId = 'CASE-001' }
     const fetchDashboard = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`http://localhost:8000/docs/dashboard/${caseId}`);
+        const res = await fetch(`/api/docs/dashboard/${caseId}`);
         if (!res.ok) throw new Error('Failed to fetch dashboard data');
         const json = await res.json();
         setData(json);
@@ -192,7 +192,7 @@ export const Dashboard: React.FC<{ caseId?: string }> = ({ caseId = 'CASE-001' }
                 <div className="h-12 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={points}>
-                      <Tooltip formatter={formatTooltipValue} labelFormatter={(lbl) => `Date: ${lbl}`} />
+                      <Tooltip formatter={formatTooltipValue} labelFormatter={(lbl: any) => `Date: ${lbl}`} />
                       <Line type="monotone" dataKey="value" stroke={color} strokeWidth={2} dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
@@ -231,7 +231,7 @@ export const Dashboard: React.FC<{ caseId?: string }> = ({ caseId = 'CASE-001' }
                     </defs>
                     <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={3} />
                     <YAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
-                    <Tooltip formatter={formatTooltipValue} labelFormatter={(lbl) => `Date: ${lbl}`} />
+                    <Tooltip formatter={formatTooltipValue} labelFormatter={(lbl: any) => `Date: ${lbl}`} />
                     <Area type="monotone" dataKey="value" stroke={color} strokeWidth={2} fill={`url(#grad-${key})`} />
                   </AreaChart>
                 </ResponsiveContainer>
@@ -251,7 +251,7 @@ export const Dashboard: React.FC<{ caseId?: string }> = ({ caseId = 'CASE-001' }
               <BarChart data={data.attendance.data}>
                 <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={3} />
                 <YAxis domain={[0, 1]} ticks={[0, 1]} tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v: any) => [v === 1 ? 'Attended' : 'Missed', 'Status']} labelFormatter={(lbl) => `Date: ${lbl}`} />
+                <Tooltip formatter={(v: any) => [v === 1 ? 'Attended' : 'Missed', 'Status']} labelFormatter={(lbl: any) => `Date: ${lbl}`} />
                 <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -266,7 +266,7 @@ export const Dashboard: React.FC<{ caseId?: string }> = ({ caseId = 'CASE-001' }
               <AreaChart data={data.milestone_progress.data}>
                 <XAxis dataKey="date" tick={{ fontSize: 10 }} interval={3} />
                 <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v: any) => [v, 'Milestones']} labelFormatter={(lbl) => `Date: ${lbl}`} />
+                <Tooltip formatter={(v: any) => [v, 'Milestones']} labelFormatter={(lbl: any) => `Date: ${lbl}`} />
                 <Area type="stepAfter" dataKey="value" stroke="#06b6d4" fill="#cff4fc" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>

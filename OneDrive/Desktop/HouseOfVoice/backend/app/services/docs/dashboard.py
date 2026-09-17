@@ -15,6 +15,10 @@ def find_mock_file(filename: str) -> Path:
     return Path("shared/mocks") / filename
 
 def get_dashboard(case_id: str) -> DashboardResponse:
+    # Ensure case_id is never empty/None
+    if not case_id or case_id == "undefined":
+        case_id = "demo_patient"
+    
     screening_file = find_mock_file("screening_result.mock.json")
     baseline = {"clarityScore": 62.0, "fluencyScore": 55.0, "pronunciationScore": 58.0, "voiceStabilityScore": 70.0}
     if screening_file.exists():
@@ -28,7 +32,11 @@ def get_dashboard(case_id: str) -> DashboardResponse:
         except Exception:
             pass
 
-    notes = get_notes_by_case(case_id)
+    try:
+        notes = get_notes_by_case(case_id)
+    except Exception:
+        notes = []  # Fallback to empty notes if case doesn't exist
+    
     now = datetime.utcnow()
     dates = [(now - timedelta(weeks=11-i)).strftime("%Y-%m-%d") for i in range(12)]
     
@@ -79,7 +87,9 @@ def get_dashboard(case_id: str) -> DashboardResponse:
             alert = True
             alert_msg = "⚠ Progress plateau detected. Speech clarity and practice frequency show an anomalous pattern in recent sessions. Consider reassessment or plan adjustment."
     except Exception:
-        pass
+        # If sklearn fails, still return data without alert
+        alert = False
+        alert_msg = None
 
     return DashboardResponse(
         case_id=case_id,
