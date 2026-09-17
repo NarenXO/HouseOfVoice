@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Star, Clock, Video, Users, Calendar, AlertCircle, 
   CheckCircle2, ChevronRight, User, Loader2, Sparkles, 
-  UserPlus, CalendarDays, BrainCircuit
+  UserPlus, CalendarDays, BrainCircuit, Check
 } from 'lucide-react';
 
 // --- Types ---
@@ -370,7 +370,7 @@ export default function MatchingHome() {
                     </div>
                   </div>
                   
-                  <label className={`flex items-center space-x-3 group ${booking ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+                  <label className={`flex items-center space-x-3 group ${booking ? 'opacity-50 cursor-not-allowed pointer-events-none' : 'cursor-pointer'}`}>
                     <div className="relative flex items-center justify-center">
                       <input 
                         type="checkbox" 
@@ -379,8 +379,8 @@ export default function MatchingHome() {
                         disabled={!!booking}
                         className="peer sr-only" 
                       />
-                      <div className="w-6 h-6 border-2 border-gray-500 rounded flex items-center justify-center peer-checked:bg-indigo-500 peer-checked:border-indigo-500 transition-all">
-                        <CheckCircle2 className="w-4 h-4 text-white opacity-0 peer-checked:opacity-100" />
+                      <div className={`transition-all ${isTrial ? 'w-5 h-5 bg-indigo-600 border border-indigo-500 rounded-md flex items-center justify-center' : 'w-5 h-5 bg-slate-900 border border-slate-700 rounded-md'}`}>
+                        {isTrial && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
                       </div>
                     </div>
                     <span className="text-gray-300 group-hover:text-white transition-colors">Request as Trial Session</span>
