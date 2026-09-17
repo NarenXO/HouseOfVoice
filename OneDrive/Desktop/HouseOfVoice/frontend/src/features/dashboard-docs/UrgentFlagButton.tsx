@@ -165,9 +165,9 @@ export default function UrgentFlagButton({ caseId }: UrgentFlagButtonProps) {
       {flags.length > 0 && (
         <div className="mt-4 space-y-2">
           <p className="text-sm font-medium text-gray-700">Previous Urgent Flags:</p>
-          {flags.map((flag) => (
+          {flags.map((flag, index) => (
             <div
-              key={flag.id}
+              key={`flag-${flag.id}-${index}`}
               className="bg-red-50 border border-red-200 rounded-lg p-3"
             >
               <div className="flex items-start justify-between">

@@ -177,7 +177,7 @@ export default function SupervisorEvalRubric({ caseId }: SupervisorEvalRubricPro
       <div className="bg-white rounded-xl shadow-sm p-6 space-y-6">
         {DIMENSIONS.map((dimension, index) => (
           <motion.div
-            key={dimension.key}
+            key={`dimension-${dimension.key}`}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
@@ -190,7 +190,7 @@ export default function SupervisorEvalRubric({ caseId }: SupervisorEvalRubricPro
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
-                  key={value}
+                  key={`rating-${dimension.key}-${value}`}
                   onClick={() => handleRatingChange(dimension.key, value)}
                   className={`w-10 h-10 rounded-lg font-medium transition-colors ${
                     ratings[dimension.key as keyof typeof ratings] === value
@@ -233,8 +233,8 @@ export default function SupervisorEvalRubric({ caseId }: SupervisorEvalRubricPro
       {pastEvaluations.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">Past Evaluations</h2>
-          {pastEvaluations.map((evaluation) => (
-            <div key={evaluation.id} className="bg-white rounded-xl shadow-sm p-4">
+          {pastEvaluations.map((evaluation, index) => (
+            <div key={`evaluation-${evaluation.id}-${index}`} className="bg-white rounded-xl shadow-sm p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-900">
@@ -260,7 +260,7 @@ export default function SupervisorEvalRubric({ caseId }: SupervisorEvalRubricPro
               {/* Rubric Breakdown */}
               <div className="grid grid-cols-5 gap-2 mb-3">
                 {DIMENSIONS.map((dim) => (
-                  <div key={dim.key} className="text-center">
+                  <div key={`eval-dim-${evaluation.id}-${dim.key}`} className="text-center">
                     <div className="text-xs text-gray-600 mb-1">{dim.label.split(' ')[0]}</div>
                     <div className="text-sm font-semibold text-gray-900">
                       {evaluation[dim.key as keyof SupervisorEval] as number}

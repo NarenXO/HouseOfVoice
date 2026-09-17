@@ -81,7 +81,7 @@ export default function FeedbackForm({ caseId }: FeedbackFormProps) {
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
-            key={star}
+            key={`star-${star}`}
             onClick={() => setRating(star)}
             onMouseEnter={() => setHoverRating(star)}
             onMouseLeave={() => setHoverRating(0)}
@@ -166,7 +166,7 @@ export default function FeedbackForm({ caseId }: FeedbackFormProps) {
               { value: 'dissatisfied', label: 'Dissatisfied' }
             ].map((option) => (
               <button
-                key={option.value}
+                key={`satisfaction-${option.value}`}
                 onClick={() => setSatisfactionLevel(option.value)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                   satisfactionLevel === option.value
@@ -209,14 +209,14 @@ export default function FeedbackForm({ caseId }: FeedbackFormProps) {
       {pastFeedback.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-gray-900">Past Feedback</h2>
-          {pastFeedback.map((feedback) => (
-            <div key={feedback.id} className="bg-white rounded-xl shadow-sm p-4">
+          {pastFeedback.map((feedback, index) => (
+            <div key={`feedback-${feedback.id}-${index}`} className="bg-white rounded-xl shadow-sm p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <div className="flex">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
-                        key={star}
+                        key={`feedback-star-${feedback.id}-${star}`}
                         className={`w-4 h-4 ${
                           star <= feedback.rating
                             ? 'fill-amber-400 text-amber-400'

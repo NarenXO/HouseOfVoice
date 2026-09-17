@@ -6,6 +6,7 @@ from .urgent_flags import raise_flag, get_flags_by_case
 from .reassessment import create_reassessment, get_reassessments
 from .feedback import submit_feedback, get_feedback_by_case
 from .supervisor_eval import submit_evaluation, get_evaluations_by_case
+from .case_closure import close_case, get_case_status, submit_followup, get_followups_by_case
 
 __all__ = [
     "generate_dashboard_timeseries",
@@ -23,5 +24,9 @@ __all__ = [
     "submit_feedback",
     "get_feedback_by_case",
     "submit_evaluation",
-    "get_evaluations_by_case"
+    "get_evaluations_by_case",
+    "close_case",
+    "get_case_status",
+    "submit_followup",
+    "get_followups_by_case"
 ]

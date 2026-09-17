@@ -123,3 +123,37 @@ class SupervisorEvalResponse(BaseModel):
     feedback_notes: str
     average_score: float
     evaluated_at: datetime
+
+
+class CaseCloseCreate(BaseModel):
+    case_id: str
+    discharge_reason: str
+    discharge_notes: str
+    therapist_id: str
+
+
+class CaseCloseResponse(BaseModel):
+    id: str
+    case_id: str
+    discharge_reason: str
+    discharge_notes: str
+    final_summary: dict
+    closed_at: datetime
+    status: str
+
+
+class FollowUpCheckinCreate(BaseModel):
+    case_id: str
+    response_text: str
+    progress_status: str
+    wants_followup_booking: bool
+
+
+class FollowUpCheckinResponse(BaseModel):
+    id: str
+    case_id: str
+    prompted_at: datetime
+    response_text: str
+    progress_status: str
+    wants_followup_booking: bool
+    created_at: datetime

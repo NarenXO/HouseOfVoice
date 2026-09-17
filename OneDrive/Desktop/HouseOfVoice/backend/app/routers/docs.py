@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, HTTPException
-from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse, UrgentFlagCreate, UrgentFlagResponse, ReassessmentCreate, ReassessmentResponse, FeedbackCreate, FeedbackResponse, SupervisorEvalCreate, SupervisorEvalResponse
-from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard, raise_flag, get_flags_by_case, create_reassessment, get_reassessments, submit_feedback, get_feedback_by_case, submit_evaluation, get_evaluations_by_case
+from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse, UrgentFlagCreate, UrgentFlagResponse, ReassessmentCreate, ReassessmentResponse, FeedbackCreate, FeedbackResponse, SupervisorEvalCreate, SupervisorEvalResponse, CaseCloseCreate, CaseCloseResponse, FollowUpCheckinCreate, FollowUpCheckinResponse
+from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard, raise_flag, get_flags_by_case, create_reassessment, get_reassessments, submit_feedback, get_feedback_by_case, submit_evaluation, get_evaluations_by_case, close_case, get_case_status, submit_followup, get_followups_by_case
 import json
 from pathlib import Path
 
@@ -138,3 +138,29 @@ async def create_supervisor_evaluation(evaluation: SupervisorEvalCreate):
 async def get_supervisor_evaluations(case_id: str):
     evaluations = get_evaluations_by_case(case_id)
     return evaluations
+
+
+@router.post("/case/{id}/close", response_model=CaseCloseResponse, status_code=201)
+async def close_case_endpoint(id: str, closure_data: CaseCloseCreate):
+    closure_data.case_id = id
+    closed_case = close_case(closure_data)
+    return closed_case
+
+
+@router.get("/case/{id}/closure", response_model=Optional[CaseCloseResponse])
+async def get_case_closure(id: str):
+    closure = get_case_status(id)
+    return closure
+
+
+@router.post("/case/{id}/follow-up-response", response_model=FollowUpCheckinResponse, status_code=201)
+async def submit_followup_endpoint(id: str, followup_data: FollowUpCheckinCreate):
+    followup_data.case_id = id
+    followup = submit_followup(followup_data)
+    return followup
+
+
+@router.get("/case/{id}/follow-ups", response_model=List[FollowUpCheckinResponse])
+async def get_case_followups(id: str):
+    followups = get_followups_by_case(id)
+    return followups

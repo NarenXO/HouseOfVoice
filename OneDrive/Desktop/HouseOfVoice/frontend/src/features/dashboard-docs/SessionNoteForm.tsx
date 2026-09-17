@@ -172,7 +172,7 @@ export default function SessionNoteForm({ onSubmit }: SessionNoteFormProps) {
             <div className="flex flex-wrap gap-2">
               {activities.map((activity, index) => (
                 <div
-                  key={index}
+                  key={`activity-${index}`}
                   className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 text-blue-800 rounded-full"
                 >
                   <span className="text-sm">{activity}</span>

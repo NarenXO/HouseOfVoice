@@ -208,7 +208,7 @@ export default function ReassessmentView({ caseId }: ReassessmentViewProps) {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {getComparisonRows().map((row, index) => (
                     <motion.tr
-                      key={row.metric}
+                      key={`comparison-${row.metric}-${index}`}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.1 }}

@@ -107,9 +107,9 @@ export default function HomeworkViewer({ caseId }: HomeworkViewerProps) {
 
       {/* Homework Cards */}
       <div className="space-y-4">
-        {homework.map((assignment) => (
+        {homework.map((assignment, index) => (
           <div
-            key={assignment.id}
+            key={`homework-${assignment.id}-${index}`}
             className="bg-white rounded-xl shadow-sm p-6 border border-gray-200"
           >
             {/* Header */}
@@ -141,7 +141,7 @@ export default function HomeworkViewer({ caseId }: HomeworkViewerProps) {
               </div>
               <ul className="space-y-1 ml-6">
                 {assignment.activities.map((activity, index) => (
-                  <li key={index} className="text-sm text-gray-700">
+                  <li key={`activity-${assignment.id}-${index}`} className="text-sm text-gray-700">
                     • {activity}
                   </li>
                 ))}

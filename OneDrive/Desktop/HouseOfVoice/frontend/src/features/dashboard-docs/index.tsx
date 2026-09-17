@@ -7,8 +7,9 @@ import ReassessmentView from './ReassessmentView';
 import FeedbackForm from './FeedbackForm';
 import SupervisorEvalRubric from './SupervisorEvalRubric';
 import HomeworkViewer from './HomeworkViewer';
+import CaseClosurePanel from './CaseClosurePanel';
 
-type TabType = 'dashboard' | 'session-notes' | 'ai-drafts' | 'reassessment' | 'feedback' | 'supervisor-eval' | 'homework';
+type TabType = 'dashboard' | 'session-notes' | 'ai-drafts' | 'reassessment' | 'feedback' | 'supervisor-eval' | 'homework' | 'case-closure';
 
 const CASE_ID = 'CASE-001';
 
@@ -94,6 +95,16 @@ export default function DashboardDocs() {
         >
           Homework
         </button>
+        <button
+          onClick={() => setActiveTab('case-closure')}
+          className={`pb-3 px-1 font-medium transition-colors whitespace-nowrap ${
+            activeTab === 'case-closure'
+              ? 'text-blue-600 border-b-2 border-blue-500'
+              : 'text-gray-400 hover:text-gray-600'
+          }`}
+        >
+          Case Closure
+        </button>
       </div>
 
       {/* Tab Content */}
@@ -113,6 +124,7 @@ export default function DashboardDocs() {
       {activeTab === 'feedback' && <FeedbackForm caseId={CASE_ID} />}
       {activeTab === 'supervisor-eval' && <SupervisorEvalRubric caseId={CASE_ID} />}
       {activeTab === 'homework' && <HomeworkViewer caseId={CASE_ID} />}
+      {activeTab === 'case-closure' && <CaseClosurePanel caseId={CASE_ID} />}
     </div>
   );
 }
