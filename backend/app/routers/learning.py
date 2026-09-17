@@ -14,6 +14,8 @@ from app.services.learning import (
     score_probe,
     get_probe_statistics,
     get_all_phoneme_statistics,
+    award_badge,
+    get_badges,
 )
 from app.models.shared import Milestone
 
@@ -275,6 +277,7 @@ async def checkpoint(milestone_id: str, request: CheckpointRequest):
         "result": result["result"],
         "milestone_status": result["milestone_status"],
         "badge_awarded": result["badge_awarded"],
+        "badge": result.get("badge"),
         "message": result["message"],
         "extra_practice_items": result.get("extra_practice_items", [])
     }
@@ -304,4 +307,15 @@ async def get_generalization_stats(case_id: str, phoneme: str):
     normalized_phoneme = decoded_phoneme.strip("/")
     stats = get_probe_statistics(case_id, normalized_phoneme)
     return stats
+
+
+@router.get("/badges/{case_id}")
+async def get_badges_endpoint(case_id: str):
+    """
+    Get all badges awarded to a case.
+
+    Returns list of awarded badges with total count.
+    """
+    badges_data = get_badges(case_id)
+    return badges_data
 

@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Roadmap from "./Roadmap";
 import MilestoneCard from "./MilestoneCard";
 import MilestoneEditor from "./MilestoneEditor";
 import GeneralizationGauge from "./GeneralizationGauge";
+import BadgesShowcase from "./BadgesShowcase";
 import { Milestone, LearningPath } from "./types";
 import axios from "axios";
 
@@ -16,6 +18,7 @@ export default function LearningPathPage() {
   const [error, setError] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<{ [milestoneId: string]: { consecutive_successes: number; checkpoint_ready: boolean } }>({});
   const [refreshKey, setRefreshKey] = useState(0);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Mock case ID - in production this would come from auth context
   const caseId = "case_demo_001";
@@ -124,6 +127,9 @@ export default function LearningPathPage() {
   const handleProbeComplete = () => {
     // Increment refresh key to trigger gauge update
     setRefreshKey(prev => prev + 1);
+    // Show celebration banner
+    setShowCelebration(true);
+    setTimeout(() => setShowCelebration(false), 5000);
   };
 
   const handleUpdateMilestone = (milestone: Milestone) => {
@@ -230,15 +236,32 @@ export default function LearningPathPage() {
 
             {/* Streak Banner */}
             {learningPath.streak && (
-              <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 mb-6 text-white">
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-orange-500 to-red-500 rounded-xl p-4 mb-6 text-white shadow-lg"
+              >
                 <div className="flex items-center gap-3">
-                  <div className="text-3xl font-bold">🔥 {learningPath.streak.current_streak_days}</div>
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0]
+                    }}
+                    transition={{ 
+                      duration: 2, 
+                      repeat: Infinity,
+                      repeatDelay: 1
+                    }}
+                    className="text-4xl"
+                  >
+                    🔥
+                  </motion.div>
                   <div>
-                    <div className="font-semibold">Day Streak!</div>
-                    <div className="text-sm opacity-90">Keep up the great work</div>
+                    <div className="font-bold text-2xl">{learningPath.streak.current_streak_days} Day Streak!</div>
+                    <div className="text-sm opacity-90">Practice today to keep your streak alive!</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             )}
 
             {/* Roadmap */}
@@ -247,7 +270,29 @@ export default function LearningPathPage() {
               onMilestoneClick={handleMilestoneClick}
               onUnlockMilestone={handleUnlockMilestone}
               progressData={progressData}
+              refreshTrigger={refreshKey}
             />
+
+            {/* Badges Showcase */}
+            <BadgesShowcase caseId={caseId} refreshTrigger={refreshKey} />
+
+            {/* Celebration Banner */}
+            <AnimatePresence>
+              {showCelebration && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.8, y: -20 }}
+                  className="bg-gradient-to-r from-green-400 to-emerald-500 text-white rounded-xl p-4 mb-6 text-center shadow-lg"
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-2xl">🎉</span>
+                    <span className="font-bold text-lg">Amazing Work! You earned a new badge!</span>
+                    <span className="text-2xl">🎉</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Milestone Detail Card */}
             <MilestoneCard

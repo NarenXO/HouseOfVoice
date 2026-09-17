@@ -14,6 +14,9 @@ from .probe_engine import (
     serve_probe,
     score_probe,
     get_probe_statistics,
+    get_all_phoneme_statistics,
+    award_badge,
+    get_badges,
     PROBE_FREQUENCY_CAP,
     TRAINED_VARIETY,
 )
@@ -35,6 +38,9 @@ __all__ = [
     "serve_probe",
     "score_probe",
     "get_probe_statistics",
+    "get_all_phoneme_statistics",
+    "award_badge",
+    "get_badges",
     "PROBE_FREQUENCY_CAP",
     "TRAINED_VARIETY",
 ]

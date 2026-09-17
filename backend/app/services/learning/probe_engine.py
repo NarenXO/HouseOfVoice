@@ -1,5 +1,7 @@
 """Probe engine for generalization testing and checkpoint management."""
 from typing import Dict, List
+from datetime import datetime
+import uuid
 from .probe_bank import select_probe_word, PROBE_WORD_BANK
 from .scorer import score_attempt
 from .state_machine import MilestoneStateMachine
@@ -9,6 +11,7 @@ from .practice_tracker import _consecutive_successes, CONSECUTIVE_SUCCESS_THRESH
 # In-memory stores for probe state (hackathon pattern)
 _probe_state: Dict[str, Dict] = {}  # milestone_id -> probe state
 _probe_history: List[Dict] = []  # List of all probe attempts across cases
+_badges: Dict[str, List[Dict]] = {}  # case_id -> list of Badge objects
 
 PROBE_FREQUENCY_CAP = 4
 
@@ -109,11 +112,14 @@ async def score_probe(
     })
 
     if passed:
+        # Award badge for this milestone if not already awarded
+        badge = award_badge(case_id, milestone_id, normalized_phoneme)
+        
         return {
             "result": "pass",
             "milestone_status": "generalized",
             "badge_awarded": True,
-            "badge_name": f"Generalization Star: {phoneme}",
+            "badge": badge,
             "next_milestone_unlocked": True,
             "message": "Amazing! You can use this sound in brand new words!"
         }
@@ -164,4 +170,122 @@ def get_probe_statistics(case_id: str, phoneme: str) -> dict:
         "probes_passed": passed,
         "rate": rate,
         "last_updated": last_updated
+    }
+
+
+def get_all_phoneme_statistics(case_id: str) -> dict:
+    """
+    Calculate probe statistics for all phonemes for a case.
+
+    Args:
+        case_id: Patient case ID
+
+    Returns:
+        Dict with overall statistics and per-phoneme breakdown
+    """
+    from datetime import datetime
+
+    # Filter probe history for this case
+    case_probes = [p for p in _probe_history if p["case_id"] == case_id]
+
+    # Group by phoneme
+    phoneme_groups: dict[str, list] = {}
+    for probe in case_probes:
+        phoneme = probe["phoneme"]
+        if phoneme not in phoneme_groups:
+            phoneme_groups[phoneme] = []
+        phoneme_groups[phoneme].append(probe)
+
+    # Calculate statistics for each phoneme
+    phoneme_scores = []
+    total_attempted = 0
+    total_passed = 0
+
+    for phoneme, probes in phoneme_groups.items():
+        attempted = len(probes)
+        passed = sum(1 for p in probes if p["passed"])
+        rate = (passed / attempted) if attempted > 0 else 0.0
+
+        # Get last updated timestamp for this phoneme
+        last_updated = datetime.utcnow().isoformat() if probes else None
+
+        phoneme_scores.append({
+            "phoneme": f"/{phoneme}/",
+            "probes_attempted": attempted,
+            "probes_passed": passed,
+            "rate": rate,
+            "last_updated": last_updated
+        })
+
+        total_attempted += attempted
+        total_passed += passed
+
+    # Calculate overall rate
+    overall_rate = (total_passed / total_attempted) if total_attempted > 0 else 0.0
+
+    return {
+        "case_id": case_id,
+        "overall_rate": overall_rate,
+        "total_probes_attempted": total_attempted,
+        "total_probes_passed": total_passed,
+        "phonemes": phoneme_scores
+    }
+
+
+def award_badge(case_id: str, milestone_id: str, phoneme: str) -> dict:
+    """
+    Award a badge for generalization achievement.
+    
+    Args:
+        case_id: Patient case ID
+        milestone_id: The milestone that was generalized
+        phoneme: The phoneme that was generalized
+        
+    Returns:
+        Badge object if awarded, None if already exists
+    """
+    # Check if badge already exists for this milestone
+    if case_id not in _badges:
+        _badges[case_id] = []
+    
+    existing_badge = next(
+        (b for b in _badges[case_id] if b["milestone_id"] == milestone_id),
+        None
+    )
+    
+    if existing_badge:
+        return existing_badge
+    
+    # Create new badge
+    badge = {
+        "id": str(uuid.uuid4()),
+        "case_id": case_id,
+        "milestone_id": milestone_id,
+        "phoneme": f"/{phoneme}/",
+        "title": f"Sound Master: /{phoneme}/",
+        "description": f"Successfully generalized /{phoneme}/ to untrained words!",
+        "icon": "star",
+        "awarded_at": datetime.utcnow().isoformat()
+    }
+    
+    _badges[case_id].append(badge)
+    return badge
+
+
+def get_badges(case_id: str) -> dict:
+    """
+    Get all badges awarded to a case.
+    
+    Args:
+        case_id: Patient case ID
+        
+    Returns:
+        Dict with badges list and count
+    """
+    badges = _badges.get(case_id, [])
+    
+    return {
+        "case_id": case_id,
+        "total_badges": len(badges),
+        "badges": badges
     }
