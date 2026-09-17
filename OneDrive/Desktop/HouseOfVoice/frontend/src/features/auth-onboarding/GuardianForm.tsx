@@ -14,7 +14,7 @@ interface GuardianFormData {
 }
 
 interface GuardianFormProps {
-  onSuccess: () => void;
+  onSuccess: (userId: string) => void;
 }
 
 export function GuardianForm({ onSuccess }: GuardianFormProps) {
@@ -41,7 +41,8 @@ export function GuardianForm({ onSuccess }: GuardianFormProps) {
       });
 
       if (response.ok) {
-        onSuccess();
+        const result = await response.json();
+        onSuccess(result.user_id);
       } else {
         const error = await response.json();
         alert(`Registration failed: ${error.detail}`);

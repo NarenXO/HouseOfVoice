@@ -1,26 +1,71 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Shield, Stethoscope, Users } from 'lucide-react';
+import { User, Shield, Stethoscope, Users, CheckCircle, ArrowRight, ArrowLeft } from 'lucide-react';
 import { RoleSelector } from './RoleSelector';
 import { PatientForm } from './PatientForm';
 import { GuardianForm } from './GuardianForm';
 import { TherapistForm } from './TherapistForm';
 import { SupervisorForm } from './SupervisorForm';
+import { CommunicationProfileForm } from './CommunicationProfileForm';
+import { IntakeForm } from './IntakeForm';
+import { ConsentForm } from './ConsentForm';
 import { useLanguage } from '../../shared/LanguageContext';
 
 type Role = 'patient' | 'guardian' | 'therapist' | 'supervisor';
+type Step = 'role' | 'registration' | 'communication' | 'intake' | 'consent' | 'complete';
+
+const steps = [
+  { id: 'role', label: 'Role Selection' },
+  { id: 'registration', label: 'Account Setup' },
+  { id: 'communication', label: 'Communication Profile' },
+  { id: 'intake', label: 'Patient Intake' },
+  { id: 'consent', label: 'Consent' }
+];
 
 export function AuthOnboarding() {
+  const [currentStep, setCurrentStep] = useState<Step>('role');
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const { t } = useLanguage();
 
-  const handleRegistrationSuccess = () => {
-    setIsSuccess(true);
+  const handleRegistrationSuccess = (newUserId: string) => {
+    setUserId(newUserId);
+    setCurrentStep('communication');
+  };
+
+  const handleCommunicationSuccess = () => {
+    setCurrentStep('intake');
+  };
+
+  const handleIntakeSuccess = () => {
+    setCurrentStep('consent');
+  };
+
+  const handleConsentSuccess = () => {
+    setCurrentStep('complete');
   };
 
   const handleBack = () => {
+    if (currentStep === 'registration') {
+      setSelectedRole(null);
+      setCurrentStep('role');
+    } else if (currentStep === 'communication') {
+      setCurrentStep('registration');
+    } else if (currentStep === 'intake') {
+      setCurrentStep('communication');
+    } else if (currentStep === 'consent') {
+      setCurrentStep('intake');
+    }
+  };
+
+  const handleReset = () => {
+    setCurrentStep('role');
     setSelectedRole(null);
+    setUserId(null);
+  };
+
+  const getCurrentStepIndex = () => {
+    return steps.findIndex(step => step.id === currentStep);
   };
 
   return (
@@ -35,67 +80,160 @@ export function AuthOnboarding() {
           <p className="text-gray-600">{t('welcome')} - {t('register')}</p>
         </motion.div>
 
+        {/* Progress Bar */}
+        {currentStep !== 'role' && currentStep !== 'complete' && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              {steps.map((step, index) => (
+                <div key={step.id} className="flex items-center flex-1">
+                  <div className="flex flex-col items-center flex-1">
+                    <div
+                      className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                        index <= getCurrentStepIndex()
+                          ? 'bg-indigo-600 text-white'
+                          : 'bg-gray-200 text-gray-600'
+                      }`}
+                    >
+                      {index < getCurrentStepIndex() ? '✓' : index + 1}
+                    </div>
+                    <span className="text-xs mt-2 text-gray-600 hidden sm:block">{step.label}</span>
+                  </div>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`h-1 flex-1 mx-2 ${
+                        index < getCurrentStepIndex() ? 'bg-indigo-600' : 'bg-gray-200'
+                      }`}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <AnimatePresence mode="wait">
-          {!isSuccess ? (
+          {currentStep === 'role' && (
+            <motion.div
+              key="role"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <RoleSelector onSelect={(role) => {
+                setSelectedRole(role);
+                setCurrentStep('registration');
+              }} />
+            </motion.div>
+          )}
+
+          {currentStep === 'registration' && selectedRole && (
             <motion.div
               key="registration"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
             >
-              {!selectedRole ? (
-                <RoleSelector onSelect={setSelectedRole} />
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                >
-                  <button
-                    onClick={handleBack}
-                    className="mb-4 text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
-                  >
-                    ← Back to role selection
-                  </button>
+              <button
+                onClick={handleBack}
+                className="mb-4 text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to role selection
+              </button>
 
-                  {selectedRole === 'patient' && (
-                    <PatientForm onSuccess={handleRegistrationSuccess} />
-                  )}
-                  {selectedRole === 'guardian' && (
-                    <GuardianForm onSuccess={handleRegistrationSuccess} />
-                  )}
-                  {selectedRole === 'therapist' && (
-                    <TherapistForm onSuccess={handleRegistrationSuccess} />
-                  )}
-                  {selectedRole === 'supervisor' && (
-                    <SupervisorForm onSuccess={handleRegistrationSuccess} />
-                  )}
-                </motion.div>
+              {selectedRole === 'patient' && (
+                <PatientForm onSuccess={handleRegistrationSuccess} />
+              )}
+              {selectedRole === 'guardian' && (
+                <GuardianForm onSuccess={handleRegistrationSuccess} />
+              )}
+              {selectedRole === 'therapist' && (
+                <TherapistForm onSuccess={handleRegistrationSuccess} />
+              )}
+              {selectedRole === 'supervisor' && (
+                <SupervisorForm onSuccess={handleRegistrationSuccess} />
               )}
             </motion.div>
-          ) : (
+          )}
+
+          {currentStep === 'communication' && userId && (
             <motion.div
-              key="success"
+              key="communication"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <button
+                onClick={handleBack}
+                className="mb-4 text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to registration
+              </button>
+              <CommunicationProfileForm userId={userId} onSuccess={handleCommunicationSuccess} />
+            </motion.div>
+          )}
+
+          {currentStep === 'intake' && userId && (
+            <motion.div
+              key="intake"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <button
+                onClick={handleBack}
+                className="mb-4 text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to communication profile
+              </button>
+              <IntakeForm userId={userId} onSuccess={handleIntakeSuccess} />
+            </motion.div>
+          )}
+
+          {currentStep === 'consent' && userId && (
+            <motion.div
+              key="consent"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+            >
+              <button
+                onClick={handleBack}
+                className="mb-4 text-indigo-600 hover:text-indigo-800 flex items-center gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back to intake
+              </button>
+              <ConsentForm userId={userId} onSuccess={handleConsentSuccess} />
+            </motion.div>
+          )}
+
+          {currentStep === 'complete' && (
+            <motion.div
+              key="complete"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               className="bg-white rounded-2xl shadow-xl p-8 text-center"
             >
-              <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="w-12 h-12 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h2>
-              <p className="text-gray-600 mb-6">Your account has been created successfully.</p>
-              <button
-                onClick={() => {
-                  setIsSuccess(false);
-                  setSelectedRole(null);
-                }}
-                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                Register Another User
-              </button>
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">🎉 Onboarding Complete!</h2>
+              <p className="text-gray-600 mb-2">You're ready for baseline screening.</p>
+              <p className="text-gray-600 mb-8">Your account has been set up with all your preferences.</p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={handleReset}
+                  className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <ArrowRight className="w-5 h-5" /> Proceed to Screening
+                </button>
+                <button
+                  onClick={handleReset}
+                  className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Register Another User
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -13,7 +13,7 @@ interface PatientFormData {
 }
 
 interface PatientFormProps {
-  onSuccess: () => void;
+  onSuccess: (userId: string) => void;
 }
 
 export function PatientForm({ onSuccess }: PatientFormProps) {
@@ -35,7 +35,8 @@ export function PatientForm({ onSuccess }: PatientFormProps) {
       });
 
       if (response.ok) {
-        onSuccess();
+        const result = await response.json();
+        onSuccess(result.user_id);
       } else {
         const error = await response.json();
         alert(`Registration failed: ${error.detail}`);

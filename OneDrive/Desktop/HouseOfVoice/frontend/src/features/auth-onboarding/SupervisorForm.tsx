@@ -16,7 +16,7 @@ interface SupervisorFormData {
 }
 
 interface SupervisorFormProps {
-  onSuccess: () => void;
+  onSuccess: (userId: string) => void;
 }
 
 const languageOptions = [
@@ -57,7 +57,8 @@ export function SupervisorForm({ onSuccess }: SupervisorFormProps) {
       });
 
       if (response.ok) {
-        onSuccess();
+        const result = await response.json();
+        onSuccess(result.user_id);
       } else {
         const error = await response.json();
         alert(`Registration failed: ${error.detail}`);

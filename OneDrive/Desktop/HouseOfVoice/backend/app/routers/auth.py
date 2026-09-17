@@ -1,7 +1,11 @@
 """Naren's auth router — stub. Build out in Phase 2-5."""
 from fastapi import APIRouter, HTTPException
-from app.models.auth import RegisterRequest, RegisterResponse, UserRole
+from app.models.auth import (
+    RegisterRequest, RegisterResponse, UserRole,
+    CommunicationProfileRequest, IntakeFormRequest, ConsentFormRequest
+)
 from app.core.supabase_client import get_supabase_admin
+from datetime import datetime
 
 router = APIRouter()
 
@@ -72,3 +76,81 @@ async def register(request: RegisterRequest):
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Registration failed: {str(e)}")
+
+@router.post("/onboarding/communication-profile")
+async def communication_profile(request: CommunicationProfileRequest):
+    supabase = get_supabase_admin()
+    
+    try:
+        profile_data = {
+            "user_id": request.user_id,
+            "primary_language": request.profile.primary_language,
+            "secondary_language": request.profile.secondary_language,
+            "preferred_therapy_language": request.profile.preferred_therapy_language,
+            "reading_ability": request.profile.reading_ability.value,
+            "typing_ability": request.profile.typing_ability.value,
+            "preferred_communication_method": request.profile.preferred_communication_method.value,
+            "guardian_assistance_required": request.profile.guardian_assistance_required,
+            "comfort_with_unfamiliar_people": request.profile.comfort_with_unfamiliar_people.value
+        }
+        
+        # Upsert communication profile
+        supabase.table("communication_profiles").upsert(profile_data).execute()
+        
+        return {
+            "status": "success",
+            "user_id": request.user_id,
+            "communication_profile": profile_data
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Communication profile update failed: {str(e)}")
+
+@router.post("/intake")
+async def intake(request: IntakeFormRequest):
+    supabase = get_supabase_admin()
+    
+    try:
+        intake_data = {
+            "user_id": request.user_id,
+            "primary_concern": request.primary_concern,
+            "medical_history": request.medical_history,
+            "prior_therapy": request.prior_therapy,
+            "medications": request.medications,
+            "therapy_goals": request.therapy_goals,
+            "daily_challenges": request.daily_challenges
+        }
+        
+        result = supabase.table("intake_forms").insert(intake_data).execute()
+        intake_id = result.data[0]["id"]
+        
+        return {
+            "status": "success",
+            "intake_id": str(intake_id)
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Intake form submission failed: {str(e)}")
+
+@router.post("/baseline-consent")
+async def baseline_consent(request: ConsentFormRequest):
+    supabase = get_supabase_admin()
+    
+    try:
+        consent_data = {
+            "user_id": request.user_id,
+            "recording_consent": request.recording_consent,
+            "supervisor_presence_consent": request.supervisor_presence_consent,
+            "accepted_at": request.accepted_at or datetime.utcnow().isoformat(),
+            "declined_reason": request.declined_reason
+        }
+        
+        supabase.table("consents").insert(consent_data).execute()
+        
+        return {
+            "status": "success",
+            "recording_consent": request.recording_consent
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Consent submission failed: {str(e)}")

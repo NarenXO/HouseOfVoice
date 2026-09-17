@@ -1,9 +1,9 @@
 """Naren's auth models — imports frozen shared types."""
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List, Dict, Any
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
-from app.models.shared import Role
+from app.models.shared import Role, CommunicationProfile
 
 class UserRole(str, Enum):
     PATIENT = "patient"
@@ -62,4 +62,24 @@ class IntakeRequest(BaseModel):
 class ConsentRequest(BaseModel):
     recording_consent: bool
     supervisor_presence_consent: bool
+    declined_reason: Optional[str] = None
+
+class CommunicationProfileRequest(BaseModel):
+    user_id: str
+    profile: CommunicationProfile
+
+class IntakeFormRequest(BaseModel):
+    user_id: str
+    primary_concern: str
+    medical_history: Optional[str] = None
+    prior_therapy: Optional[str] = None
+    medications: Optional[str] = None
+    therapy_goals: Optional[str] = None
+    daily_challenges: Optional[Dict[str, Any]] = {}
+
+class ConsentFormRequest(BaseModel):
+    user_id: str
+    recording_consent: bool
+    supervisor_presence_consent: bool
+    accepted_at: Optional[datetime] = None
     declined_reason: Optional[str] = None
