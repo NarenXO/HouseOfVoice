@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     SUPABASE_URL: str = ""
-    SUPABASE_KEY: str = ""
+    SUPABASE_ANON_KEY: str = ""
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     GEMINI_API_KEY: str = ""
     USE_MOCKS: bool = True

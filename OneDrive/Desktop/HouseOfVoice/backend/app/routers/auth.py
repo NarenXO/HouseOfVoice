@@ -5,4 +5,4 @@ router = APIRouter()
 
 @router.get("/ping")
 async def ping():
-    return {"msg": "auth router alive"}
+    return {"message": "auth service alive"}
