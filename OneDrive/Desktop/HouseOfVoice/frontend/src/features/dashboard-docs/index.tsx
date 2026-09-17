@@ -1,12 +1,9 @@
 /**
- * Dashboard Documentation Feature - Placeholder
- * This component will be implemented in later phases
+ * Dashboard Documentation Feature
+ * Main entry point for the documentation slice
  */
+import SessionNoteForm from "./SessionNoteForm";
+
 export default function DashboardDocs() {
-  return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold">Dashboard Documentation</h1>
-      <p>Placeholder for dashboard documentation feature</p>
-    </div>
-  );
+  return <SessionNoteForm />;
 }
