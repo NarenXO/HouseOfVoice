@@ -1,0 +1,8 @@
+{
+  "sessionId": "sess_demo_001",
+  "caseId": "case_demo_001",
+  "therapistId": "thr_demo_001",
+  "activitiesCompleted": ["Flashcards - s sound", "Smartboard mouth diagram", "AI Live Demo - s start of words"],
+  "homeworkAssigned": ["Practice s-start words 10 min/day"],
+  "clinicalObservations": "Patient engaged well, improved consistency on /s/ compared to last session."
+}

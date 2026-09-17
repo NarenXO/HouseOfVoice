@@ -1,0 +1,11 @@
+{
+  "caseId": "case_demo_001",
+  "therapistId": "thr_demo_001",
+  "goals": [
+    "Improve /s/ production at word-final position",
+    "Improve /th/ production at word-initial position"
+  ],
+  "sessionMode": "online",
+  "approvedBy": "thr_demo_001",
+  "approvedAt": "2026-09-10T10:00:00Z"
+}

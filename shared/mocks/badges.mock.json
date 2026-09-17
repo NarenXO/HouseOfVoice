@@ -1,0 +1,16 @@
+{
+  "case_id": "case_demo_001",
+  "total_badges": 1,
+  "badges": [
+    {
+      "id": "badge_001",
+      "case_id": "case_demo_001",
+      "milestone_id": "m1",
+      "phoneme": "/s/",
+      "title": "Sound Master: /s/",
+      "description": "Successfully generalized /s/ to untrained words!",
+      "icon": "star",
+      "awarded_at": "2025-01-15T10:30:00Z"
+    }
+  ]
+}

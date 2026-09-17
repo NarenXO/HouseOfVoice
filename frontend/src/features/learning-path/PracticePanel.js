@@ -1,0 +1,188 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, Flame, Target } from "lucide-react";
+import axios from "axios";
+import ProbeSession from "./ProbeSession";
+const API_BASE = "http://localhost:8000/api";
+export default function PracticePanel({ milestone, caseId, onCheckpointReady, onProgressUpdate, onProbeComplete, autoFillTrigger }) {
+    const [progress, setProgress] = useState(null);
+    const [streak, setStreak] = useState(null);
+    const [exercises, setExercises] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [notification, setNotification] = useState(null);
+    const [showProbeSession, setShowProbeSession] = useState(false);
+    // Mock exercises for the milestone
+    const mockExercises = [
+        { id: "ex1", title: "Say 'sun' five times slowly", instructions: "Repeat the word 'sun' slowly, focusing on the /s/ sound", done: false },
+        { id: "ex2", title: "Practice 'sock' in a sentence", instructions: "Use the word 'sock' in a sentence like 'I put on my sock'", done: false },
+        { id: "ex3", title: "Read the 's' word list", instructions: "Read the list of words: sun, soap, soup, sand, sock", done: false },
+    ];
+    useEffect(() => {
+        // Initialize exercises
+        setExercises(mockExercises);
+        fetchProgress();
+    }, [milestone.id]);
+    // Handle auto-fill trigger from parent
+    useEffect(() => {
+        if (autoFillTrigger && autoFillTrigger > 0) {
+            handleAutoFill();
+        }
+    }, [autoFillTrigger]);
+    const handleAutoFill = () => {
+        // IMMEDIATE local state updates (synchronous)
+        const updatedExercises = mockExercises.map((ex) => ({ ...ex, done: true }));
+        setExercises(updatedExercises);
+        setProgress({
+            total_exercises: 3,
+            completed_exercises: 3,
+            consecutive_successes: 3,
+            checkpoint_ready: true,
+            recent_attempts: [],
+        });
+        // Notify parent immediately
+        if (onProgressUpdate) {
+            onProgressUpdate(milestone.id, 3, true);
+        }
+        setNotification("Practice session completed");
+        setTimeout(() => setNotification(null), 3000);
+    };
+    const fetchProgress = async () => {
+        try {
+            setLoading(true);
+            const response = await axios.get(`${API_BASE}/learning/milestones/${milestone.id}/progress`);
+            setProgress(response.data);
+            // Fetch streak data
+            const streakResponse = await axios.get(`${API_BASE}/learning/paths/${caseId}/roadmap`);
+            setStreak(streakResponse.data.streak);
+            // Update exercise completion status based on progress
+            if (response.data.completed_exercises > 0) {
+                const updatedExercises = mockExercises.map((ex, index) => ({
+                    ...ex,
+                    done: index < response.data.completed_exercises,
+                }));
+                setExercises(updatedExercises);
+            }
+        }
+        catch (err) {
+            console.error("Failed to fetch progress:", err);
+            // Set default progress for demo
+            setProgress({
+                total_exercises: 3,
+                completed_exercises: 0,
+                consecutive_successes: 0,
+                checkpoint_ready: false,
+                recent_attempts: [],
+            });
+            setStreak({ current_streak_days: 0, last_practice_date: null });
+        }
+        finally {
+            setLoading(false);
+        }
+    };
+    const handleMarkDone = async (exerciseIndex) => {
+        // IMMEDIATE local state updates (happen synchronously)
+        const updatedExercises = exercises.map((ex, index) => index === exerciseIndex ? { ...ex, done: true } : ex);
+        setExercises(updatedExercises);
+        const completedCount = updatedExercises.filter((ex) => ex.done).length;
+        const checkpointReady = completedCount >= 3;
+        // Update progress immediately
+        setProgress({
+            total_exercises: 3,
+            completed_exercises: completedCount,
+            consecutive_successes: completedCount,
+            checkpoint_ready: checkpointReady,
+            recent_attempts: [],
+        });
+        // Notify parent immediately
+        if (onProgressUpdate) {
+            onProgressUpdate(milestone.id, completedCount, checkpointReady);
+        }
+        // Show notification immediately
+        const threshold = 3;
+        const remaining = threshold - completedCount;
+        if (remaining > 0) {
+            setNotification(`${remaining} more practice session${remaining > 1 ? 's' : ''} to checkpoint`);
+        }
+        else {
+            setNotification("Checkpoint ready");
+        }
+        // Clear notification after 3 seconds
+        setTimeout(() => setNotification(null), 3000);
+        // Check if checkpoint is ready immediately
+        if (checkpointReady && onCheckpointReady) {
+            onCheckpointReady();
+        }
+        // Try API call but don't wait for it - fire and forget
+        axios.post(`${API_BASE}/learning/milestones/${milestone.id}/practice-attempt`, {
+            case_id: caseId,
+            exercise_index: exerciseIndex,
+            audio_or_text: "",
+        }).then(response => {
+            // Update with server response if successful
+            setProgress(response.data);
+            setStreak(response.data.streak);
+            if (onProgressUpdate) {
+                onProgressUpdate(milestone.id, response.data.consecutive_successes, response.data.checkpoint_ready);
+            }
+        }).catch(err => {
+            console.log("Practice attempt API call failed (non-critical):", err);
+        });
+    };
+    const handleTakeCheckpoint = () => {
+        setShowProbeSession(true);
+    };
+    const handleProbeComplete = (status, extraItems) => {
+        setShowProbeSession(false);
+        // Trigger gauge refresh
+        if (onProbeComplete) {
+            onProbeComplete();
+        }
+        if (status === "generalized") {
+            // Refresh roadmap and milestone cards
+            if (onProgressUpdate) {
+                onProgressUpdate(milestone.id, 3, false); // Reset checkpoint ready
+            }
+            // Trigger parent refresh if available
+            window.location.reload(); // Simple refresh for demo
+        }
+        else if (status === "trained" && extraItems) {
+            // Append extra practice items to exercise list and reset progress
+            const extraExercises = extraItems.map((word, index) => ({
+                id: `extra_${index}`,
+                title: `Practice "${word}"`,
+                instructions: `Say "${word}" clearly out loud to reinforce the sound`,
+                done: false,
+            }));
+            setExercises([...exercises, ...extraExercises]);
+            // Reset progress by fetching fresh data
+            setTimeout(() => fetchProgress(), 100);
+            if (onProgressUpdate) {
+                onProgressUpdate(milestone.id, 0, false);
+            }
+        }
+    };
+    const handleProbeCancel = () => {
+        setShowProbeSession(false);
+    };
+    if (loading) {
+        return (_jsx("div", { className: "flex items-center justify-center p-8", children: _jsx("div", { className: "text-gray-500 font-medium", children: "Loading practice panel..." }) }));
+    }
+    if (!progress) {
+        return null;
+    }
+    // Show probe session if active
+    if (showProbeSession) {
+        // Extract phoneme from milestone title (e.g., "s - start of words" -> "/s/")
+        const phonemeMatch = milestone.title.match(/^([a-z]+)/);
+        const phoneme = phonemeMatch ? `/${phonemeMatch[1]}/` : "/s/";
+        return (_jsx(ProbeSession, { milestoneId: milestone.id, caseId: caseId, phoneme: phoneme, onComplete: handleProbeComplete, onCancel: handleProbeCancel }));
+    }
+    const progressPercentage = (progress.completed_exercises / progress.total_exercises) * 100;
+    const threshold = 3;
+    const remaining = threshold - progress.consecutive_successes;
+    return (_jsxs("div", { className: "bg-white border-2 border-[#059669] rounded-[16px] shadow-sm p-6", children: [_jsxs("div", { className: "mb-6", children: [_jsx("h3", { className: "text-2xl font-black text-[#022C22] tracking-tight mb-1", children: milestone.title }), _jsx("p", { className: "text-sm font-bold text-[#1E293B] mb-4", children: milestone.goal }), _jsxs("div", { className: "flex items-center justify-between mb-2", children: [_jsxs("span", { className: "text-sm font-extrabold text-[#0F172A]", children: ["Practice ", progress.consecutive_successes, " of ", threshold, " days to unlock checkpoint"] }), _jsxs("span", { className: "text-sm font-black text-[#022C22] tabular-nums", children: [progress.completed_exercises, "/", progress.total_exercises] })] }), _jsx("div", { className: "w-full bg-[#D1FAE5] h-2.5 rounded-full overflow-hidden", children: _jsx(motion.div, { initial: { width: 0 }, animate: { width: `${progressPercentage}%` }, transition: { duration: 0.2, ease: "easeOut" }, className: "bg-[#059669] h-2.5 rounded-full" }) })] }), _jsx(AnimatePresence, { children: notification && (_jsx(motion.div, { initial: { opacity: 0, y: -8 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -8 }, transition: { duration: 0.2, ease: "easeOut" }, className: "bg-[#064E3B] border border-[#0D9488] rounded-lg p-3 mb-4 shadow-sm", children: _jsx("p", { className: "text-sm font-extrabold text-white", children: notification }) })) }), progress.checkpoint_ready && (_jsx(motion.div, { initial: { opacity: 0, y: 8 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.2, ease: "easeOut" }, className: "bg-[#047857] border-2 border-[#0D9488] text-white rounded-[12px] p-4 mb-6 shadow-sm", children: _jsxs("div", { className: "flex items-start gap-4", children: [_jsx("div", { className: "p-2 bg-[#064E3B] border border-[#0D9488] rounded-full flex-shrink-0", children: _jsx(Target, { className: "w-6 h-6 text-[#CCFBF1]", strokeWidth: 1.75 }) }), _jsxs("div", { className: "flex-1", children: [_jsx("h4", { className: "font-black text-white text-lg mb-1", children: "Checkpoint ready" }), _jsx("p", { className: "text-sm font-extrabold text-white mb-4", children: "You have completed the required practice sessions. Take the generalization probe to assess progress." }), _jsxs("button", { onClick: handleTakeCheckpoint, className: "bg-white hover:bg-[#CCFBF1] text-[#047857] font-black rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm", children: [_jsx(Target, { className: "w-5 h-5 text-[#047857]", strokeWidth: 1.75 }), "Take probe checkpoint"] })] })] }) })), _jsx("div", { className: "space-y-4 mb-6", children: exercises.map((exercise, index) => (_jsx("div", { className: "bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-4 transition-all shadow-sm", children: _jsxs("div", { className: "flex items-start justify-between", children: [_jsxs("div", { className: "flex-1", children: [_jsxs("h4", { className: `font-black mb-1.5 ${exercise.done ? "text-[#CCFBF1] line-through opacity-80 text-base" : "text-base font-black text-white"}`, children: ["Exercise ", index + 1, ": ", exercise.title] }), _jsx("p", { className: `text-base font-extrabold ${exercise.done ? "text-[#CCFBF1] opacity-80" : "text-white"}`, children: exercise.instructions })] }), _jsx("div", { className: "ml-4", children: exercise.done ? (_jsx(motion.div, { initial: { scale: 0 }, animate: { scale: 1 }, transition: { duration: 0.2, ease: "easeOut" }, className: "flex items-center justify-center w-9 h-9 bg-[#34D399] rounded-full", children: _jsx(CheckCircle2, { className: "w-5 h-5 text-[#064E3B]", strokeWidth: 2 }) })) : (_jsx("button", { onClick: () => handleMarkDone(index), className: "bg-white hover:bg-[#CCFBF1] text-[#064E3B] font-black rounded-lg px-4 py-2 transition-colors shadow-sm", children: "Mark Done" })) })] }) }, exercise.id))) }), _jsxs("div", { className: "flex items-center justify-between pt-4 border-t border-[#CBD5E1]", children: [_jsxs("div", { className: "flex items-center gap-2", children: [_jsx(Flame, { className: "w-5 h-5 text-[#D97706]", strokeWidth: 1.75 }), _jsxs("span", { className: "text-[#022C22] font-black text-sm tabular-nums", children: ["Streak: ", streak?.current_streak_days || 0, " days"] })] }), _jsx("button", { onClick: () => {
+                            setNotification("Practice session recorded");
+                            setTimeout(() => setNotification(null), 3000);
+                        }, className: "bg-[#059669] hover:bg-[#047857] text-white font-extrabold rounded-lg px-4 py-2 shadow-sm transition-colors", children: "Record Practice Session" })] })] }));
+}
