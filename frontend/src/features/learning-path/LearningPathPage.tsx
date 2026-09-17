@@ -265,28 +265,28 @@ export default function LearningPathPage() {
     <div className="min-h-screen bg-[#E8F8F3] text-[#0F172A] p-6">
       <div className="max-w-6xl mx-auto">
         {/* Sticky Top Header Card */}
-        <div className="bg-white border border-[#A7E3D5] rounded-[14px] p-4 shadow-sm mb-6 sticky top-4 z-50 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-[#0F172A]">Learning path</h1>
+        <div className="bg-white border-2 border-[#059669] rounded-[16px] p-4 shadow-sm mb-6 sticky top-4 z-50 flex items-center justify-between">
+          <h1 className="text-2xl font-black text-[#022C22] tracking-tight">Learning path</h1>
 
           <div className="flex items-center gap-3">
             {/* Tab Toggle */}
             <div className="flex gap-2">
               <button
                 onClick={() => setActiveTab("roadmap")}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 ${
                   activeTab === "roadmap"
-                    ? "bg-[#0D9488] text-white"
-                    : "bg-white text-[#0F172A] border border-[#A7E3D5] hover:bg-[#F8FAFC]"
+                    ? "bg-[#059669] text-white"
+                    : "bg-white text-[#022C22] border border-[#059669] hover:bg-[#F0FDF4]"
                 }`}
               >
                 Patient Roadmap
               </button>
               <button
                 onClick={() => setActiveTab("edit")}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg font-bold transition-colors flex items-center gap-2 ${
                   activeTab === "edit"
-                    ? "bg-[#0D9488] text-white"
-                    : "bg-white text-[#0F172A] border border-[#A7E3D5] hover:bg-[#F8FAFC]"
+                    ? "bg-[#059669] text-white"
+                    : "bg-white text-[#022C22] border border-[#059669] hover:bg-[#F0FDF4]"
                 }`}
               >
                 Clinician Mode
@@ -297,7 +297,7 @@ export default function LearningPathPage() {
             {activeTab === "roadmap" && (
               <button
                 onClick={handleQuickDemoAutoFill}
-                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-semibold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-bold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Zap className="w-4 h-4" strokeWidth={1.75} />
                 Auto-fill practice
@@ -318,17 +318,17 @@ export default function LearningPathPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="bg-white border border-[#A7E3D5] rounded-[14px] p-5 shadow-sm"
+                className="bg-white border-2 border-[#059669] rounded-[16px] p-5 shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <div className="p-2.5 bg-[#FEF3C7] border border-[#FDE68A] rounded-full flex items-center justify-center">
                     <Flame className="w-6 h-6 text-[#D97706]" strokeWidth={1.75} />
                   </div>
                   <div>
-                    <div className="font-bold text-lg text-[#0F172A] tabular-nums">
+                    <div className="font-black text-xl text-[#022C22] tabular-nums tracking-tight">
                       Streak: {learningPath.streak.current_streak_days} days
                     </div>
-                    <div className="text-sm font-medium text-[#334155]">
+                    <div className="text-sm font-bold text-[#1E293B]">
                       Practice today to maintain your streak
                     </div>
                   </div>

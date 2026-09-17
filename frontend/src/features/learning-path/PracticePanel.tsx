@@ -249,29 +249,29 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
   const remaining = threshold - progress.consecutive_successes;
 
   return (
-    <div className="bg-white border border-[#A7E3D5] rounded-[14px] shadow-sm p-6">
+    <div className="bg-white border-2 border-[#059669] rounded-[16px] shadow-sm p-6">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="text-xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-        <p className="text-sm font-medium text-[#334155] mb-4">{milestone.goal}</p>
+        <h3 className="text-2xl font-black text-[#022C22] tracking-tight mb-1">{milestone.title}</h3>
+        <p className="text-sm font-bold text-[#1E293B] mb-4">{milestone.goal}</p>
 
         {/* Progress text */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-[#0F172A]">
+          <span className="text-sm font-extrabold text-[#0F172A]">
             Practice {progress.consecutive_successes} of {threshold} days to unlock checkpoint
           </span>
-          <span className="text-sm font-bold text-[#0D9488] tabular-nums">
+          <span className="text-sm font-black text-[#022C22] tabular-nums">
             {progress.completed_exercises}/{progress.total_exercises}
           </span>
         </div>
 
         {/* Progress bar */}
-        <div className="w-full bg-[#E2E8F0] h-2.5 rounded-full overflow-hidden">
+        <div className="w-full bg-[#D1FAE5] h-2.5 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="bg-[#0D9488] h-2.5 rounded-full"
+            className="bg-[#059669] h-2.5 rounded-full"
           />
         </div>
       </div>
@@ -284,9 +284,9 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="bg-[#CCFBF1] border border-[#0D9488] rounded-lg p-3 mb-4"
+            className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-lg p-3 mb-4"
           >
-            <p className="text-sm font-semibold text-[#0F172A]">{notification}</p>
+            <p className="text-sm font-extrabold text-[#022C22]">{notification}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -297,20 +297,20 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="bg-[#CCFBF1] border border-[#0D9488] text-[#0F172A] rounded-[12px] p-4 mb-6 shadow-sm"
+          className="bg-[#F0FDF4] border border-[#A7F3D0] text-[#022C22] rounded-[12px] p-4 mb-6 shadow-sm"
         >
           <div className="flex items-start gap-4">
-            <div className="p-2 bg-white border border-[#0D9488] rounded-full flex-shrink-0">
-              <Target className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
+            <div className="p-2 bg-white border border-[#059669] rounded-full flex-shrink-0">
+              <Target className="w-6 h-6 text-[#059669]" strokeWidth={1.75} />
             </div>
             <div className="flex-1">
-              <h4 className="font-bold text-[#0F172A] text-lg mb-1">Checkpoint ready</h4>
-              <p className="text-sm font-medium text-[#334155] mb-4">
+              <h4 className="font-black text-[#022C22] text-lg mb-1">Checkpoint ready</h4>
+              <p className="text-sm font-bold text-[#1E293B] mb-4">
                 You have completed the required practice sessions. Take the generalization probe to assess progress.
               </p>
               <button
                 onClick={handleTakeCheckpoint}
-                className="bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
+                className="bg-[#059669] hover:bg-[#047857] text-white font-extrabold rounded-lg px-4 py-2 transition-colors flex items-center gap-2 shadow-sm"
               >
                 <Target className="w-5 h-5 text-white" strokeWidth={1.75} />
                 Take probe checkpoint
@@ -325,18 +325,18 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
         {exercises.map((exercise, index) => (
           <div
             key={exercise.id}
-            className={`p-4 rounded-[12px] border transition-all ${
+            className={`p-4 rounded-[12px] border-2 transition-all ${
               exercise.done
-                ? "bg-[#CCFBF1] border-[#0D9488]"
-                : "bg-[#F0FDFA] border-[#A7E3D5]"
+                ? "bg-[#F0FDF4] border-[#059669]"
+                : "bg-[#F0FDF4] border-[#A7F3D0]"
             }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h4 className={`font-semibold mb-1 ${exercise.done ? "text-[#0F766E] line-through opacity-75" : "text-[#0F172A]"}`}>
+                <h4 className={`font-black mb-1.5 ${exercise.done ? "text-[#047857] line-through opacity-75 text-base" : "text-base font-black text-[#022C22]"}`}>
                   Exercise {index + 1}: {exercise.title}
                 </h4>
-                <p className={`text-sm ${exercise.done ? "text-[#0F766E] opacity-75" : "text-[#334155]"} font-medium`}>
+                <p className={`text-base font-extrabold ${exercise.done ? "text-[#047857] opacity-75" : "text-[#022C22]"}`}>
                   {exercise.instructions}
                 </p>
               </div>
@@ -346,14 +346,14 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="flex items-center justify-center w-9 h-9 bg-[#16A34A] rounded-full"
+                    className="flex items-center justify-center w-9 h-9 bg-[#059669] rounded-full"
                   >
                     <CheckCircle2 className="w-5 h-5 text-white" strokeWidth={1.75} />
                   </motion.div>
                 ) : (
                   <button
                     onClick={() => handleMarkDone(index)}
-                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-semibold rounded-lg px-4 py-2 transition-colors shadow-sm"
+                    className="bg-[#1E3A5F] hover:bg-[#2E5A88] text-white font-extrabold rounded-lg px-4 py-2 transition-colors shadow-sm"
                   >
                     Mark Done
                   </button>
@@ -368,7 +368,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
       <div className="flex items-center justify-between pt-4 border-t border-[#CBD5E1]">
         <div className="flex items-center gap-2">
           <Flame className="w-5 h-5 text-[#D97706]" strokeWidth={1.75} />
-          <span className="text-[#0F172A] font-bold tabular-nums">
+          <span className="text-[#022C22] font-black text-sm tabular-nums">
             Streak: {streak?.current_streak_days || 0} days
           </span>
         </div>
@@ -377,7 +377,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
             setNotification("Practice session recorded");
             setTimeout(() => setNotification(null), 3000);
           }}
-          className="bg-[#0D9488] hover:bg-[#0F766E] text-white font-semibold rounded-lg px-4 py-2 shadow-sm transition-colors"
+          className="bg-[#059669] hover:bg-[#047857] text-white font-extrabold rounded-lg px-4 py-2 shadow-sm transition-colors"
         >
           Record Practice Session
         </button>
