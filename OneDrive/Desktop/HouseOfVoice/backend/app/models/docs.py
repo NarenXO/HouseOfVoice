@@ -71,6 +71,10 @@ class UrgentFlagResponse(BaseModel):
 
 class ReassessmentCreate(BaseModel):
     case_id: str
+    clarity_score: Optional[float] = None
+    fluency_score: Optional[float] = None
+    pronunciation_score: Optional[float] = None
+    voice_stability_score: Optional[float] = None
 
 
 class ReassessmentResponse(BaseModel):

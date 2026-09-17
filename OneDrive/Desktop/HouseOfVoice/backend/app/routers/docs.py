@@ -3,9 +3,10 @@ from fastapi import APIRouter, HTTPException
 from app.models.docs import SessionNoteCreate, SessionNoteResponse, AIDraftRequest, AIDraftResponse, DashboardResponse, UrgentFlagCreate, UrgentFlagResponse, ReassessmentCreate, ReassessmentResponse, FeedbackCreate, FeedbackResponse, SupervisorEvalCreate, SupervisorEvalResponse, CaseCloseCreate, CaseCloseResponse, FollowUpCheckinCreate, FollowUpCheckinResponse
 from app.services.docs import save_note, get_notes_by_case, get_note_by_session, generate_draft, approve_draft, get_drafts_by_case, get_dashboard, raise_flag, get_flags_by_case, create_reassessment, get_reassessments, submit_feedback, get_feedback_by_case, submit_evaluation, get_evaluations_by_case, close_case, get_case_status, submit_followup, get_followups_by_case
 import json
+import os
 from pathlib import Path
 
-USE_MOCKS = True
+USE_MOCKS = os.getenv("USE_MOCKS", "false").lower() == "true"
 
 router = APIRouter()
 
@@ -66,6 +67,8 @@ async def generate_ai_draft(request: AIDraftRequest):
         draft = generate_draft(request.session_note_id)
         return draft
     except ValueError as e:
+        if "GEMINI_API_KEY" in str(e):
+            raise HTTPException(status_code=500, detail=str(e))
         raise HTTPException(status_code=404, detail=str(e))
 
 
@@ -88,8 +91,11 @@ async def get_ai_drafts(case_id: str):
 
 @router.get("/dashboard/{case_id}", response_model=DashboardResponse)
 async def get_dashboard_data(case_id: str):
-    dashboard_data = get_dashboard(case_id)
-    return dashboard_data
+    try:
+        dashboard_data = get_dashboard(case_id)
+        return dashboard_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to compute dashboard metrics: {str(e)}")
 
 
 @router.post("/urgent-flag", response_model=UrgentFlagResponse, status_code=201)
@@ -106,7 +112,7 @@ async def get_urgent_flags(case_id: str):
 
 @router.post("/reassessment", response_model=ReassessmentResponse, status_code=201)
 async def create_reassessment_endpoint(reassessment: ReassessmentCreate):
-    created_reassessment = create_reassessment(reassessment.case_id)
+    created_reassessment = create_reassessment(reassessment)
     return created_reassessment
 
 

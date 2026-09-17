@@ -32,7 +32,7 @@ export default function AIDraftPanel({ sessionNoteId }: AIDraftPanelProps) {
 
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:8000/session-notes/draft', {
+      const response = await fetch('http://localhost:8000/docs/session-notes/draft', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -46,9 +46,13 @@ export default function AIDraftPanel({ sessionNoteId }: AIDraftPanelProps) {
         setSoapNote(draftData.soap_note);
         setSessionSummary(draftData.session_summary);
         setParentSummary(draftData.parent_summary);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to generate AI draft');
       }
     } catch (error) {
       console.error('Error generating AI draft:', error);
+      alert(error instanceof Error ? error.message : 'Failed to generate AI draft. Make sure GEMINI_API_KEY is configured.');
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +63,7 @@ export default function AIDraftPanel({ sessionNoteId }: AIDraftPanelProps) {
 
     setIsApproving(true);
     try {
-      const response = await fetch(`http://localhost:8000/session-notes/draft/${draft.id}/approve`, {
+      const response = await fetch(`http://localhost:8000/docs/session-notes/draft/${draft.id}/approve`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +143,8 @@ export default function AIDraftPanel({ sessionNoteId }: AIDraftPanelProps) {
         {isLoading && (
           <div className="flex flex-col items-center justify-center py-12">
             <Loader2 className="w-8 h-8 text-purple-600 animate-spin mb-4" />
-            <p className="text-gray-600">Gemini is drafting your notes...</p>
+            <p className="text-gray-600">Gemini AI is generating live clinical documentation...</p>
+            <p className="text-sm text-gray-500 mt-2">Processing SOAP note, session summary, and parent explanation</p>
           </div>
         )}
 

@@ -29,6 +29,12 @@ export default function ReassessmentView({ caseId }: ReassessmentViewProps) {
   const [reassessment, setReassessment] = useState<Reassessment | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Score input states
+  const [clarityScore, setClarityScore] = useState<number | ''>('');
+  const [fluencyScore, setFluencyScore] = useState<number | ''>('');
+  const [pronunciationScore, setPronunciationScore] = useState<number | ''>('');
+  const [voiceStabilityScore, setVoiceStabilityScore] = useState<number | ''>('');
 
   const runReassessment = async () => {
     setIsRunning(true);
@@ -37,7 +43,13 @@ export default function ReassessmentView({ caseId }: ReassessmentViewProps) {
       const response = await fetch('http://localhost:8000/docs/reassessment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ case_id: caseId })
+        body: JSON.stringify({ 
+          case_id: caseId,
+          clarity_score: clarityScore !== '' ? clarityScore / 100 : null,
+          fluency_score: fluencyScore !== '' ? fluencyScore / 100 : null,
+          pronunciation_score: pronunciationScore !== '' ? pronunciationScore / 100 : null,
+          voice_stability_score: voiceStabilityScore !== '' ? voiceStabilityScore / 100 : null
+        })
       });
 
       if (response.ok) {
@@ -63,6 +75,10 @@ export default function ReassessmentView({ caseId }: ReassessmentViewProps) {
       value: change,
       isPositive: change >= 0
     };
+  };
+
+  const formatDecimalScore = (value: number) => {
+    return `${(value * 100).toFixed(0)}%`;
   };
 
   const prepareChartData = () => {
@@ -162,18 +178,88 @@ export default function ReassessmentView({ caseId }: ReassessmentViewProps) {
         </div>
       </div>
 
-      {/* Run Reassessment Button */}
-      <div className="flex justify-center">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={runReassessment}
-          disabled={isRunning}
-          className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCw className={`w-5 h-5 ${isRunning ? 'animate-spin' : ''}`} />
-          <span>{isRunning ? 'Running...' : 'Run Reassessment'}</span>
-        </motion.button>
+      {/* Score Input Form */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Re-evaluation Scores (Optional)</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Enter current re-evaluated scores to compute exact improvement deltas. Leave blank to derive from session data.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Speech Clarity (%)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={clarityScore}
+              onChange={(e) => setClarityScore(e.target.value === '' ? '' : parseFloat(e.target.value))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="0-100"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Fluency (%)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={fluencyScore}
+              onChange={(e) => setFluencyScore(e.target.value === '' ? '' : parseFloat(e.target.value))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="0-100"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Pronunciation (%)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={pronunciationScore}
+              onChange={(e) => setPronunciationScore(e.target.value === '' ? '' : parseFloat(e.target.value))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="0-100"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Voice Stability (%)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={voiceStabilityScore}
+              onChange={(e) => setVoiceStabilityScore(e.target.value === '' ? '' : parseFloat(e.target.value))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="0-100"
+            />
+          </div>
+        </div>
+
+        {/* Run Reassessment Button */}
+        <div className="flex justify-center">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={runReassessment}
+            disabled={isRunning}
+            className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCw className={`w-5 h-5 ${isRunning ? 'animate-spin' : ''}`} />
+            <span>{isRunning ? 'Running...' : 'Run Reassessment'}</span>
+          </motion.button>
+        </div>
       </div>
 
       {/* Error State */}
