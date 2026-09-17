@@ -59,8 +59,8 @@ export default function MilestoneEditor({
       </div>
 
       {disabled && (
-        <div className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-[16px] p-4 mb-6 shadow-sm">
-          <p className="text-[#022C22] font-extrabold text-sm">
+        <div className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-4 mb-6 shadow-sm">
+          <p className="text-[#CCFBF1] font-extrabold text-sm">
             Path is approved and locked. Editing is disabled.
           </p>
         </div>

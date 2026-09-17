@@ -318,17 +318,17 @@ export default function LearningPathPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="bg-white border-2 border-[#059669] rounded-[16px] p-5 shadow-sm"
+                className="bg-[#064E3B] border border-[#0D9488] rounded-[16px] p-5 shadow-sm"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 bg-[#FEF3C7] border border-[#FDE68A] rounded-full flex items-center justify-center">
-                    <Flame className="w-6 h-6 text-[#D97706]" strokeWidth={1.75} />
+                  <div className="p-2.5 bg-[#047857] border border-[#0D9488] rounded-full flex items-center justify-center">
+                    <Flame className="w-6 h-6 text-[#F59E0B]" strokeWidth={1.75} />
                   </div>
                   <div>
-                    <div className="font-black text-xl text-[#022C22] tabular-nums tracking-tight">
+                    <div className="font-black text-xl text-white tabular-nums tracking-tight">
                       Streak: {learningPath.streak.current_streak_days} days
                     </div>
-                    <div className="text-sm font-bold text-[#1E293B]">
+                    <div className="text-sm font-bold text-[#CCFBF1]">
                       Practice today to maintain your streak
                     </div>
                   </div>
@@ -356,12 +356,12 @@ export default function LearningPathPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="bg-[#CCFBF1] border border-[#0D9488] rounded-[14px] p-4 text-center shadow-sm"
+                  className="bg-[#064E3B] border border-[#0D9488] rounded-[14px] p-4 text-center shadow-sm"
                 >
                   <div className="flex items-center justify-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-[#16A34A]" strokeWidth={1.75} />
-                    <span className="font-bold text-lg text-[#0F172A]">Badge unlocked</span>
-                    <CheckCircle2 className="w-5 h-5 text-[#16A34A]" strokeWidth={1.75} />
+                    <CheckCircle2 className="w-5 h-5 text-[#34D399]" strokeWidth={1.75} />
+                    <span className="font-black text-lg text-white">Badge unlocked</span>
+                    <CheckCircle2 className="w-5 h-5 text-[#34D399]" strokeWidth={1.75} />
                   </div>
                 </motion.div>
               )}

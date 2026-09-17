@@ -42,9 +42,9 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 };
             case "active":
                 return {
-                    bg: "bg-[#1E3A5F]",
+                    bg: "bg-[#064E3B]",
                     text: "text-white",
-                    border: "border-2 border-[#059669]",
+                    border: "border-2 border-[#0D9488]",
                     icon: _jsx(Target, { className: "w-6 h-6 text-white", strokeWidth: 1.75 }),
                 };
             case "trained":

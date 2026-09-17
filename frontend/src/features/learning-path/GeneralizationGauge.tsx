@@ -182,10 +182,10 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-[12px] p-4 mb-6"
+          className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-4 mb-6 shadow-sm"
         >
           <div className="flex items-center gap-2">
-            <span className="text-sm font-extrabold text-[#022C22]">
+            <span className="text-sm font-extrabold text-white">
               {topPhoneme.phoneme} is generalized. Ready for conversational transfer.
             </span>
           </div>
@@ -203,22 +203,22 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="flex items-center gap-3"
+              className="bg-[#064E3B] text-white border border-[#0D9488] rounded-[12px] p-3 flex items-center gap-3 shadow-sm"
             >
-              <div className="w-12 h-8 flex items-center justify-center bg-[#D1FAE5] text-[#047857] border border-[#059669] font-black px-3 py-1 rounded-full text-xs font-mono">
+              <div className="w-12 h-8 flex items-center justify-center bg-[#CCFBF1] text-[#064E3B] font-black rounded-md text-xs font-mono">
                 {phoneme.phoneme}
               </div>
               <div className="flex-1">
-                <div className="h-3 bg-[#D1FAE5] rounded-full overflow-hidden">
+                <div className="h-3 bg-[#047857] rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${phonemePercentage}%` }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="h-full bg-[#059669] rounded-full"
+                    className="h-full bg-[#34D399] rounded-full"
                   />
                 </div>
               </div>
-              <div className="text-sm text-[#022C22] whitespace-nowrap tabular-nums font-black">
+              <div className="text-sm text-white whitespace-nowrap tabular-nums font-extrabold">
                 {phoneme.probes_passed} / {phoneme.probes_attempted} ({phonemePercentage}%)
               </div>
             </motion.div>
@@ -227,20 +227,20 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
       </div>
 
       {/* Overall Stats Inner Accent Panel */}
-      <div className="bg-[#F0FDF4] border border-[#A7F3D0] rounded-[12px] p-4 mt-6">
+      <div className="bg-[#064E3B] border border-[#0D9488] rounded-[12px] p-4 mt-6 shadow-sm">
         <div className="flex justify-between items-center text-sm">
-          <span className="font-extrabold text-[#0F172A]">
+          <span className="font-extrabold text-white text-sm">
             Total probes attempted
           </span>
-          <span className="font-black text-[#022C22] text-base tabular-nums">
+          <span className="font-black text-[#CCFBF1] text-lg tabular-nums">
             {data.total_probes_attempted}
           </span>
         </div>
         <div className="flex justify-between items-center text-sm mt-2">
-          <span className="font-extrabold text-[#0F172A]">
+          <span className="font-extrabold text-white text-sm">
             Total probes passed
           </span>
-          <span className="font-black text-[#022C22] text-base tabular-nums">
+          <span className="font-black text-[#CCFBF1] text-lg tabular-nums">
             {data.total_probes_passed}
           </span>
         </div>
