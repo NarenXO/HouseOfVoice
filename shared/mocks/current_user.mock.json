@@ -1,0 +1,16 @@
+{
+  "id": "usr_demo_001",
+  "role": "patient",
+  "name": "Aanya Demo",
+  "age": 9,
+  "communicationProfile": {
+    "primaryLanguage": "English",
+    "secondaryLanguage": "Tamil",
+    "preferredTherapyLanguage": "English",
+    "readingAbility": "developing",
+    "typingAbility": "developing",
+    "preferredCommunicationMethod": "voice",
+    "guardianAssistanceRequired": true,
+    "comfortWithUnfamiliarPeople": "medium"
+  }
+}
