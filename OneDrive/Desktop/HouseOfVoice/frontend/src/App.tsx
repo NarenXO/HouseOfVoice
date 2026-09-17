@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { LanguageProvider } from './shared/LanguageContext'
+import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding'
 
 /* Feature imports — uncomment during integration */
-// import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding'
 // import { ScreeningFlow } from './features/screening/ScreeningFlow'
 // import { MatchingFlow } from './features/matching/MatchingFlow'
 // import { LearningDashboard } from './features/learning/LearningDashboard'
@@ -18,16 +19,18 @@ function Home() {
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        {/* <Route path="/auth/*" element={<AuthOnboarding />} /> */}
-        {/* <Route path="/screening/*" element={<ScreeningFlow />} /> */}
-        {/* <Route path="/matching/*" element={<MatchingFlow />} /> */}
-        {/* <Route path="/learning/*" element={<LearningDashboard />} /> */}
-        {/* <Route path="/session/*" element={<SessionRoom />} /> */}
-        {/* <Route path="/docs/*" element={<DocsDashboard />} /> */}
-      </Routes>
-    </BrowserRouter>
+    <LanguageProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<AuthOnboarding />} />
+          <Route path="/auth/*" element={<AuthOnboarding />} />
+          {/* <Route path="/screening/*" element={<ScreeningFlow />} /> */}
+          {/* <Route path="/matching/*" element={<MatchingFlow />} /> */}
+          {/* <Route path="/learning/*" element={<LearningDashboard />} /> */}
+          {/* <Route path="/session/*" element={<SessionRoom />} /> */}
+          {/* <Route path="/docs/*" element={<DocsDashboard />} /> */}
+        </Routes>
+      </BrowserRouter>
+    </LanguageProvider>
   )
 }
