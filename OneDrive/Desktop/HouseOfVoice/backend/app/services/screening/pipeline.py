@@ -12,68 +12,37 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-def _fetch_audio_bytes(clip_data: dict) -> bytes:
-    """
-    Try to fetch audio bytes from the best available clip.
-    Priority: spontaneous > sentence > picture > first available.
-    If all fail, return minimal silent WAV bytes.
-    """
-    priority = ["spontaneous", "sentence", "picture"]
-    ordered_clips = []
+def _fetch_all_audio_bytes(clip_data: dict) -> list[bytes]:
+    """Fetch audio bytes for all available clips. Returns list of bytes."""
+    audio_clips = []
+    priority = ["sentence", "picture", "spontaneous"]
+    
     for key in priority:
         if key in clip_data:
-            ordered_clips.append(clip_data[key])
+            data = clip_data[key]
+            if data.get("bytes"):
+                audio_clips.append(data["bytes"])
+            elif data.get("local_file_path"):
+                with open(data["local_file_path"], "rb") as f:
+                    audio_clips.append(f.read())
+                    
     for key, data in clip_data.items():
         if key not in priority:
-            ordered_clips.append(data)
-
-    for data in ordered_clips:
-        if data.get("bytes"):
-            return data["bytes"]
-            
-        url = data.get("url")
-        if url and not url.startswith("https://mock-storage"):
-            if url.startswith("local://"):
+            if data.get("bytes") and data["bytes"] not in audio_clips:
+                audio_clips.append(data["bytes"])
+            elif data.get("local_file_path"):
                 try:
-                    local_path = url.replace("local://", "")
-                    with open(local_path, "rb") as f:
-                        return f.read()
-                except Exception as e:
-                    logger.debug(f"[pipeline] Could not read local file {url}: {e}")
-            else:
-                try:
-                    with urllib.request.urlopen(url, timeout=5) as resp:
-                        return resp.read()
-                except Exception as e:
-                    logger.debug(f"[pipeline] Could not fetch {url}: {e}")
-
-    # No real audio available — raise an error instead of silently substituting a WAV stub
-    raise ValueError("No audio bytes available. Please re-record your clips.")
-
-
-def _make_silent_wav(sample_rate: int = 16000, duration_s: int = 1) -> bytes:
-    """Generate a minimal silent WAV file in memory."""
-    import struct
-
-    num_samples = sample_rate * duration_s
-    data_size = num_samples * 2  # 16-bit PCM
-    header = struct.pack(
-        "<4sI4s4sIHHIIHH4sI",
-        b"RIFF",
-        36 + data_size,
-        b"WAVE",
-        b"fmt ",
-        16,        # chunk size
-        1,         # PCM
-        1,         # mono
-        sample_rate,
-        sample_rate * 2,
-        2,         # block align
-        16,        # bits per sample
-        b"data",
-        data_size,
-    )
-    return header + b"\x00" * data_size
+                    with open(data["local_file_path"], "rb") as f:
+                        content = f.read()
+                        if content not in audio_clips:
+                            audio_clips.append(content)
+                except Exception:
+                    pass
+                    
+    if not audio_clips:
+        raise ValueError("No audio bytes available. Please re-record your clips.")
+        
+    return audio_clips
 
 
 async def run_full_pipeline(case_id: str, clip_data: dict) -> dict:
@@ -98,16 +67,46 @@ async def run_full_pipeline(case_id: str, clip_data: dict) -> dict:
         logger.error(f"[pipeline] Stage import failed: {e}")
         raise
 
-    audio_bytes = _fetch_audio_bytes(clip_data)
+    audio_clips_bytes = _fetch_all_audio_bytes(clip_data)
 
     try:
         # Stage 1 – Whisper
-        whisper_res = await whisper_stage.process_whisper(audio_bytes)
-        logger.info(f"[pipeline] Whisper done: lang={whisper_res.get('language')}, "
-                    f"words={len(whisper_res.get('words', []))}")
+        full_transcript = ""
+        combined_words = []
+        total_duration = 0.0
+        detected_lang = "en"
+        
+        for clip_bytes in audio_clips_bytes:
+            whisper_res = await whisper_stage.process_whisper(clip_bytes)
+            if whisper_res["transcript"]:
+                full_transcript += (" " + whisper_res["transcript"]) if full_transcript else whisper_res["transcript"]
+            if whisper_res["words"]:
+                combined_words.extend(whisper_res["words"])
+            total_duration += whisper_res["duration"]
+            if whisper_res["language"]:
+                detected_lang = whisper_res["language"]
+
+        if not combined_words:
+            raise ValueError("⚠️ Analysis Failed: No speech detected in your audio. Please re-record your clips and speak clearly into the microphone.")
+
+        aggregated_whisper_res = {
+            "transcript": full_transcript.strip(),
+            "words": combined_words,
+            "duration": total_duration,
+            "language": detected_lang
+        }
+        
+        total_words = len(combined_words)
+        speech_rate_wpm = (total_words / total_duration) * 60.0 if total_duration > 0 else 0.0
+
+        print(f"[LIVE PIPELINE] Full Transcript: '{full_transcript}'")
+        print(f"[LIVE PIPELINE] Total Words: {total_words}, Duration: {total_duration:.1f}s, WPM: {speech_rate_wpm:.1f}")
+
+        # Use first clip for acoustic-only analysis where concatenation isn't trivial
+        primary_audio_bytes = audio_clips_bytes[0]
 
         # Stage 2 – VAD
-        vad_res = await vad_stage.process_vad(audio_bytes)
+        vad_res = await vad_stage.process_vad(primary_audio_bytes)
         logger.info(f"[pipeline] VAD done: speech_ratio={vad_res.get('speech_ratio')}")
     except ValueError as e:
         import fastapi
@@ -119,23 +118,26 @@ async def run_full_pipeline(case_id: str, clip_data: dict) -> dict:
         )
 
     # Stage 3 – Features
-    feat_res = await feature_stage.process_features(audio_bytes, whisper_res)
+    feat_res = await feature_stage.process_features(primary_audio_bytes, aggregated_whisper_res)
     logger.info(f"[pipeline] Features done: wpm={feat_res.get('speech_rate_wpm')}")
 
     # Stage 4 – Phonemes
-    phoneme_res = await phoneme_stage.process_phonemes(audio_bytes, whisper_res)
+    phoneme_res = await phoneme_stage.process_phonemes(primary_audio_bytes, aggregated_whisper_res)
     logger.info(f"[pipeline] Phonemes done: {phoneme_res.get('phoneme_scores')}")
 
     # Stage 5 – Voice
-    voice_res = await voice_stage.process_voice(audio_bytes)
+    voice_res = await voice_stage.process_voice(primary_audio_bytes)
     logger.info(f"[pipeline] Voice done: stability={voice_res.get('voice_stability')}")
 
     # Stage 6 – Classify
     class_res = await classify_stage.process_classification(feat_res, vad_res, phoneme_res, voice_res)
     logger.info(f"[pipeline] Classify done: severity={class_res.get('overall_severity')}")
 
+    # Print final verification logs
+    print(f"[LIVE PIPELINE] Fluency: {class_res['fluency_score'] * 100:.1f}%, Language: {class_res['language_score'] * 100:.1f}%")
+
     # Stage 7 – Explain
-    recs = await explain_stage.process_explanation({**phoneme_res, **class_res})
+    recs = await explain_stage.process_explanation({**phoneme_res, **class_res, "full_transcript": full_transcript.strip()})
     logger.info(f"[pipeline] Explain done: {len(recs)} recommendations")
 
     return {

@@ -14,6 +14,7 @@ _PHONEME_PATTERNS = {
     "r": ["r"],
     "l": ["l"],
     "sh": ["sh"],
+    "ch": ["ch"],
 }
 
 def _score_from_whisper(words: list) -> dict:

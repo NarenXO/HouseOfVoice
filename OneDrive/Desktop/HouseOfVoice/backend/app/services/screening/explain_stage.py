@@ -63,6 +63,8 @@ async def process_explanation(metrics: dict) -> List[str]:
         else:
             lowest_str = "None specifically detected"
 
+        full_transcript = metrics.get("full_transcript", "Not available")
+
         prompt = (
             f"You are a licensed speech-language pathologist.\n"
             f"A child patient has been assessed with the following metrics:\n"
@@ -70,9 +72,10 @@ async def process_explanation(metrics: dict) -> List[str]:
             f"- Fluency score: {fluency:.2f} (0=poor, 1=excellent)\n"
             f"- Language score: {language:.2f} (0=poor, 1=excellent)\n"
             f"- Phoneme accuracy scores: {phoneme_scores}\n"
-            f"- Lowest scoring phonemes actually detected: {lowest_str}\n\n"
+            f"- Lowest scoring phonemes actually detected: {lowest_str}\n"
+            f"- Exact spoken transcript: '{full_transcript}'\n\n"
             f"Provide exactly 2 to 3 specific, evidence-based therapy recommendations "
-            f"for the therapist. Specifically cite the lowest-scoring phonemes actually detected. "
+            f"for the therapist. Specifically cite the lowest-scoring phonemes actually detected and reference the spoken words. "
             f"Output only the recommendations as a numbered list "
             f"with no additional commentary. Each item on its own line, starting with '1.', '2.', '3.'."
         )

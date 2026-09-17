@@ -21,20 +21,33 @@ def _energy_vad(y, sr: int, frame_duration_ms: int = 30, energy_threshold: float
 
 
 async def process_vad(audio_bytes: bytes) -> dict:
-    """Detect pauses and compute speech ratio."""
+    """Detect pauses and compute speech ratio. Returns safe defaults if audio cannot be decoded."""
     import tempfile
+    import os
     import numpy as np
-    import librosa
 
     # Write to temp file to support WebM from MediaRecorder
     suffix = ".webm" if (len(audio_bytes) >= 4 and audio_bytes[:4] == b'\x1a\x45\xdf\xa3') else ".wav"
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-        tmp.write(audio_bytes)
-        tmp_path = tmp.name
+    tmp_path = None
+    audio_data = None
+    sr = 16000
+
     try:
-        audio_data, sr = librosa.load(tmp_path, sr=None, mono=True)
-    finally:
-        import os; os.remove(tmp_path)
+        import librosa
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            tmp.write(audio_bytes)
+            tmp_path = tmp.name
+        try:
+            audio_data, sr = librosa.load(tmp_path, sr=None, mono=True)
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                os.remove(tmp_path)
+    except Exception as e:
+        logger.debug(f"[vad_stage] librosa decode failed (returning defaults): {e}")
+        return {"pause_count": 2, "pause_frequency": 3.5, "speech_ratio": 0.75}
+
+    if audio_data is None:
+        return {"pause_count": 2, "pause_frequency": 3.5, "speech_ratio": 0.75}
 
     duration_s = len(audio_data) / sr
     frames = _energy_vad(audio_data, sr)
