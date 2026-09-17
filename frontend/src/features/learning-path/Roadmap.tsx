@@ -142,7 +142,7 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.15, ease: "easeOut" }}
-                className="absolute -bottom-2 bg-white text-[#0F172A] px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm hover:bg-[#F4F6F8] border border-[#CBD5E1]"
+                className="absolute -bottom-2 bg-white text-[#0F172A] px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm hover:bg-[#F1F5F9] border border-[#CBD5E1]"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUnlockMilestone(milestone.id);
@@ -156,13 +156,13 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
         </motion.div>
 
         {/* Label */}
-        <div className={`text-sm font-semibold text-center max-w-[100px] ${styles.text}`}>
+        <div className="text-sm font-semibold text-center max-w-[100px] text-[#0F172A]">
           {milestone.title}
         </div>
 
         {/* Progress indicator for active milestones */}
         {milestone.status === "active" && progressData[milestone.id] && (
-          <div className="bg-[#CCFBF1] text-[#0D9488] text-xs font-bold px-2 py-1 rounded-full">
+          <div className="bg-[#CCFBF1] text-[#0D9488] font-bold border border-[#0D9488] px-2.5 py-0.5 rounded-full text-xs">
             {progressData[milestone.id].consecutive_successes}/3
           </div>
         )}
@@ -173,8 +173,8 @@ export default function Roadmap({ milestones, onMilestoneClick, onUnlockMileston
   return (
     <div className="w-full">
       {/* Section Label */}
-      <div className="mb-4">
-        <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Milestones</h3>
+      <div className="mb-2">
+        <h3 className="text-xs font-bold text-[#0D9488] uppercase tracking-wider">Milestones</h3>
       </div>
 
       {/* Desktop: Horizontal layout */}

@@ -252,15 +252,15 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
     <div className="bg-white border border-[#CBD5E1] rounded-[12px] shadow-sm p-6">
       {/* Header */}
       <div className="mb-6">
-        <h3 className="text-2xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-        <p className="text-[#475569] text-base mb-4 font-medium">{milestone.goal}</p>
+        <h3 className="text-xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
+        <p className="text-sm font-medium text-[#475569] mb-4">{milestone.goal}</p>
 
         {/* Progress text */}
         <div className="flex items-center justify-between mb-2">
-          <span className="text-base font-semibold text-[#475569]">
+          <span className="text-sm font-semibold text-[#475569]">
             Practice {progress.consecutive_successes} of {threshold} days to unlock checkpoint
           </span>
-          <span className="text-base font-bold text-[#0D9488] font-mono tabular-nums">
+          <span className="text-sm font-bold text-[#0D9488] font-mono tabular-nums">
             {progress.completed_exercises}/{progress.total_exercises}
           </span>
         </div>
@@ -303,7 +303,7 @@ export default function PracticePanel({ milestone, caseId, onCheckpointReady, on
             <Target className="w-8 h-8 text-[#0D9488] flex-shrink-0" strokeWidth={1.75} />
             <div className="flex-1">
               <h4 className="font-bold text-[#0F172A] text-lg mb-2">Checkpoint ready</h4>
-              <p className="text-[#475569] mb-4 font-medium">
+              <p className="text-sm font-medium text-[#475569] mb-4">
                 You have completed the required practice sessions. Take the generalization probe to assess progress.
               </p>
               <button

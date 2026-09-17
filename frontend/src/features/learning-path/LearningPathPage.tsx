@@ -262,12 +262,12 @@ export default function LearningPathPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F6F8] text-[#0F172A] p-6">
+    <div className="min-h-screen bg-[#F1F5F9] text-[#0F172A] p-6">
       {/* Header */}
       <div className="bg-white border-b border-[#CBD5E1] sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-2xl font-bold text-[#0F172A]">Learning path</h1>
+            <h1 className="text-xl font-bold text-[#0F172A]">Learning path</h1>
 
             {/* Tab Toggle */}
             <div className="flex gap-2">
@@ -276,7 +276,7 @@ export default function LearningPathPage() {
                 className={`px-5 py-2.5 rounded-[8px] font-semibold transition-colors flex items-center gap-2 ${
                   activeTab === "roadmap"
                     ? "bg-[#1E3A5F] text-white"
-                    : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F4F6F8]"
+                    : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F1F5F9]"
                 }`}
               >
                 Patient Roadmap
@@ -286,7 +286,7 @@ export default function LearningPathPage() {
                 className={`px-5 py-2.5 rounded-[8px] font-semibold transition-colors flex items-center gap-2 ${
                   activeTab === "edit"
                     ? "bg-[#1E3A5F] text-white"
-                    : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F4F6F8]"
+                    : "bg-white text-[#0F172A] border border-[#CBD5E1] hover:bg-[#F1F5F9]"
                 }`}
               >
                 Clinician Mode
@@ -322,7 +322,7 @@ export default function LearningPathPage() {
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                className="bg-white border border-[#CBD5E1] rounded-xl p-4 mb-6 shadow-sm"
+                className="bg-white border border-[#CBD5E1] rounded-[12px] p-4 mb-6 shadow-sm"
               >
                 <div className="flex items-center gap-3">
                   <Flame className="w-6 h-6 text-[#D97706]" strokeWidth={1.75} />
@@ -356,7 +356,7 @@ export default function LearningPathPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
-                  className="bg-[#CCFBF1] border border-[#0D9488] rounded-xl p-4 mb-6 text-center shadow-sm"
+                  className="bg-[#CCFBF1] border border-[#0D9488] rounded-[12px] p-4 mb-6 text-center shadow-sm"
                 >
                   <div className="flex items-center justify-center gap-2">
                     <CheckCircle2 className="w-5 h-5 text-[#16A34A]" strokeWidth={1.75} />

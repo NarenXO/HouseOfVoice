@@ -48,7 +48,7 @@ export default function MilestoneEditor({
   return (
     <div className="w-full max-w-4xl mx-auto p-6 pb-24">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-[#0F172A]">Clinician Mode - Edit Learning Path</h2>
+        <h2 className="text-xl font-bold text-[#0F172A]">Clinician Mode - Edit Learning Path</h2>
         <button
           onClick={onAddMilestone}
           disabled={disabled}
@@ -97,7 +97,7 @@ export default function MilestoneEditor({
                   </button>
                   <button
                     onClick={handleCancel}
-                    className="bg-white text-[#0F172A] border border-[#CBD5E1] font-semibold rounded-[8px] px-5 py-2.5 hover:bg-[#F4F6F8] transition-colors"
+                    className="bg-white text-[#0F172A] border border-[#CBD5E1] font-semibold rounded-[8px] px-5 py-2.5 hover:bg-[#F1F5F9] transition-colors"
                   >
                     Cancel
                   </button>
@@ -107,9 +107,9 @@ export default function MilestoneEditor({
               <div className="flex items-start justify-between">
                 <div>
                   <h3 className="font-semibold text-[#0F172A]">{milestone.title}</h3>
-                  <p className="text-base text-[#475569] mt-1 font-medium">{milestone.goal}</p>
+                  <p className="text-sm font-medium text-[#475569] mt-1">{milestone.goal}</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-sm text-[#475569] font-medium">Order: {milestone.order_index}</span>
+                    <span className="text-sm font-medium text-[#475569]">Order: {milestone.order_index}</span>
                     <span className="text-sm px-2 py-1 rounded-full bg-[#F1F5F9] text-[#0F172A] font-medium">
                       {milestone.status}
                     </span>

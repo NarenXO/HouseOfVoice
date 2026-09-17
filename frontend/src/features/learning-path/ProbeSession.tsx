@@ -176,7 +176,7 @@ export default function ProbeSession({
                 </button>
                 <button
                   onClick={onCancel}
-                  className="bg-white hover:bg-[#F4F6F8] text-[#0F172A] border border-[#CBD5E1] font-semibold rounded-[8px] px-5 py-2.5 transition-colors"
+                  className="bg-white hover:bg-[#F1F5F9] text-[#0F172A] border border-[#CBD5E1] font-semibold rounded-[8px] px-5 py-2.5 transition-colors"
                 >
                   Cancel
                 </button>

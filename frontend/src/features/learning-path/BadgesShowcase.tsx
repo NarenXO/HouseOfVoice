@@ -109,18 +109,18 @@ export default function BadgesShowcase({ caseId, refreshTrigger = 0 }: BadgesSho
   return (
     <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
       {/* Section Label */}
-      <div className="mb-4">
-        <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Achievements</h3>
+      <div className="mb-2">
+        <h3 className="text-xs font-bold text-[#0D9488] uppercase tracking-wider">Achievements</h3>
       </div>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-[#0F172A] flex items-center gap-2">
+          <h2 className="text-xl font-bold text-[#0F172A] flex items-center gap-2">
             <Award className="w-6 h-6 text-[#0D9488]" strokeWidth={1.75} />
             Achievements
           </h2>
-          <p className="text-base text-[#475569] font-medium mt-1">
+          <p className="text-sm font-medium text-[#475569] mt-1">
             Earned by mastering sounds in new words
           </p>
         </div>

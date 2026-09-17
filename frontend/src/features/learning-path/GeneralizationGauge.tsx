@@ -108,17 +108,17 @@ export default function GeneralizationGauge({ caseId, refreshTrigger = 0 }: Gene
   return (
     <div className="bg-white border border-[#CBD5E1] rounded-[12px] p-6 shadow-sm">
       {/* Section Label */}
-      <div className="mb-4">
-        <h3 className="text-xs font-bold text-[#0D9488] tracking-wider uppercase">Generalization by context</h3>
+      <div className="mb-2">
+        <h3 className="text-xs font-bold text-[#0D9488] uppercase tracking-wider">Generalization by context</h3>
       </div>
 
       {/* Card Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-[#0F172A]">
+          <h2 className="text-xl font-bold text-[#0F172A]">
             Generalization index
           </h2>
-          <p className="text-base text-[#475569] font-medium mt-1">
+          <p className="text-sm font-medium text-[#475569] mt-1">
             Untrained word mastery rate
           </p>
         </div>

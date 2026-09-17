@@ -81,7 +81,7 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
             </div>
             <button
               onClick={() => onUnlockMilestone(milestone.id)}
-              className="px-3 py-1 bg-white hover:bg-[#F4F6F8] text-[#0F172A] border border-[#CBD5E1] rounded-full text-xs font-semibold transition-colors"
+              className="px-3 py-1 bg-white hover:bg-[#F1F5F9] text-[#0F172A] border border-[#CBD5E1] rounded-full text-xs font-semibold transition-colors"
             >
               Unlock
             </button>
@@ -113,8 +113,8 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h3 className="text-2xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
-              <p className="text-[#475569] text-base font-medium">{milestone.goal}</p>
+              <h3 className="text-xl font-bold text-[#0F172A] mb-1">{milestone.title}</h3>
+              <p className="text-sm font-medium text-[#475569]">{milestone.goal}</p>
             </div>
             {getStatusBadge()}
           </div>
@@ -141,8 +141,8 @@ export default function MilestoneCard({ milestone, onUnlockMilestone, caseId, on
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="font-semibold text-[#0F172A] text-base">{exercise.title}</p>
-                    <p className="text-[#475569] text-sm mt-1 font-medium">{exercise.instructions}</p>
+                    <p className="font-semibold text-[#0F172A] text-sm">{exercise.title}</p>
+                    <p className="text-sm font-medium text-[#475569] mt-1">{exercise.instructions}</p>
                   </div>
                 </div>
               ))}
