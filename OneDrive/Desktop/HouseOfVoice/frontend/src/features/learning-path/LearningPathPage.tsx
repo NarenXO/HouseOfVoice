@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Flame, CheckCircle2 } from "lucide-react";
+import { Zap, Flame, CheckCircle2, ChevronRight } from "lucide-react";
 import Roadmap from "./Roadmap";
 import MilestoneCard from "./MilestoneCard";
 import MilestoneEditor from "./MilestoneEditor";
@@ -9,9 +10,10 @@ import BadgesShowcase from "./BadgesShowcase";
 import { Milestone, LearningPath } from "./types";
 import axios from "axios";
 
-const API_BASE = "http://localhost:8000/api"; // Adjust as needed
+const API_BASE = "/api"; // Use Vite proxy
 
 export default function LearningPathPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"roadmap" | "edit">("roadmap");
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
   const [selectedMilestone, setSelectedMilestone] = useState<Milestone | null>(null);
@@ -410,10 +412,18 @@ export default function LearningPathPage() {
                 transition={{ duration: 0.2, ease: "easeOut" }}
                 className="fixed bottom-0 left-0 right-0 bg-[#064E3B] border-t border-[#0D9488] text-white p-4 shadow-md z-40"
               >
-                <div className="max-w-6xl mx-auto flex items-center justify-center gap-3">
-                  <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
-                  <span className="font-bold text-lg text-white">Path is live and approved</span>
-                  <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
+                <div className="max-w-6xl mx-auto flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-[#34D399]" strokeWidth={1.75} />
+                    <span className="font-bold text-lg text-white">Path is live and approved</span>
+                  </div>
+                  <button
+                    onClick={() => navigate('/session')}
+                    className="bg-white hover:bg-[#CCFBF1] text-[#064E3B] font-black rounded-lg px-5 py-2.5 shadow-sm transition-colors flex items-center gap-2"
+                  >
+                    <span>Join Live Session</span>
+                    <ChevronRight className="w-5 h-5" strokeWidth={1.75} />
+                  </button>
                 </div>
               </motion.div>
             )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Star, Clock, Video, Users, Calendar, AlertCircle, 
   CheckCircle2, ChevronRight, User, Loader2, Sparkles, 
@@ -65,6 +66,7 @@ const MOCK_RECOMMENDATIONS: Recommendation[] = [
 ];
 
 export default function MatchingHome() {
+  const navigate = useNavigate();
   const caseId = "case_demo_001";
   
   // State
@@ -517,9 +519,18 @@ export default function MatchingHome() {
                       </div>
 
                       {plan.approved_by ? (
-                        <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center space-x-3 text-emerald-400">
-                          <CheckCircle2 className="w-5 h-5 shrink-0" />
-                          <span className="font-medium">Plan Approved & Locked</span>
+                        <div className="space-y-4">
+                          <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center space-x-3 text-emerald-400">
+                            <CheckCircle2 className="w-5 h-5 shrink-0" />
+                            <span className="font-medium">Plan Approved & Locked</span>
+                          </div>
+                          <button 
+                            onClick={() => navigate('/learning')}
+                            className="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-xl shadow-[0_0_20px_rgba(236,72,153,0.2)] transition-all flex items-center justify-center space-x-2"
+                          >
+                            <span>Proceed to Learning Path</span>
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
                         </div>
                       ) : (
                         <button 

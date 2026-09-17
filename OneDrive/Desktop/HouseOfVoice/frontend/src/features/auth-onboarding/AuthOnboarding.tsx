@@ -257,16 +257,10 @@ export function AuthOnboarding() {
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
-                  onClick={() => navigate('/docs')}
-                  className="bg-[#1E3A5F] text-white px-6 py-3 rounded-lg hover:bg-[#2E5A88] transition-colors flex items-center justify-center gap-2"
-                >
-                  <CheckCircle className="w-5 h-5" strokeWidth={1.75} /> Go to Patient Dashboard
-                </button>
-                <button
-                  onClick={() => navigate('/matching')}
+                  onClick={() => navigate('/screening')}
                   className="bg-[#0D9488] text-white px-6 py-3 rounded-lg hover:bg-[#0D9488]/90 transition-colors flex items-center justify-center gap-2"
                 >
-                  <User className="w-5 h-5" strokeWidth={1.75} /> Explore Therapist Matching
+                  Proceed to Speech Screening
                 </button>
               </div>
               <div className="mt-6">

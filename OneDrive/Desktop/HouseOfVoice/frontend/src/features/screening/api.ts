@@ -1,6 +1,6 @@
 import { ScreeningResult } from '../../shared/types';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '/api/screening';
+const API_BASE = '/api/screening';
 
 export interface ClipUploadResponse {
   clip_id: string;

@@ -1,8 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
   Activity, Volume2, Target, Mic2,
-  RotateCcw, Download, CheckCircle2, AlertCircle, Info, FileText
+  RotateCcw, Download, CheckCircle2, AlertCircle, Info, FileText, ChevronRight
 } from 'lucide-react';
 import { ScreeningResult } from '../../shared/types';
 
@@ -121,6 +122,7 @@ interface Props {
 }
 
 export const ScreeningResults: React.FC<Props> = ({ result, onReset }) => {
+  const navigate = useNavigate();
   const sevKey = (result.overall_severity?.toLowerCase() as SevKey) in SEVERITY
     ? (result.overall_severity.toLowerCase() as SevKey)
     : 'mild';
@@ -272,6 +274,14 @@ export const ScreeningResults: React.FC<Props> = ({ result, onReset }) => {
             Retake Assessment
           </button>
         )}
+        <button
+          onClick={() => navigate('/matching')}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-white transition-colors hover:opacity-90"
+          style={{ background: C.teal }}
+        >
+          Proceed to Therapist Matching
+          <ChevronRight size={16} strokeWidth={2} />
+        </button>
         <button
           onClick={() => window.print()}
           className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-white transition-colors hover:opacity-90"
