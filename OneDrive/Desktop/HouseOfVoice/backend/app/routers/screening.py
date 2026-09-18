@@ -67,25 +67,23 @@ async def run_screening_pipeline(payload: Dict):
         case_id = payload.get("case_id", "demo-case-001")
         clip_ids = payload.get("clip_ids", {})
         
-        # Mock screening result
+        # Mock screening result matching frontend ScreeningResult type
         return {
             "case_id": case_id,
-            "overall_assessment": "Mild speech articulation difficulties detected",
-            "confidence_score": 0.85,
-            "recommendations": [
-                "Consider targeting /r/ and /s/ sounds in therapy",
-                "Practice spontaneous speech exercises",
-                "Monitor progress over 6-8 weeks"
-            ],
-            "phoneme_errors": {
+            "overall_severity": "mild",
+            "phoneme_scores": {
                 "/r/": 0.45,
                 "/s/": 0.32,
                 "/th/": 0.18
             },
             "fluency_score": 0.78,
-            "intelligibility_score": 0.82,
-            "transcript": "The quick brown fox jumps over the lazy dog. She sells seashells by the seashore.",
-            "analyzed_at": datetime.utcnow().isoformat()
+            "language_score": 0.82,
+            "recommendations": [
+                "Consider targeting /r/ and /s/ sounds in therapy",
+                "Practice spontaneous speech exercises",
+                "Monitor progress over 6-8 weeks"
+            ],
+            "created_at": datetime.utcnow().isoformat()
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pipeline failed: {str(e)}")
@@ -100,22 +98,20 @@ async def get_screening_result(case_id: str):
     try:
         return {
             "case_id": case_id,
-            "overall_assessment": "Mild speech articulation difficulties detected",
-            "confidence_score": 0.85,
-            "recommendations": [
-                "Consider targeting /r/ and /s/ sounds in therapy",
-                "Practice spontaneous speech exercises",
-                "Monitor progress over 6-8 weeks"
-            ],
-            "phoneme_errors": {
+            "overall_severity": "mild",
+            "phoneme_scores": {
                 "/r/": 0.45,
                 "/s/": 0.32,
                 "/th/": 0.18
             },
             "fluency_score": 0.78,
-            "intelligibility_score": 0.82,
-            "transcript": "The quick brown fox jumps over the lazy dog. She sells seashells by the seashore.",
-            "analyzed_at": datetime.utcnow().isoformat()
+            "language_score": 0.82,
+            "recommendations": [
+                "Consider targeting /r/ and /s/ sounds in therapy",
+                "Practice spontaneous speech exercises",
+                "Monitor progress over 6-8 weeks"
+            ],
+            "created_at": datetime.utcnow().isoformat()
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Fetch result failed: {str(e)}")

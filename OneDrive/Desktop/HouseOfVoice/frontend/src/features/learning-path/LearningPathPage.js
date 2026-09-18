@@ -8,7 +8,7 @@ import MilestoneEditor from "./MilestoneEditor";
 import GeneralizationGauge from "./GeneralizationGauge";
 import BadgesShowcase from "./BadgesShowcase";
 import axios from "axios";
-const API_BASE = "http://localhost:8000/api"; // Adjust as needed
+const API_BASE = "/api";
 export default function LearningPathPage() {
     const [activeTab, setActiveTab] = useState("roadmap");
     const [learningPath, setLearningPath] = useState(null);

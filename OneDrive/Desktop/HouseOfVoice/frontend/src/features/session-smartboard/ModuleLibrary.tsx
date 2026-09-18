@@ -54,7 +54,7 @@ export default function ModuleLibrary() {
       if (selectedLanguage !== "all") params.append("language", selectedLanguage);
 
       const response = await fetch(
-        `http://localhost:8000/api/session/modules?${params.toString()}`
+        `/api/session/modules?${params.toString()}`
       );
       
       if (!response.ok) {
@@ -111,7 +111,7 @@ export default function ModuleLibrary() {
 
   const handleGenerateModule = async (phoneme: string) => {
     try {
-      const response = await fetch("http://localhost:8000/api/session/modules/generate", {
+      const response = await fetch("/api/session/modules/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

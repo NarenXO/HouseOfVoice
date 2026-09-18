@@ -138,7 +138,7 @@ export default function SessionRoom() {
   useEffect(() => {
     const loadClinicalContext = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/session/context/case_demo_001");
+        const response = await fetch("/api/session/context/case_demo_001");
         if (response.ok) {
           const context: ClinicalContext = await response.json();
           setClinicalContext(context);
@@ -252,7 +252,7 @@ export default function SessionRoom() {
   const generateDemoForPhoneme = async (phoneme: string) => {
     setIsGeneratingDemo(true);
     try {
-      const response = await fetch("http://localhost:8000/api/session/demo/generate", {
+      const response = await fetch("/api/session/demo/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -337,7 +337,7 @@ export default function SessionRoom() {
 
   const attachToMilestone = async (moduleId: string, milestoneId: string) => {
     try {
-      const response = await fetch("http://localhost:8000/api/session/modules/attach", {
+      const response = await fetch("/api/session/modules/attach", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -362,7 +362,7 @@ export default function SessionRoom() {
   const handleEndSession = async () => {
     setEndingSession(true);
     try {
-      const response = await fetch("http://localhost:8000/api/session/end-session", {
+      const response = await fetch("/api/session/end-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -447,7 +447,7 @@ export default function SessionRoom() {
   const generateModuleForPhoneme = async (phoneme: string) => {
     setIsGeneratingModule(true);
     try {
-      const response = await fetch("http://localhost:8000/api/session/modules/generate", {
+      const response = await fetch("/api/session/modules/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

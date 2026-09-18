@@ -6,6 +6,7 @@ import {
   RotateCcw, Download, CheckCircle2, AlertCircle, Info, FileText, ChevronRight
 } from 'lucide-react';
 import { ScreeningResult } from '../../shared/types';
+import { demoStore } from '../../shared/demoStore';
 
 const C = {
   navy: '#1E3A5F',
@@ -123,6 +124,12 @@ interface Props {
 
 export const ScreeningResults: React.FC<Props> = ({ result, onReset }) => {
   const navigate = useNavigate();
+  
+  // Save screening result to demo store
+  React.useEffect(() => {
+    demoStore.setScreeningResult(result);
+  }, [result]);
+  
   const sevKey = (result.overall_severity?.toLowerCase() as SevKey) in SEVERITY
     ? (result.overall_severity.toLowerCase() as SevKey)
     : 'mild';

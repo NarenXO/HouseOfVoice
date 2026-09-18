@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Flame, Target } from "lucide-react";
 import axios from "axios";
 import ProbeSession from "./ProbeSession";
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "/api";
 export default function PracticePanel({ milestone, caseId, onCheckpointReady, onProgressUpdate, onProbeComplete, autoFillTrigger }) {
     const [progress, setProgress] = useState(null);
     const [streak, setStreak] = useState(null);

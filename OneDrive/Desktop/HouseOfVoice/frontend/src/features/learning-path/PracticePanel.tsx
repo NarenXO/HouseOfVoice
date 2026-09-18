@@ -5,7 +5,7 @@ import { Milestone, Exercise } from "./types";
 import axios from "axios";
 import ProbeSession from "./ProbeSession";
 
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "/api";
 
 interface PracticePanelProps {
   milestone: Milestone;

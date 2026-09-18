@@ -24,7 +24,7 @@ app.add_middleware(
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "app": "HouseOfVoice", "version": "1.0.0"}
+    return {"status": "ok"}
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(docs_router, prefix="/api/docs", tags=["docs"])

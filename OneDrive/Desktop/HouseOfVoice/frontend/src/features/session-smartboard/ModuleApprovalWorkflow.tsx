@@ -68,7 +68,7 @@ export default function ModuleApprovalWorkflow({
   const handleApprove = async () => {
     setIsProcessing(true);
     try {
-      await fetch(`http://localhost:8000/api/session/modules/${moduleData.id}/approve`, {
+      await fetch(`/api/session/modules/${moduleData.id}/approve`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export default function ModuleApprovalWorkflow({
   const handleReject = async () => {
     setIsProcessing(true);
     try {
-      await fetch(`http://localhost:8000/api/session/modules/${moduleData.id}/approve`, {
+      await fetch(`/api/session/modules/${moduleData.id}/approve`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

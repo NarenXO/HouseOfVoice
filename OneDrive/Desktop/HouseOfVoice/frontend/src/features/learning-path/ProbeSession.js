@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Award, Target, CheckCircle2, ArrowRight, X, RotateCcw, Mic } from "lucide-react";
 import axios from "axios";
-const API_BASE = "http://localhost:8000/api";
+const API_BASE = "/api";
 export default function ProbeSession({ milestoneId, caseId, phoneme, onComplete, onCancel, }) {
     const [step, setStep] = useState("loading");
     const [probeItem, setProbeItem] = useState(null);
