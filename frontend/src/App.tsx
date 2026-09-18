@@ -2,12 +2,10 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { Activity, UserCheck, Mic, Users, BookOpen, Monitor, LayoutDashboard } from 'lucide-react';
 
-import AuthHome from './features/auth-onboarding/AuthHome';
-import DashboardHome from './features/dashboard-docs/DashboardHome';
+import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding';
 import LearningPathPage from './features/learning-path/LearningPathPage';
 import MatchingHome from './features/matching-booking-plan/MatchingHome';
-import ScreeningHome from './features/screening/ScreeningHome';
-// import SessionHome from './features/session-smartboard/SessionHome';
+import ScreeningHome from './features/screening/ScreeningPage';
 
 function Header() {
   const location = useLocation();
@@ -17,8 +15,6 @@ function Header() {
     { path: '/screening', label: 'Speech Screening', icon: Mic },
     { path: '/matching', label: 'Therapist Matching', icon: Users },
     { path: '/learning', label: 'Learning Path', icon: BookOpen },
-    // { path: '/session', label: 'Live Session', icon: Monitor },
-    { path: '/docs', label: 'Progress Dashboard', icon: LayoutDashboard },
   ];
 
   return (
@@ -69,13 +65,11 @@ function App() {
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <Routes>
-            <Route path="/" element={<AuthHome />} />
-            <Route path="/auth/*" element={<AuthHome />} />
+            <Route path="/" element={<AuthOnboarding />} />
+            <Route path="/auth/*" element={<AuthOnboarding />} />
             <Route path="/screening/*" element={<ScreeningHome />} />
             <Route path="/matching/*" element={<MatchingHome />} />
             <Route path="/learning/*" element={<LearningPathPage />} />
-            {/* <Route path="/session/*" element={<SessionHome />} /> */}
-            <Route path="/docs/*" element={<DashboardHome />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
