@@ -1,11 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
-import { Activity, UserCheck, Mic, Users, BookOpen, Monitor, LayoutDashboard } from 'lucide-react';
+import { Activity, UserCheck, Mic, Users, BookOpen, Video, LayoutDashboard } from 'lucide-react';
 
 import { AuthOnboarding } from './features/auth-onboarding/AuthOnboarding';
+import DashboardDocs from './features/dashboard-docs/DashboardDocs';
 import LearningPathPage from './features/learning-path/LearningPathPage';
 import MatchingHome from './features/matching-booking-plan/MatchingHome';
 import ScreeningHome from './features/screening/ScreeningPage';
+import SessionHome from './features/session-smartboard/SessionHome';
 
 function Header() {
   const location = useLocation();
@@ -15,6 +17,8 @@ function Header() {
     { path: '/screening', label: 'Speech Screening', icon: Mic },
     { path: '/matching', label: 'Therapist Matching', icon: Users },
     { path: '/learning', label: 'Learning Path', icon: BookOpen },
+    { path: '/session', label: 'Live Session', icon: Video },
+    { path: '/docs', label: 'Progress Dashboard', icon: LayoutDashboard },
   ];
 
   return (
@@ -70,6 +74,8 @@ function App() {
             <Route path="/screening/*" element={<ScreeningHome />} />
             <Route path="/matching/*" element={<MatchingHome />} />
             <Route path="/learning/*" element={<LearningPathPage />} />
+            <Route path="/session/*" element={<SessionHome />} />
+            <Route path="/docs/*" element={<DashboardDocs />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

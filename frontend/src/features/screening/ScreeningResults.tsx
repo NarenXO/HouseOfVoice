@@ -100,11 +100,14 @@ function PhonemeRow({ phoneme, score }: { phoneme: string; score: number }) {
   const pct = Math.round((score <= 1 ? score * 100 : score));
   const isFlagged = score < 0.7;
   const barColor = score >= 0.7 ? C.success : score >= 0.5 ? C.warning : C.danger;
-  
+
+  // Strip extra slashes and ensure single slash format
+  const cleanPhoneme = phoneme.replace(/^\/+|\/+$/g, '');
+
   return (
     <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: C.surface, border: `1px solid ${C.border}` }}>
       <div className="flex items-center justify-between">
-        <span className="font-mono font-semibold text-sm" style={{ color: C.textPrimary }}>/{phoneme}/</span>
+        <span className="font-mono font-semibold text-sm" style={{ color: C.textPrimary }}>/{cleanPhoneme}/</span>
         <span className="text-xs font-bold tabular-nums" style={{ color: barColor }}>{pct}%</span>
       </div>
       <div className="h-1.5 rounded-full overflow-hidden" style={{ background: C.border }}>
@@ -220,16 +223,19 @@ export const ScreeningResults: React.FC<Props> = ({ result, onReset }) => {
               Flagged Errors
             </p>
             <div className="flex flex-wrap gap-2">
-              {flaggedPhonemes.map(([ph, score]) => (
-                <div
-                  key={ph}
-                  className="px-2.5 py-1 rounded-md text-xs font-mono flex items-center gap-1.5 border"
-                  style={{ background: '#FEF2F2', color: C.danger, borderColor: '#FCA5A5' }}
-                >
-                  <AlertCircle size={12} strokeWidth={2} />
-                  <span>{ph} - {PHONEME_POSITIONS[ph] || 'various positions'}</span>
-                </div>
-              ))}
+              {flaggedPhonemes.map(([ph, score]) => {
+                const cleanPhoneme = ph.replace(/^\/+|\/+$/g, '');
+                return (
+                  <div
+                    key={ph}
+                    className="px-2.5 py-1 rounded-md text-xs font-mono flex items-center gap-1.5 border"
+                    style={{ background: '#FEF2F2', color: C.danger, borderColor: '#FCA5A5' }}
+                  >
+                    <AlertCircle size={12} strokeWidth={2} />
+                    <span>/{cleanPhoneme}/ - {PHONEME_POSITIONS[cleanPhoneme] || 'various positions'}</span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

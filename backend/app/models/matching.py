@@ -25,6 +25,11 @@ class Booking(BaseModel):
     mode: Literal["in-person", "virtual"]
     status: Literal["pending", "confirmed", "no_response", "trial"]
     reminder_sent: bool
+    
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat()
+        }
 
 class SupervisorAssignment(BaseModel):
     booking_id: str
@@ -56,7 +61,7 @@ class TherapistRecommendation(BaseModel):
 class BookingCreateRequest(BaseModel):
     case_id: str
     therapist_id: str
-    datetime: datetime
+    datetime: str  # Accept string from frontend, will be parsed
     mode: Literal["in-person", "virtual"]
     is_trial: bool = False
 

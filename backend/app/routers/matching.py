@@ -5,14 +5,14 @@ import uuid
 import os
 from datetime import datetime
 
-from backend.app.models.shared import CommunicationProfile, ScreeningResult, CurrentUser
-from backend.app.models.matching import (
+from app.models.shared import CommunicationProfile, ScreeningResult, CurrentUser
+from app.models.matching import (
     Therapist, Supervisor, Booking, SupervisorAssignment, TherapyPlan,
     TherapistRecommendation, BookingCreateRequest, SupervisorAssignRequest,
     PlanDraftRequest, PlanApproveRequest
 )
-from backend.app.services.matching.scoring import score_therapist
-from backend.app.services.matching.plan_generator import generate_gemini_therapy_plan
+from app.services.matching.scoring import score_therapist
+from app.services.matching.plan_generator import generate_gemini_therapy_plan
 
 router = APIRouter()
 
@@ -138,9 +138,16 @@ async def recommend_therapists(case_id: str):
 
 @router.post("/bookings", response_model=Booking)
 async def create_booking(request: BookingCreateRequest):
+    # Parse datetime string to datetime object
+    try:
+        parsed_datetime = datetime.fromisoformat(request.datetime.replace('Z', '+00:00'))
+    except ValueError:
+        # Fallback to current time if parsing fails
+        parsed_datetime = datetime.utcnow()
+    
     # Live availability check: query existing bookings, exclude conflicts
     for b in db_bookings:
-        if b.therapist_id == request.therapist_id and b.datetime == request.datetime and b.status in ["confirmed", "pending", "trial"]:
+        if b.therapist_id == request.therapist_id and b.datetime == parsed_datetime and b.status in ["confirmed", "pending", "trial"]:
             raise HTTPException(status_code=400, detail="Timeslot conflict. Therapist is already booked at this time.")
             
     booking_id = f"book_{uuid.uuid4().hex[:8]}"
@@ -150,7 +157,7 @@ async def create_booking(request: BookingCreateRequest):
         id=booking_id,
         case_id=request.case_id,
         therapist_id=request.therapist_id,
-        datetime=request.datetime,
+        datetime=parsed_datetime,
         mode=request.mode,
         status=status,
         reminder_sent=True # Create a reminder record automatically
