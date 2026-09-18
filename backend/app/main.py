@@ -35,14 +35,14 @@ def health():
 # teammate's router lands on `main` after merge.
 # ============================================================
 # from app.routers import auth as auth_router
-# from app.routers import screening as screening_router
+from app.routers import screening as screening_router
 # from app.routers import matching as matching_router
 from app.routers import learning as learning_router
 # from app.routers import session as session_router
 # from app.routers import docs as docs_router
 #
 # app.include_router(auth_router.router, prefix="/api/auth", tags=["auth"])
-# app.include_router(screening_router.router, prefix="/api/screening", tags=["screening"])
+app.include_router(screening_router.router, prefix="/api/screening", tags=["screening"])
 # app.include_router(matching_router.router, prefix="/api/matching", tags=["matching"])
 app.include_router(learning_router.router, prefix="/api/learning", tags=["learning"])
 # app.include_router(session_router.router, prefix="/api/session", tags=["session"])
