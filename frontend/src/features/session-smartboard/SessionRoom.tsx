@@ -4,6 +4,13 @@ import Smartboard from "./Smartboard";
 import LiveDemoPlayer from "./LiveDemoPlayer";
 import ModuleApprovalWorkflow from "./ModuleApprovalWorkflow";
 
+// Type declaration for Jitsi Meet API
+declare global {
+  interface Window {
+    JitsiMeetExternalAPI: any;
+  }
+}
+
 // Import screening result mock
 const screeningResultMock: {
   caseId: string;
@@ -447,7 +454,7 @@ export default function SessionRoom() {
   const generateModuleForPhoneme = async (phoneme: string) => {
     setIsGeneratingModule(true);
     try {
-      const response = await fetch("http://localhost:8000/api/session/modules/generate", {
+      const response = await fetch("/api/session/modules/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
