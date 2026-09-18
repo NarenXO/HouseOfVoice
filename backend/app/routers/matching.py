@@ -5,14 +5,24 @@ import uuid
 import os
 from datetime import datetime
 
-from app.models.shared import CommunicationProfile, ScreeningResult, CurrentUser
-from app.models.matching import (
-    Therapist, Supervisor, Booking, SupervisorAssignment, TherapyPlan,
-    TherapistRecommendation, BookingCreateRequest, SupervisorAssignRequest,
-    PlanDraftRequest, PlanApproveRequest
-)
-from app.services.matching.scoring import score_therapist
-from app.services.matching.plan_generator import generate_gemini_therapy_plan
+try:
+    from app.models.shared import CommunicationProfile, ScreeningResult, CurrentUser
+    from app.models.matching import (
+        Therapist, Supervisor, Booking, SupervisorAssignment, TherapyPlan,
+        TherapistRecommendation, BookingCreateRequest, SupervisorAssignRequest,
+        PlanDraftRequest, PlanApproveRequest
+    )
+    from app.services.matching.scoring import score_therapist
+    from app.services.matching.plan_generator import generate_gemini_therapy_plan
+except ImportError:
+    from backend.app.models.shared import CommunicationProfile, ScreeningResult, CurrentUser
+    from backend.app.models.matching import (
+        Therapist, Supervisor, Booking, SupervisorAssignment, TherapyPlan,
+        TherapistRecommendation, BookingCreateRequest, SupervisorAssignRequest,
+        PlanDraftRequest, PlanApproveRequest
+    )
+    from backend.app.services.matching.scoring import score_therapist
+    from backend.app.services.matching.plan_generator import generate_gemini_therapy_plan
 
 router = APIRouter()
 
